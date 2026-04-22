@@ -1,0 +1,27 @@
+.blue-color{
+   background-color: #2771E2 !important; 
+    
+}
+.navy-blue{
+    background-color: #182b4b !important;
+}
+.light-blue{
+    background-color: #80b6e5 !important;
+}
+
+.heading{
+    font-family: 'Inter';
+    font-size: 5px;
+    font-weight: bold;
+}
+p{
+    font-family: 'Poppins';
+    font-size: 14px;
+}
+
+.shadow{
+  box-shadow: rgba(0, 0, 0, 0.15) 0px 3px 3px 0px;
+}
+
+
+
