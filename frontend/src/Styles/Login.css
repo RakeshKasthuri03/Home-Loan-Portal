@@ -1,0 +1,31 @@
+.Login{
+     background-color: #ffffff;
+     width: 70%;
+     height: 78%;
+     padding: 1rem;
+     border-radius: 20px;
+}
+.google-border {
+  border-bottom: 2px solid #dee2e6;
+  display: inline-block;
+  padding-bottom: 6px;
+}
+
+.fa-google {
+  font-size: 18px;
+}
+.google-linear{
+
+ background: linear-gradient(
+    90deg,
+    #4285f4, /* Blue */
+    #34a853, /* Green */
+    #fbbc05, /* Yellow */
+    #ea4335  /* Red */
+  );
+
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+
+}
+

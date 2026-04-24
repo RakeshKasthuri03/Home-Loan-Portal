@@ -1,0 +1,103 @@
+.Home .hero-section {
+  background-color: #f8f9fa;
+}
+
+.Home .hero-section h1 {
+  font-size: 2.5rem;
+}
+
+.Home .hero-section p {
+  font-size: 1.1rem;
+}
+
+.key-benefits {
+  margin-top: 40px;
+}
+.scroll-animate {
+  opacity: 0;
+  transform: translateY(40px);
+  transition: opacity 0.9s ease, transform 0.9s ease;
+}
+
+.scroll-animate.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.key-benefits {
+  background-color: #f8f9fa;
+}
+
+.key-benefits .card {
+  border-radius: 12px;
+}
+/* Customer Review CSS */
+.Customer-review {
+  background: #ffffff;
+}
+
+.review-title {
+  font-size: 32px;
+  font-weight: 700;
+  color: #000;
+}
+
+.review-card {
+  position: relative;
+  border: 1px solid #cfe0ff;
+  border-radius: 14px;
+  padding: 25px;
+  height: 100%;
+  background: #fff;
+}
+
+.review-card h5 {
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+
+.review-card p {
+  font-size: 15px;
+  line-height: 1.6;
+  color: #333;
+}
+
+.quote-mark {
+  position: absolute;
+  top: -15px;
+  right: 20px;
+  font-size: 80px;
+  color: #d6e4ff;
+  font-family: serif;
+}
+
+.review-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 20px;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.user-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #cfcfcf;
+}
+
+.user-info small {
+  display: block;
+  font-size: 13px;
+  color: #777;
+}
+
+.stars {
+  color: #ffb400;
+  font-size: 18px;
+}

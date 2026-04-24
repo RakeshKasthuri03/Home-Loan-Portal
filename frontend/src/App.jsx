@@ -1,24 +1,24 @@
 import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-import './App.css'
 
+import './App.css'
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Header from './Components/Header'
 import './style.css'
 import Footer from './Components/Footer'
+import Home from './Components/pages/Home'
+import Login from './Components/pages/auth/Login';
 function App() {
  
   return (
     <>
-      <Header/>
-    {/* <div className="min-h-screen bg-black flex items-center justify-center">
-      <h1 className="text-4xl font-bold text-blue-500">
-        Tailwind v4 ✅ Working
-      </h1>
-    </div> */}
-    <Footer/>
- 
+  
+    <BrowserRouter>
+    <Routes>
+      <Route  to path="/" element={<Home/>}/>
+      <Route to path='/login' element={<Login/>}/>
+    </Routes>
+    </BrowserRouter>
+    
 
     </>
   )

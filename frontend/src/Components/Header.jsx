@@ -6,8 +6,19 @@ import Image from "react-bootstrap/Image";
 import logo from '../assets/logo.png';
 import { NavLink } from 'react-bootstrap';
 import Button from 'react-bootstrap/Button';
+import { useNavigate } from 'react-router-dom';
+import { useState } from 'react';
+import Login from './pages/auth/Login';
 function Header() {
+
+  const navigate=useNavigate();
+    const[Showlogin,Setshowlogin]=useState(false);
+
+   
   return (
+    <>
+    <div className='Header'>
+      
     <Navbar expand="lg" className="bg-body-light   shadow " >
       <Container>
         <Navbar.Brand >
@@ -18,7 +29,7 @@ function Header() {
             width="70"
             
             
-          />
+            />
         </Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
@@ -38,17 +49,25 @@ function Header() {
                Eligibility calculator
               </NavDropdown.Item>
               <NavDropdown.Item href="#action/3.3">Affordability Calculator</NavDropdown.Item>
-              <NavDropdown.Item href="#action/3.3">House Renovations Loans</NavDropdown.Item>
+             
              
             </NavDropdown>
-               <Nav.Link className='text-dark' href="#home">About us</Nav.Link>
+               <Nav.Link className='text-dark' href="#key-benefits">About us</Nav.Link>
                <Nav.Link className='text-dark' href="#home">Contact us</Nav.Link>
           </Nav>
-           <Button className='me-4 px-3 blue-color'>Apply</Button>
-         <Button  variant='outline-primary'>Sign In</Button>
+           <Button className='me-4 px-3 blue-color' onClick={()=>Setshowlogin(true)}>Apply</Button>
+         <Button  variant='outline-primary' onClick={()=>Setshowlogin(true)}>Sign In</Button>
         </Navbar.Collapse>
       </Container>
     </Navbar>
+      {Showlogin && (
+        <div className='login-overlay '>
+         <Login closeModal={()=>Setshowlogin(false)}/>
+         </div>
+         )}
+            </div>
+            </>
+
   );
 }
 
