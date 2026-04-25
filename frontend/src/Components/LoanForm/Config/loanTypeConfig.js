@@ -1,7 +1,142 @@
 export const LOAN_TYPES = {
-    PURSHASE:{
-        key:    "PURCHASE",
-        label:  "Home Purchase Loan",
-        steps: ["Basic","Employment","Financial","Property","Document"]
-    }
-}
+  PURCHASE: {
+    key: "PURCHASE",
+    label: "Home Purchase Loan",
+    icon: "🏠",
+    steps: [
+      {
+        title: "Basic Details",
+        subtitle: "Tell us about yourself",
+        fields: [
+          { name: "fullName",    label: "Full Name",       type: "text",   required: true,  placeholder: "Enter your full name" },
+          { name: "dob",         label: "Date of Birth",   type: "date",   required: true },
+          { name: "gender",      label: "Gender",          type: "select", required: true,
+            options: ["Select Gender", "Male", "Female", "Other"] },
+          { name: "mobile",      label: "Mobile Number",   type: "tel",    required: true,  placeholder: "10-digit mobile number" },
+          { name: "email",       label: "Email Address",   type: "email",  required: true,  placeholder: "example@email.com" },
+          { name: "panCard",     label: "PAN Card Number", type: "text",   required: true,  placeholder: "ABCDE1234F" },
+          { name: "aadhar",      label: "Aadhar Number",   type: "text",   required: true,  placeholder: "12-digit Aadhar number" },
+          { name: "maritalStatus", label: "Marital Status", type: "select", required: true,
+            options: ["Select Status", "Single", "Married", "Divorced", "Widowed"] },
+        ],
+      },
+      {
+        title: "Employment Details",
+        subtitle: "Tell us about your work",
+        fields: [
+          { name: "employmentType", label: "Employment Type", type: "select", required: true,
+            options: ["Select Type", "Salaried", "Self-Employed", "Business Owner", "Retired"] },
+          { name: "companyName",    label: "Company / Business Name", type: "text",   required: true, placeholder: "Enter company name" },
+          { name: "designation",    label: "Designation",             type: "text",   required: true, placeholder: "Your job title" },
+          { name: "workExperience", label: "Total Work Experience",   type: "select", required: true,
+            options: ["Select", "Less than 1 year", "1-3 years", "3-5 years", "5-10 years", "10+ years"] },
+          { name: "monthlyIncome",  label: "Monthly Income (₹)",      type: "number", required: true, placeholder: "Net monthly income" },
+          { name: "officeAddress",  label: "Office Address",          type: "textarea", required: true, placeholder: "Full office address" },
+        ],
+      },
+      {
+        title: "Financial Details",
+        subtitle: "Your financial background",
+        fields: [
+          { name: "loanAmount",      label: "Loan Amount Required (₹)", type: "number", required: true, placeholder: "e.g. 5000000" },
+          { name: "loanTenure",      label: "Loan Tenure",              type: "select", required: true,
+            options: ["Select Tenure", "5 years", "10 years", "15 years", "20 years", "25 years", "30 years"] },
+          { name: "existingLoans",   label: "Any Existing Loans?",      type: "select", required: true,
+            options: ["Select", "No", "Yes - Home Loan", "Yes - Car Loan", "Yes - Personal Loan", "Yes - Multiple"] },
+          { name: "existingEMI",     label: "Existing EMI per month (₹)", type: "number", required: false, placeholder: "0 if none" },
+          { name: "bankName",        label: "Primary Bank Name",        type: "text",   required: true, placeholder: "Your salary/savings bank" },
+          { name: "accountType",     label: "Account Type",             type: "select", required: true,
+            options: ["Select", "Savings", "Current", "Salary"] },
+          { name: "cibilScore",      label: "Approximate CIBIL Score",  type: "select", required: true,
+            options: ["Select", "Below 650", "650-700", "700-750", "750-800", "800+", "Don't Know"] },
+        ],
+      },
+      {
+        title: "Property Details",
+        subtitle: "About the property you want to buy",
+        fields: [
+          { name: "propertyType",     label: "Property Type",           type: "select", required: true,
+            options: ["Select Type", "Apartment / Flat", "Independent House", "Villa", "Plot + Construction", "Under Construction"] },
+          { name: "propertyLocation", label: "Property Location",       type: "text",   required: true, placeholder: "City, State" },
+          { name: "propertyValue",    label: "Estimated Property Value (₹)", type: "number", required: true, placeholder: "e.g. 6000000" },
+          { name: "builderName",      label: "Builder / Seller Name",   type: "text",   required: false, placeholder: "If known" },
+          { name: "possessionStatus", label: "Possession Status",       type: "select", required: true,
+            options: ["Select", "Ready to Move", "Under Construction", "Resale"] },
+          { name: "propertyAddress",  label: "Property Address",        type: "textarea", required: true, placeholder: "Full property address" },
+        ],
+      },
+      {
+        title: "Documents",
+        subtitle: "Upload required documents",
+        fields: [
+          { name: "panDoc",       label: "PAN Card",              type: "file", required: true,  accept: ".pdf,.jpg,.jpeg,.png" },
+          { name: "aadharDoc",    label: "Aadhar Card",           type: "file", required: true,  accept: ".pdf,.jpg,.jpeg,.png" },
+          { name: "photoDoc",     label: "Passport Size Photo",   type: "file", required: true,  accept: ".jpg,.jpeg,.png" },
+          { name: "salarySlip",   label: "Last 3 Salary Slips",   type: "file", required: true,  accept: ".pdf,.jpg,.jpeg,.png" },
+          { name: "bankStatement",label: "Bank Statement (6 months)", type: "file", required: true, accept: ".pdf" },
+          { name: "itr",          label: "ITR / Form 16",         type: "file", required: false, accept: ".pdf" },
+        ],
+      },
+    ],
+  },
+
+  CONSTRUCTION: {
+    key: "CONSTRUCTION",
+    label: "Home Construction Loan",
+    icon: "🏗️",
+    steps: [
+      {
+        title: "Basic Details",
+        subtitle: "Tell us about yourself",
+        fields: [
+          { name: "fullName", label: "Full Name",       type: "text",   required: true, placeholder: "Enter your full name" },
+          { name: "dob",      label: "Date of Birth",   type: "date",   required: true },
+          { name: "gender",   label: "Gender",          type: "select", required: true,
+            options: ["Select Gender", "Male", "Female", "Other"] },
+          { name: "mobile",   label: "Mobile Number",   type: "tel",    required: true, placeholder: "10-digit mobile number" },
+          { name: "email",    label: "Email Address",   type: "email",  required: true, placeholder: "example@email.com" },
+          { name: "panCard",  label: "PAN Card Number", type: "text",   required: true, placeholder: "ABCDE1234F" },
+          { name: "aadhar",   label: "Aadhar Number",   type: "text",   required: true, placeholder: "12-digit Aadhar number" },
+        ],
+      },
+      {
+        title: "Employment Details",
+        subtitle: "Tell us about your work",
+        fields: [
+          { name: "employmentType", label: "Employment Type",   type: "select", required: true,
+            options: ["Select Type", "Salaried", "Self-Employed", "Business Owner"] },
+          { name: "monthlyIncome",  label: "Monthly Income (₹)", type: "number", required: true, placeholder: "Net monthly income" },
+          { name: "workExperience", label: "Work Experience",    type: "select", required: true,
+            options: ["Select", "Less than 1 year", "1-3 years", "3-5 years", "5+ years"] },
+        ],
+      },
+      {
+        title: "Construction Details",
+        subtitle: "About your construction project",
+        fields: [
+          { name: "plotOwned",         label: "Do you own the plot?",       type: "select", required: true,
+            options: ["Select", "Yes", "No - Will Purchase"] },
+          { name: "plotLocation",      label: "Plot Location",              type: "text",   required: true, placeholder: "City, State" },
+          { name: "plotArea",          label: "Plot Area (sq ft)",          type: "number", required: true, placeholder: "e.g. 1200" },
+          { name: "constructionCost",  label: "Estimated Construction Cost (₹)", type: "number", required: true, placeholder: "e.g. 3000000" },
+          { name: "loanAmount",        label: "Loan Amount Required (₹)",   type: "number", required: true, placeholder: "e.g. 2500000" },
+          { name: "loanTenure",        label: "Loan Tenure",                type: "select", required: true,
+            options: ["Select Tenure", "5 years", "10 years", "15 years", "20 years", "25 years"] },
+          { name: "constructionStage", label: "Current Construction Stage", type: "select", required: true,
+            options: ["Select", "Planning Stage", "Foundation Done", "Structure In Progress", "Finishing Stage"] },
+        ],
+      },
+      {
+        title: "Documents",
+        subtitle: "Upload required documents",
+        fields: [
+          { name: "panDoc",        label: "PAN Card",                type: "file", required: true,  accept: ".pdf,.jpg,.jpeg,.png" },
+          { name: "aadharDoc",     label: "Aadhar Card",             type: "file", required: true,  accept: ".pdf,.jpg,.jpeg,.png" },
+          { name: "plotDoc",       label: "Plot / Land Documents",   type: "file", required: true,  accept: ".pdf,.jpg,.jpeg,.png" },
+          { name: "approvedPlan",  label: "Approved Building Plan",  type: "file", required: true,  accept: ".pdf,.jpg,.jpeg,.png" },
+          { name: "bankStatement", label: "Bank Statement (6 months)", type: "file", required: true, accept: ".pdf" },
+        ],
+      },
+    ],
+  },
+};

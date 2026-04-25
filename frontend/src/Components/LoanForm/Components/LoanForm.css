@@ -1,0 +1,419 @@
+/* ─── LOAN FORM DESIGN SYSTEM ─────────────────────────────────────────────── */
+:root {
+  --lf-primary:     #1a3c6e;
+  --lf-accent:      #2771e2;
+  --lf-accent-light:#eff6ff;
+  --lf-success:     #16a34a;
+  --lf-error:       #dc2626;
+  --lf-bg:          #f8fafc;
+  --lf-white:       #ffffff;
+  --lf-border:      #d1d5db;
+  --lf-label:       #374151;
+  --lf-muted:       #6b7280;
+  --lf-radius:      10px;
+  --lf-font:        'Inter', 'Poppins', sans-serif;
+  --lf-shadow:      0 4px 24px rgba(26, 60, 110, 0.10);
+}
+
+/* ─── PAGE WRAPPER ─────────────────────────────────────────────────────────── */
+.lf-page {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #e8f0fe 0%, #f8fafc 60%, #e0ecff 100%);
+  padding: 40px 16px 60px;
+  font-family: var(--lf-font);
+}
+
+.lf-page-header {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.lf-page-header h1 {
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--lf-primary);
+  margin-bottom: 6px;
+}
+
+.lf-page-header p {
+  color: var(--lf-muted);
+  font-size: 1rem;
+}
+
+/* ─── LOAN TYPE SELECTOR ───────────────────────────────────────────────────── */
+.lf-type-selector {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  justify-content: center;
+  margin-bottom: 40px;
+}
+
+.lf-type-card {
+  background: var(--lf-white);
+  border: 2px solid var(--lf-border);
+  border-radius: 14px;
+  padding: 20px 28px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: center;
+  min-width: 180px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.lf-type-card:hover {
+  border-color: var(--lf-accent);
+  box-shadow: 0 4px 16px rgba(39, 113, 226, 0.15);
+  transform: translateY(-2px);
+}
+
+.lf-type-card--active {
+  border-color: var(--lf-accent);
+  background: var(--lf-accent-light);
+  box-shadow: 0 4px 16px rgba(39, 113, 226, 0.2);
+}
+
+.lf-type-card .lf-type-icon {
+  font-size: 2rem;
+  display: block;
+  margin-bottom: 8px;
+}
+
+.lf-type-card .lf-type-label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--lf-primary);
+}
+
+/* ─── FORM CARD ────────────────────────────────────────────────────────────── */
+.lf-card {
+  background: var(--lf-white);
+  border-radius: 18px;
+  box-shadow: var(--lf-shadow);
+  max-width: 860px;
+  margin: 0 auto;
+  overflow: hidden;
+}
+
+/* ─── PROGRESS BAR ─────────────────────────────────────────────────────────── */
+.lf-progress {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 28px 32px 20px;
+  background: var(--lf-white);
+  border-bottom: 1px solid #f0f0f0;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.lf-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  cursor: default;
+}
+
+.lf-step-circle {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  font-weight: 700;
+  border: 2px solid var(--lf-border);
+  background: var(--lf-white);
+  color: var(--lf-muted);
+  transition: all 0.3s ease;
+}
+
+.lf-step--active .lf-step-circle {
+  background: var(--lf-accent);
+  border-color: var(--lf-accent);
+  color: white;
+  box-shadow: 0 0 0 4px rgba(39, 113, 226, 0.15);
+}
+
+.lf-step--completed .lf-step-circle {
+  background: var(--lf-success);
+  border-color: var(--lf-success);
+  color: white;
+}
+
+.lf-step-label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--lf-muted);
+  text-align: center;
+  max-width: 70px;
+  line-height: 1.2;
+}
+
+.lf-step--active .lf-step-label {
+  color: var(--lf-accent);
+}
+
+.lf-step--completed .lf-step-label {
+  color: var(--lf-success);
+}
+
+.lf-step-line {
+  flex: 1;
+  height: 2px;
+  background: var(--lf-border);
+  min-width: 24px;
+  max-width: 60px;
+  margin-bottom: 22px;
+  transition: background 0.3s ease;
+}
+
+.lf-step-line--done {
+  background: var(--lf-success);
+}
+
+/* ─── STEP BODY ────────────────────────────────────────────────────────────── */
+.lf-step-body {
+  padding: 32px 36px;
+}
+
+.lf-step-header {
+  margin-bottom: 28px;
+}
+
+.lf-step-title {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--lf-primary);
+  margin-bottom: 4px;
+}
+
+.lf-step-subtitle {
+  font-size: 0.9rem;
+  color: var(--lf-muted);
+  margin: 0;
+}
+
+/* ─── FIELDS GRID ──────────────────────────────────────────────────────────── */
+.lf-fields-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px 28px;
+}
+
+@media (max-width: 640px) {
+  .lf-fields-grid {
+    grid-template-columns: 1fr;
+  }
+  .lf-step-body {
+    padding: 24px 20px;
+  }
+}
+
+/* ─── FIELD ────────────────────────────────────────────────────────────────── */
+.lf-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.lf-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--lf-label);
+  letter-spacing: 0.01em;
+}
+
+.lf-required {
+  color: var(--lf-error);
+  margin-left: 3px;
+}
+
+.lf-input {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1.5px solid var(--lf-border);
+  border-radius: var(--lf-radius);
+  font-size: 0.92rem;
+  color: #111827;
+  background: var(--lf-white);
+  transition: border-color 0.2s, box-shadow 0.2s;
+  outline: none;
+  font-family: var(--lf-font);
+}
+
+.lf-input:focus {
+  border-color: var(--lf-accent);
+  box-shadow: 0 0 0 3px rgba(39, 113, 226, 0.12);
+}
+
+.lf-input--error {
+  border-color: var(--lf-error);
+}
+
+.lf-input--error:focus {
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+}
+
+textarea.lf-input {
+  resize: vertical;
+  min-height: 80px;
+}
+
+select.lf-input {
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236b7280' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  padding-right: 36px;
+}
+
+.lf-error-msg {
+  font-size: 0.78rem;
+  color: var(--lf-error);
+  font-weight: 500;
+}
+
+/* ─── FILE UPLOAD ──────────────────────────────────────────────────────────── */
+.lf-file-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.lf-file-label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border: 1.5px dashed var(--lf-accent);
+  border-radius: var(--lf-radius);
+  cursor: pointer;
+  background: var(--lf-accent-light);
+  transition: background 0.2s;
+}
+
+.lf-file-label:hover {
+  background: #dbeafe;
+}
+
+.lf-file-icon {
+  font-size: 1.1rem;
+}
+
+.lf-file-text {
+  font-size: 0.85rem;
+  color: var(--lf-accent);
+  font-weight: 500;
+}
+
+.lf-file-input {
+  display: none;
+}
+
+.lf-file-chosen {
+  font-size: 0.78rem;
+  color: var(--lf-success);
+  font-weight: 500;
+  padding-left: 4px;
+}
+
+/* ─── NAV BUTTONS ──────────────────────────────────────────────────────────── */
+.lf-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 36px 32px;
+  border-top: 1px solid #f0f0f0;
+}
+
+.lf-btn {
+  padding: 11px 28px;
+  border-radius: 8px;
+  font-size: 0.92rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s ease;
+  font-family: var(--lf-font);
+}
+
+.lf-btn--back {
+  background: var(--lf-white);
+  color: var(--lf-primary);
+  border: 1.5px solid var(--lf-border);
+}
+
+.lf-btn--back:hover {
+  background: var(--lf-bg);
+  border-color: var(--lf-primary);
+}
+
+.lf-btn--next {
+  background: var(--lf-accent);
+  color: white;
+  box-shadow: 0 2px 8px rgba(39, 113, 226, 0.3);
+}
+
+.lf-btn--next:hover {
+  background: #1a5fcc;
+  box-shadow: 0 4px 12px rgba(39, 113, 226, 0.4);
+  transform: translateY(-1px);
+}
+
+.lf-btn--submit {
+  background: var(--lf-success);
+  color: white;
+  box-shadow: 0 2px 8px rgba(22, 163, 74, 0.3);
+}
+
+.lf-btn--submit:hover {
+  background: #15803d;
+  transform: translateY(-1px);
+}
+
+.lf-step-count {
+  font-size: 0.82rem;
+  color: var(--lf-muted);
+  font-weight: 500;
+}
+
+/* ─── SUCCESS SCREEN ───────────────────────────────────────────────────────── */
+.lf-success {
+  text-align: center;
+  padding: 60px 40px;
+}
+
+.lf-success-icon {
+  font-size: 4rem;
+  margin-bottom: 16px;
+}
+
+.lf-success h2 {
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: var(--lf-primary);
+  margin-bottom: 10px;
+}
+
+.lf-success p {
+  color: var(--lf-muted);
+  font-size: 1rem;
+  margin-bottom: 28px;
+}
+
+.lf-ref-box {
+  display: inline-block;
+  background: var(--lf-accent-light);
+  border: 1.5px solid var(--lf-accent);
+  border-radius: 10px;
+  padding: 12px 28px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--lf-accent);
+  letter-spacing: 0.05em;
+  margin-bottom: 28px;
+}
