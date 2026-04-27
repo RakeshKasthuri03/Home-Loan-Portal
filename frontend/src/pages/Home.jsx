@@ -6,7 +6,6 @@ import Col from "react-bootstrap/Col";
 
 import AnimateOnScroll from "./homeAnimations/AnimationOnScroll";
 import CountUpNumber from "./homeAnimations/CountUpNumber";
-import logo from "../assets/logo.png";
 
 import "../Styles/Home.css";
 import Header from "../Components/Header";
@@ -72,7 +71,6 @@ function Home() {
 
   return (
     <>
-      <Header />
       <div className="Home">
 
         {/* ── HERO ─────────────────────────────────────────────────────────── */}
@@ -280,9 +278,7 @@ function Home() {
             </Container>
           </section>
         </AnimateOnScroll>
-
       </div>
-      <Footer />
     </>
   );
 }

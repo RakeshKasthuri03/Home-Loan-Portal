@@ -6,7 +6,7 @@ import Login from '../pages/auth/Login';
 import './Header.css';
 
 const NAV_LINKS = [
-  { label: 'Loans',       href: '/apply' },
+  { label: 'Loans',       href: '/loantypes' },
   { label: 'Calculators', href: '#calculators' },
   { label: 'About Us',    href: '#key-benefits' },
   { label: 'Contact Us',  href: '#contact' },
