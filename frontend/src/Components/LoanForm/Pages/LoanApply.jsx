@@ -1,8 +1,6 @@
 import React, { useState } from "react";
 import { LOAN_TYPES } from "../Config/loanTypeConfig";
 import LoanApplicationContainer from "../Container/LoanApplicationContainer";
-import Header from "../../Header";
-import Footer from "../../Footer";
 import "../Components/LoanForm.css";
 
 const LoanApply = () => {

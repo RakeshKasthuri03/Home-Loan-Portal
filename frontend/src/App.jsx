@@ -6,8 +6,8 @@ import Login from './pages/auth/Login';
 import { LoanApply } from './Components/LoanForm';
 import MainLayout from './Layout/MainLayout';
 import LeadsDetails from '../src/pages/Agent/LeadsDetails';
-import LoanTypes from './pages/loanpages/loantypes';
 import Applicationsub from './pages/Agent/Applicationsub';
+import LoanTypes from './pages/loanpages/loantypes';
 
 function App() {
   return (

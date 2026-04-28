@@ -1,7 +1,7 @@
 import { types } from '../../utils/loanTypes';
 import Card from 'react-bootstrap/Card';
 import Button from 'react-bootstrap/Button';
-import './LoanTypes.css';
+import '../../Styles/LoanTypes.css';
 
 function LoanTypes() {
     return (
