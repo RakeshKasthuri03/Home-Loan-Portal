@@ -68,7 +68,6 @@ function Home() {
 
   return (
     <>
-    <Header />
       <div className="Home">
 
         {/* ── HERO ─────────────────────────────────────────────────────────── */}
@@ -277,7 +276,6 @@ function Home() {
           </section>
         </AnimateOnScroll>
       </div>
-        <Footer />
     </>
   );
 }

@@ -13,16 +13,15 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route >
-       
-        <Route path="/" element={<Home />} />
+        <Route element={<MainLayout/>}>
+        <Route index element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/loantypes" element={<LoanTypes />} />
         <Route path="/appsub" element={<Applicationsub />} />
         <Route path="/leaddetails" element={<LeadsDetails/>} />
+        <Route path='/apply' element={<LoanApply/>}/>
         </Route>
       </Routes>
-      
     </BrowserRouter>
   );
 }
