@@ -1,0 +1,208 @@
+/* ─────────────────────────────────────────────
+   GLOBAL PAGE WRAPPER
+───────────────────────────────────────────── */
+.LeadsDetails {
+  padding-bottom: 60px;
+  background: #f8fafc;
+}
+
+/* ─────────────────────────────────────────────
+   DASHBOARD SUMMARY CARDS (LIGHT)
+───────────────────────────────────────────── */
+.agent-stat-card {
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 18px 20px;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.agent-stat-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 14px 34px rgba(15, 23, 42, 0.12);
+}
+
+.stat-title {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #6b7280;
+}
+
+.stat-value {
+  font-size: 1.9rem;
+  font-weight: 800;
+  margin: 6px 0 4px;
+  color: #182b4b;
+  letter-spacing: -0.02em;
+}
+
+.stat-sub {
+  font-size: 0.75rem;
+  color: #6b7280;
+}
+
+/* Accent colors */
+.text-success,
+.text-primary {
+  color: #182b4b !important;
+}
+
+/* ─────────────────────────────────────────────
+   MONTHLY TARGETS CARD (LIGHT)
+───────────────────────────────────────────── */
+.agent-target-card {
+  margin-top: 22px;
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 22px;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 10px 28px rgba(15, 23, 42, 0.08);
+}
+
+.agent-target-card h6 {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #0f2557;
+}
+
+/* ─────────────────────────────────────────────
+   TARGET ROWS
+───────────────────────────────────────────── */
+.target-row {
+  margin-top: 16px;
+  position: relative;
+}
+
+.target-row span {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: #374151;
+}
+
+/* Progress background */
+/* Progress background */
+
+.target-bar {
+  height: 6px;
+  border-radius: 6px;
+  margin-top: 8px;
+  background: #e5e7eb;
+  overflow: hidden;
+}
+
+/* Shared fill logic */
+.target-bar::after {
+  content: "";
+  display: block;
+  height: 100%;
+  width: inherit;
+  border-radius: 6px;
+}
+
+/* INDIGO — Customers */
+.target-bar.indigo::after {
+  background: linear-gradient(90deg, #6366f1, #4f46e5);
+}
+
+/* EMERALD — Loans closed */
+.target-bar.emerald::after {
+  background: linear-gradient(90deg, #10b981, #059669);
+}
+
+/* AMBER — Loan value */
+.target-bar.amber::after {
+  background: linear-gradient(90deg, #f59e0b, #d97706);
+}
+
+
+
+/* ─────────────────────────────────────────────
+   LEAD PROFILE CARDS (LIGHT & CLEAN)
+───────────────────────────────────────────── */
+.lead-profile-card {
+  background: #ffffff;
+  border-radius: 16px;
+  border: 1px solid #e5e7eb;
+  transition: all 0.25s ease;
+}
+
+.lead-profile-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 16px 40px rgba(15, 23, 42, 0.12);
+}
+
+.lead-profile-card .card-body {
+  padding: 20px;
+}
+
+/* Avatar */
+.lead-profile-card img {
+  border: 3px solid #e5e7eb;
+  transition: transform 0.25s ease;
+}
+
+.lead-profile-card:hover img {
+  transform: scale(1.05);
+}
+
+/* Name */
+.lead-profile-card h6 {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #0f2557;
+}
+
+/* Meta text */
+.lead-profile-card .text-muted {
+  font-size: 0.75rem;
+  color: #6b7280;
+}
+
+/* Status badge */
+.lead-profile-card .badge {
+  padding: 6px 10px;
+  font-size: 0.65rem;
+  border-radius: 10px;
+}
+
+/* CTA */
+.view-profile-text {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: #2563eb;
+}
+
+.lead-profile-card:hover .view-profile-text {
+  text-decoration: underline;
+}
+
+/* ─────────────────────────────────────────────
+   MODAL OVERLAY
+───────────────────────────────────────────── */
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.45);
+  backdrop-filter: blur(3px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1050;
+}
+
+/* ─────────────────────────────────────────────
+   RESPONSIVE ADJUSTMENTS
+───────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .stat-value {
+    font-size: 1.6rem;
+  }
+
+  .agent-stat-card,
+  .agent-target-card {
+    padding: 16px;
+  }
+}
