@@ -3,10 +3,11 @@ import { useNavigate } from 'react-router-dom';
 import Image from 'react-bootstrap/Image';
 import logo from '../assets/logo.png';
 import Login from '../pages/auth/Login';
+import { getUser, logoutUser } from '../utils/auth';
 import './Header.css';
 
 const NAV_LINKS = [
-  { label: 'Loans',       href: '/loans' },
+  { label: 'Loans',       href: '/loan-types' },
   { label: 'Calculators', href: '#calculators' },
   { label: 'About Us',    href: '#key-benefits' },
   { label: 'Contact Us',  href: '#contact' },
@@ -17,12 +18,25 @@ function Header() {
   const [showLogin, setShowLogin] = useState(false);
   const [scrolled, setScrolled]   = useState(false);
   const [menuOpen, setMenuOpen]   = useState(false);
+  const [user, setUser]           = useState(getUser());
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
     window.addEventListener('scroll', onScroll);
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
+
+  // Refresh user state when login modal closes
+  const handleCloseModal = () => {
+    setShowLogin(false);
+    setUser(getUser());
+  };
+
+  const handleLogout = () => {
+    logoutUser();
+    setUser(null);
+    navigate('/');
+  };
 
   return (
     <>
@@ -71,10 +85,21 @@ function Header() {
 
           {/* CTA Buttons */}
           <div className="hdr-actions">
-            <button className="hdr-btn hdr-btn--ghost" onClick={() => setShowLogin(true)}>
-              Sign In
-            </button>
-            <button className="hdr-btn hdr-btn--primary" onClick={() => navigate('/apply')}>
+            {user ? (
+              <>
+                <button className="hdr-btn hdr-btn--ghost" onClick={() => navigate('/dashboard')}>
+                  My Dashboard
+                </button>
+                <button className="hdr-btn hdr-btn--ghost" onClick={handleLogout}>
+                  Logout
+                </button>
+              </>
+            ) : (
+              <button className="hdr-btn hdr-btn--ghost" onClick={() => setShowLogin(true)}>
+                Sign In
+              </button>
+            )}
+            <button className="hdr-btn hdr-btn--primary" onClick={() => navigate('/loan-types')}>
               Apply Now
             </button>
           </div>
@@ -109,7 +134,7 @@ function Header() {
               <button className="hdr-btn hdr-btn--ghost w-100" onClick={() => { setShowLogin(true); setMenuOpen(false); }}>
                 Sign In
               </button>
-              <button className="hdr-btn hdr-btn--primary w-100" onClick={() => { navigate('/apply'); setMenuOpen(false); }}>
+              <button className="hdr-btn hdr-btn--primary w-100" onClick={() => { navigate('/loan-types'); setMenuOpen(false); }}>
                 Apply Now
               </button>
             </div>
@@ -120,7 +145,7 @@ function Header() {
       {/* Login Modal */}
       {showLogin && (
         <div className="login-overlay">
-          <Login closeModal={() => setShowLogin(false)} />
+          <Login closeModal={handleCloseModal} />
         </div>
       )}
     </>

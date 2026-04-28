@@ -18,6 +18,7 @@ const StepRenderer = ({ step, formData, onChange, errors }) => {
             value={formData[field.name]}
             onChange={onChange}
             error={errors[field.name]}
+            fullWidth={field.type === "textarea" || field.type === "file"}
           />
         ))}
       </div>

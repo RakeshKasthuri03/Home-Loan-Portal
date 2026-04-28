@@ -98,7 +98,7 @@ function Home() {
                   </div>
                 </div>
                 <div className="hero-actions">
-                  <a className="btn-hero-primary" onClick={() => navigate("/apply")} style={{ cursor: "pointer" }}>
+                  <a className="btn-hero-primary" onClick={() => navigate("/loan-types")} style={{ cursor: "pointer" }}>
                     Apply Now →
                   </a>
                   <a className="btn-hero-outline" href="#how-it-works">
@@ -127,7 +127,7 @@ function Home() {
               <Row className="g-4">
                 {LOAN_TYPES.map((lt) => (
                   <Col md={6} lg={3} key={lt.title}>
-                    <div className="loan-type-card" onClick={() => navigate("/apply")}>
+                    <div className="loan-type-card" onClick={() => navigate("/loan-types")}>
                       <span className="loan-type-icon">{lt.icon}</span>
                       <h5>{lt.title}</h5>
                       <p>{lt.desc}</p>
@@ -274,7 +274,7 @@ function Home() {
               <h2>Ready to Own Your Dream Home?</h2>
               <p>Join 50,000+ happy homeowners. Apply online in minutes no branch visit needed.</p>
               <div className="d-flex gap-3 justify-content-center flex-wrap">
-                <button className="btn-hero-primary" onClick={() => navigate("/apply")}>
+                <button className="btn-hero-primary" onClick={() => navigate("/loan-types")}>
                   Start Application →
                 </button>
                 <a className="btn-hero-outline" href="tel:+919999999999">

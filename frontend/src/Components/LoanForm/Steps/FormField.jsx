@@ -1,7 +1,7 @@
 import React from "react";
 import "../Styles/LoanForm.css";
 
-const FormField = ({ field, value, onChange, error }) => {
+const FormField = ({ field, value, onChange, error, fullWidth }) => {
   const { name, label, type, required, placeholder, options, accept } = field;
 
   const baseClass = `lf-input ${error ? "lf-input--error" : ""}`;
@@ -71,7 +71,7 @@ const FormField = ({ field, value, onChange, error }) => {
   };
 
   return (
-    <div className="lf-field">
+    <div className={`lf-field ${fullWidth ? "lf-field--full" : ""}`}>
       <label className="lf-label">
         {label}
         {required && <span className="lf-required">*</span>}

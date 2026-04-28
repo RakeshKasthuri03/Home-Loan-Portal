@@ -1,19 +1,36 @@
 import './App.css'
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import './style.css'
 import Home from './pages/Home'
 import Login from './pages/auth/Login';
-import Loans from './pages/loanpages/Loans';
 import LoanApply from './pages/loanpages/LoanApply';
+import LoanTypes from './pages/loanpages/LoanTypes';
+import UserDashboard from './Components/userDashboard/UserDashboard';
+import LeadsDetails from './pages/Agent/LeadsDetails';
+import { isLoggedIn } from './utils/auth';
+
+// Redirect to home if not logged in
+const ProtectedRoute = ({ children }) => {
+  return isLoggedIn() ? children : <Navigate to="/" replace />;
+};
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/"        element={<Home />} />
-        <Route path="/login"   element={<Login />} />
-        <Route path="/apply"   element={<LoanApply />} />
-        <Route path="/loans"   element={<Loans />} />
+        <Route path="/"           element={<Home />} />
+        <Route path="/login"      element={<Login />} />
+        <Route path="/loan-types" element={<LoanTypes />} />
+        <Route path="/apply"      element={<LoanApply />} />
+        <Route path="/agent"      element={<LeadsDetails />} />
+        <Route
+          path="/dashboard/*"
+          element={
+            <ProtectedRoute>
+              <UserDashboard />
+            </ProtectedRoute>
+          }
+        />
       </Routes>
     </BrowserRouter>
   );
