@@ -5,13 +5,23 @@ import login from "../../assets/login.png"
 import '../../Styles/Login.css'
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
+import { useState } from "react";
 ``
-const Login = ({closeModal}) => {
+const Login = ({closeModal,onLogin }) => {
   const navigate = useNavigate();
-
+    const[Email,Setemail]=useState("agent@gmail.com");
+  const[Password,SetPassword]=useState("1234");
   const handleSubmit = (e) => {
     e.preventDefault();
     // handle login logic here
+      if(Email==="agent@gmail.com" && Password==="1234"){
+        
+       navigate("/leaddetails"); 
+
+      
+         // redirect after login
+      }
+
     console.log("Login submitted");
   };
 
@@ -20,9 +30,14 @@ const Login = ({closeModal}) => {
       <Container>
         <Row className=" align-items-center">
           {/* Left side (optional image / empty) */}
-          <Col md={6} className="d-none d-md-block">
-               <Image src={login}></Image>
-          </Col>
+          <Col md={6} className="d-none d-md-flex login-image-wrapper">
+      <Image
+        src={login}
+        alt="Login Illustration"
+        className="login-side-image"
+        fluid
+      />
+    </Col>
 
           {/* Right side login box */}
           <Col md={6}>

@@ -1,0 +1,23 @@
+[
+  {
+    "agentId": 101,
+    "agentName": "Arun Kumar",
+    "users": [
+           {
+  "id": 1,
+  "name": "Ramesh Kumar",
+  "phone": "+91 91234 56789",
+  "email": "ramesh@gmail.com",
+  "loanAmount": "₹50,00,000",
+  "bank": "HDFC",
+  "status": "Docs Pending",
+  "avatar": "https://randomuser.me/api/portraits/men/32.jpg",
+  "documents": [
+    { "name": "PAN Card", "status": "Verified" },
+    { "name": "Aadhaar Card", "status": "Pending" },
+    { "name": "Signed Agreement", "status": "Uploaded" }
+  ]
+}
+   ]
+  }
+]

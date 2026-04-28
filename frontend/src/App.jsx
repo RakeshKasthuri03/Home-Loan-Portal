@@ -5,16 +5,21 @@ import Home from './pages/Home'
 import Login from './pages/auth/Login';
 import { LoanApply } from './Components/LoanForm';
 import MainLayout from './Layout/MainLayout';
+import LeadsDetails from '../src/pages/Agent/LeadsDetails';
 import LoanTypes from './pages/loanpages/loantypes';
+import Applicationsub from './pages/Agent/Applicationsub';
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route element={<MainLayout />}>
-        <Route index element={<Home />} />
+        <Route >
+       
+        <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/loantypes" element={<LoanTypes />} />
+        <Route path="/appsub" element={<Applicationsub />} />
+        <Route path="/leaddetails" element={<LeadsDetails/>} />
         </Route>
       </Routes>
       

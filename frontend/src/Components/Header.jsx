@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import Image from 'react-bootstrap/Image';
 import logo from '../assets/logo.png';
 import Login from '../pages/auth/Login';
-import './Header.css';
+import '../Styles/Header.css';
 
 const NAV_LINKS = [
   { label: 'Loans',       href: '/loantypes' },
@@ -23,6 +23,15 @@ function Header() {
     window.addEventListener('scroll', onScroll);
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
+  useEffect(() => { 
+    if(showLogin){
+      document.body.style.overflow = 'hidden';
+    }
+    else{
+      document.body.style.overflow = 'auto';
+    }     
+  }, [showLogin]);
+      
 
   return (
     <>
@@ -119,7 +128,7 @@ function Header() {
 
       {/* Login Modal */}
       {showLogin && (
-        <div className="login-overlay">
+        <div className="overlay">
           <Login closeModal={() => setShowLogin(false)} />
         </div>
       )}
