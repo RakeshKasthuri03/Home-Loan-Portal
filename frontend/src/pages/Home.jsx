@@ -8,9 +8,6 @@ import AnimateOnScroll from "./homeAnimations/AnimationOnScroll";
 import CountUpNumber from "./homeAnimations/CountUpNumber";
 
 import "../Styles/Home.css";
-import Header from "../Components/Header";
-import Footer from "../Components/Footer";
-import hero from "../assets/hero.png";
 
 /* ── data ──────────────────────────────────────────────────────────────────── */
 const LOAN_TYPES = [
