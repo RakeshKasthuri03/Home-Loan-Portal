@@ -8,7 +8,7 @@ import './Header.css';
 
 const NAV_LINKS = [
   { label: 'Loans',       href: '/loan-types' },
-  { label: 'Calculators', href: '#calculators' },
+  { label: 'Calculators', href: '/calculator' },
   { label: 'About Us',    href: '#key-benefits' },
   { label: 'Contact Us',  href: '#contact' },
 ];

@@ -25,15 +25,7 @@ function LoanTypes() {
 
   return (
     <>
-      <Header />
       <div className="loan-types-page">
-
-        {/* Hero */}
-        <div className="lt-hero">
-          <div className="lt-hero-badge">{types.length} loan products available</div>
-          <h1>Find the right loan for you</h1>
-          <p>Compare our home loan products — from purchase to renovation — and apply in minutes.</p>
-        </div>
 
         {/* Cards */}
         <div className="loan-types-grid">
@@ -123,7 +115,6 @@ function LoanTypes() {
         </div>
 
       </div>
-      <Footer />
     </>
   );
 }

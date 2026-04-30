@@ -7,24 +7,11 @@ export default function DashboardMain({ dashboardData }) {
   return (
     <div className="dashboard-main">
 
-      {/* Welcome */}
-      <div className="welcome-card">
-        <div>
-          <h2>Good morning, {user.name} 👋</h2>
-          <p>
-            You have {stats[1]?.value || 0} application{stats[1]?.value !== '1' ? 's' : ''} under review and {stats[3]?.value || 0} document{stats[3]?.value !== '1' ? 's' : ''} pending upload.
-          </p>
-        </div>
-        <div>
-          <button className="outline-btn" onClick={() => navigate('/dashboard/loan-tracker')}>Track status</button>
-          <button className="primary-btn" onClick={() => navigate('/loan-types')}>Apply for loan</button>
-        </div>
-      </div>
 
       {/* Stats */}
       <div className="stats">
         {stats.map((item, index) => (
-          <div className="stat-card" key={index}>
+          <div className="user-stat-card" key={index}>
             <h4>{item.title}</h4>
             <p className={`stat-number ${item.color ?? ""}`}>
               {item.value}
@@ -58,33 +45,8 @@ export default function DashboardMain({ dashboardData }) {
             <div style={{ fontSize: "2rem", marginBottom: "8px" }}>📋</div>
             <p style={{ margin: 0, fontWeight: 600 }}>No active applications yet</p>
             <p style={{ margin: "4px 0 16px", fontSize: "0.85rem" }}>Start your home loan journey today</p>
-            <button className="primary-btn" onClick={() => navigate('/loan-types')}>
-              Apply for a loan →
-            </button>
           </div>
         )}
-      </div>
-
-      {/* Bottom */}
-      <div className="bottom-grid">
-        <div>
-          <h3>Quick actions</h3>
-          <ul>
-            <li>🏠 Apply for a loan</li>
-            <li>📄 Upload docs (1 pending)</li>
-            <li>🧮 EMI calculator</li>
-            <li>🔁 Balance transfer</li>
-          </ul>
-        </div>
-
-        <div>
-          <h3>Recent activity</h3>
-          <ul className="activity">
-            {activities.map((item, index) => (
-              <li key={index}>{item}</li>
-            ))}
-          </ul>
-        </div>
       </div>
 
     </div>

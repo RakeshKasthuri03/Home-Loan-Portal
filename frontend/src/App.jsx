@@ -8,6 +8,8 @@ import LoanTypes from './pages/loanpages/LoanTypes';
 import UserDashboard from './Components/userDashboard/UserDashboard';
 import LeadsDetails from './pages/Agent/LeadsDetails';
 import { isLoggedIn } from './utils/auth';
+import MainLayout from './Layout/MainLayout';
+import EmiPage from './pages/calculators/EmiPage';
 
 // Redirect to home if not logged in
 const ProtectedRoute = ({ children }) => {
@@ -18,11 +20,13 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/"           element={<Home />} />
-        <Route path="/login"      element={<Login />} />
+        <Route element={<MainLayout/>}>
+        <Route index element={<Home />} />
+        <Route path="/login" element={<Login />} />
         <Route path="/loan-types" element={<LoanTypes />} />
-        <Route path="/apply"      element={<LoanApply />} />
-        <Route path="/agent"      element={<LeadsDetails />} />
+        <Route path="/calculator" element={<EmiPage />} />
+        <Route path="/apply" element={<LoanApply />} />
+        <Route path="/agent" element={<LeadsDetails />} />
         <Route
           path="/dashboard/*"
           element={
@@ -31,6 +35,7 @@ function App() {
             </ProtectedRoute>
           }
         />
+        </Route>
       </Routes>
     </BrowserRouter>
   );

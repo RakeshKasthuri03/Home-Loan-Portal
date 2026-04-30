@@ -1,7 +1,6 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 import Sidebar from "./Sidebar";
 import DashboardMain from "./DashboardMain";
-import Head from "./Head";
 import Applications from "./Applications";
 import Documents from "./Documents";
 import Profile from "./Profile";
@@ -16,13 +15,6 @@ const menuSections = [
       { label: "My applications",  to: "/dashboard/applications", badge: "2" },
       { label: "My documents",     to: "/dashboard/documents",    badge: "1" },
       { label: "Loan tracker",     to: "/dashboard/loan-tracker" },
-    ],
-  },
-  {
-    heading: "TOOLS",
-    items: [
-      { label: "EMI calculator",    to: "/dashboard/emi-calculator" },
-      { label: "Eligibility check", to: "/dashboard/eligibility-check" },
     ],
   },
   {
@@ -70,14 +62,11 @@ export default function UserDashboard() {
     <div className="dashboard-layout">
       <Sidebar user={user} sections={menuSections} />
       <div className="dashboard-content">
-        <Head user={user} />
         <Routes>
           <Route index                    element={<DashboardMain dashboardData={dashboardData} />} />
           <Route path="applications"      element={<Applications user={user} />} />
           <Route path="documents"         element={<Documents user={user} />} />
           <Route path="loan-tracker"      element={<PagePlaceholder title="Loan tracker" />} />
-          <Route path="emi-calculator"    element={<PagePlaceholder title="EMI calculator" />} />
-          <Route path="eligibility-check" element={<PagePlaceholder title="Eligibility check" />} />
           <Route path="profile"           element={<Profile user={userProfile} />} />
           <Route path="*"                 element={<Navigate replace to="/dashboard" />} />
         </Routes>

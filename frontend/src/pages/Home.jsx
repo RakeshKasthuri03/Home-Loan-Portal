@@ -71,7 +71,6 @@ function Home() {
 
   return (
     <>
-      <Header />
       <div className="Home">
 
         {/* ── HERO ─────────────────────────────────────────────────────────── */}
@@ -110,9 +109,6 @@ function Home() {
             </Row>
           </Container>
           {/* Image pinned to top-right of hero */}
-          <div className="hero-image-card d-none d-lg-block">
-            <img src={hero} alt="Dream Home" />
-          </div>
         </section>
 
         {/* ── LOAN TYPES ───────────────────────────────────────────────────── */}
@@ -286,7 +282,6 @@ function Home() {
         </AnimateOnScroll>
 
       </div>
-      <Footer />
     </>
   );
 }

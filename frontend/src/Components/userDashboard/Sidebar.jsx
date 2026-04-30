@@ -16,9 +16,6 @@ export default function Sidebar({ user, sections = [] }) {
   return (
     <aside className="sidebar">
       {/* Home link at top-left */}
-      <div className="sidebar-home-link" onClick={() => navigate("/")}>
-        🏠 <span>Back to Home</span>
-      </div>
 
       <div className="user-card">
         <div className="avatar">{generateInitials(user.name)}</div>
@@ -44,6 +41,9 @@ export default function Sidebar({ user, sections = [] }) {
             ))}
           </div>
         ))}
+        <button className="primary-btn" onClick={() => navigate('/loan-types')} style={{ margin: "4px 0 16px", fontSize: "0.85rem" }}>
+              Apply for a New loan →
+            </button>
       </div>
     </aside>
   );

@@ -127,13 +127,13 @@ export default function Profile({ user }) {
         {activeTab === 'loans' && (
           <div className="tab-panel profile-card fade-in">
             <div className="card-body">
-              <div className="loan-grid">
+              <div className="user-loan-grid">
                 {loanDetails.map((loan, index) => (
-                  <div key={index} className="loan-item">
-                    <div className="loan-icon">{loan.icon}</div>
-                    <div className="loan-info">
-                      <p className="loan-label">{loan.label}</p>
-                      <p className="loan-value">{loan.value}</p>
+                  <div key={index} className="user-loan-item">
+                    <div className="user-loan-icon">{loan.icon}</div>
+                    <div className="user-loan-info">
+                      <p className="user-loan-label">{loan.label}</p>
+                      <p className="user-loan-value">{loan.value}</p>
                     </div>
                   </div>
                 ))}

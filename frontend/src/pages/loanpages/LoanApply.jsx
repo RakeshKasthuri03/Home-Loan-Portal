@@ -21,7 +21,6 @@ const LoanApply = () => {
 
   return (
     <>
-      <Header />
       <div className="lf-page">
         <div className="lf-page-header">
           <h1>Apply for a Home Loan</h1>
@@ -49,7 +48,6 @@ const LoanApply = () => {
           </div>
         )}
       </div>
-      <Footer />
     </>
   );
 };
