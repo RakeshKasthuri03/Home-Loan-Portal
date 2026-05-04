@@ -10,7 +10,13 @@ import LeadsDetails from './pages/Agent/LeadsDetails';
 import { isLoggedIn } from './utils/auth';
 import MainLayout from './Layout/MainLayout';
 import EmiPage from './pages/calculators/EmiPage';
-
+import NavBarCal from './Components/calculator/NavBarCal';
+import EligibilityPage from './pages/calculators/EligibilityPage';
+import AdminLayout from './Layout/AdminLayout';
+import AdminDashboard from './pages/Admin/AdminDashboard';
+import AdminApplications from './pages/Admin/AdminApplications';
+import AdminUsers from './pages/Admin/AdminUsers';
+import AdminAgents from './pages/Admin/AdminAgents';
 // Redirect to home if not logged in
 const ProtectedRoute = ({ children }) => {
   return isLoggedIn() ? children : <Navigate to="/" replace />;
@@ -25,7 +31,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/loan-types" element={<LoanTypes />} />
         
-        <Route path="/calculator" element={<CalculatorLayout />}>
+        <Route path="/calculator" element={<NavBarCal />}>
             <Route index element={<Navigate to="emi" />} />
             <Route path="emi" element={<EmiPage />} />
             <Route path="eligibility" element={<EligibilityPage />} />
