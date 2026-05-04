@@ -1,7 +1,10 @@
 /* ─── GLOBAL HOME ──────────────────────────────────────────────────────────── */
+
+
+
 .Home {
   font-family: 'Inter', 'Poppins', sans-serif;
-  overflow-x: hidden;
+  
 }
 
 /* ─── SCROLL ANIMATION ─────────────────────────────────────────────────────── */
@@ -25,6 +28,17 @@
   overflow: hidden;
   padding: 80px 0 60px;
 }
+.hero-corner-image {
+  position: absolute;
+  right: 0px;
+  top:0px;
+  width: 420px;
+  max-width: 45vw;
+  height: auto;
+  z-index: 1;
+  pointer-events: none;
+}
+
 .hero-section::before {
   content: '';
   position: absolute;

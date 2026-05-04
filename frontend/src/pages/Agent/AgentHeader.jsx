@@ -5,7 +5,6 @@ import logo from "../../assets/logo.png";
 import AgentDashboard from "./AgentDashboard";
 import "../../Components/Header.css";
 
-
 /* ✅ Safe localStorage reader */
 const getAgentFromStorage = () => {
   return {
@@ -21,8 +20,8 @@ const getAgentFromStorage = () => {
 };
 
 const AGENT_NAV_LINKS = [
-  { label: "Lead Details", href: "/leaddetails" },
-  { label: "Application Submission", href: "/appsub" },
+  { label: "Lead Details", href: "/agent" },
+  { label: "Application Submission", href: "/agent/applications" },
   { label: "Doc Action", href: "/docaction" },
 ];
 
@@ -53,19 +52,8 @@ function AgentHeader() {
 
   return (
     <>
-      {/* ── TOP BAR ───────────────────────────────── */}
-      <div className="hdr-topbar">
-        <div className="hdr-topbar-inner">
-          <div className="hdr-topbar-left">
-            <span>📞 +91 98485 70949</span>
-            <span className="hdr-topbar-divider" />
-            <span>✉️ mlrrhomeloan@gmail.com</span>
-          </div>
-          <div className="hdr-topbar-right">
-            <span>Agent Panel</span>
-          </div>
-        </div>
-      </div>
+      
+     
 
       {/* ── MAIN HEADER ───────────────────────────── */}
       <header className={`hdr-main ${scrolled ? "hdr-main--scrolled" : ""}`}>

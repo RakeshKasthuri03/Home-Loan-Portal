@@ -4,12 +4,15 @@ import './style.css'
 import Home from './pages/Home'
 import Login from './pages/auth/Login';
 import LoanApply from './pages/loanpages/LoanApply';
-import LoanTypes from './pages/loanpages/LoanTypes';
+
 import UserDashboard from './Components/userDashboard/UserDashboard';
 import LeadsDetails from './pages/Agent/LeadsDetails';
 import { isLoggedIn } from './utils/auth';
 import MainLayout from './Layout/MainLayout';
 import EmiPage from './pages/calculators/EmiPage';
+import Applicationsub from './pages/Agent/Applicationsub';
+import AgentLayout from './Layout/AgentLayout';
+import LoanTypes from './pages/loanpages/LoanTypes';
 
 // Redirect to home if not logged in
 const ProtectedRoute = ({ children }) => {
@@ -26,7 +29,6 @@ function App() {
         <Route path="/loan-types" element={<LoanTypes />} />
         <Route path="/calculator" element={<EmiPage />} />
         <Route path="/apply" element={<LoanApply />} />
-        <Route path="/agent" element={<LeadsDetails />} />
         <Route
           path="/dashboard/*"
           element={
@@ -35,6 +37,10 @@ function App() {
             </ProtectedRoute>
           }
         />
+        </Route>
+        <Route element={<AgentLayout/>}>
+          <Route path="/agent" element={<LeadsDetails />} />
+          <Route path="/agent/applications" element={<Applicationsub />} />
         </Route>
       </Routes>
     </BrowserRouter>
