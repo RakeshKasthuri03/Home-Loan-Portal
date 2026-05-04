@@ -1,49 +1,69 @@
 import { NavLink, useNavigate } from "react-router-dom";
 import "../../Styles/Sidebar.css";
 
-export default function Sidebar({ user, sections = [] }) {
+export default function Sidebar({
+  user,
+  sections = [],
+  role = "user",
+  basePath = "",   // ✅ ADD THIS
+}) {
   const navigate = useNavigate();
 
   const generateInitials = (fullName) => {
     if (!fullName) return "";
     const names = fullName.trim().split(" ");
-    if (names.length >= 2) {
-      return `${names[0].charAt(0)}${names[1].charAt(0)}`.toUpperCase();
-    }
-    return names[0].charAt(0).toUpperCase();
+    return names.length >= 2
+      ? `${names[0][0]}${names[1][0]}`.toUpperCase()
+      : names[0][0].toUpperCase();
+  };
+
+  // ✅ Builds absolute path safely
+  const resolvePath = (to) => {
+    if (!to) return basePath;
+    if (to.startsWith("/")) return to;
+    return `${basePath}/${to}`.replace(/\/+/g, "/");
   };
 
   return (
     <aside className="sidebar">
-      {/* Home link at top-left */}
-
       <div className="user-card">
         <div className="avatar">{generateInitials(user.name)}</div>
         <h4>{user.name}</h4>
         <p>{user.email}</p>
-        <span className="badge">✔ Verified customer</span>
+        <span className="badge">
+          {role === "admin" ? "Administrator" : "✔ Verified customer"}
+        </span>
       </div>
 
       <div className="menu">
         {sections.map((section) => (
           <div key={section.heading}>
             <h5>{section.heading}</h5>
+
             {section.items.map((item) => (
               <NavLink
-                key={item.to}
-                to={item.to}
-                end={item.to === "/"}
-                className={({ isActive }) => (isActive ? "active" : "")}
+                key={item.label}
+                to={resolvePath(item.to)}
+                end={item.to}
+                className={({ isActive }) =>
+                  isActive ? "active" : ""
+                }
               >
                 <span>{item.label}</span>
-                {item.badge ? <span>{item.badge}</span> : null}
+                {item.badge && <span>{item.badge}</span>}
               </NavLink>
             ))}
           </div>
         ))}
-        <button className="primary-btn" onClick={() => navigate('/loan-types')} style={{ margin: "4px 0 16px", fontSize: "0.85rem" }}>
-              Apply for a New loan →
-            </button>
+
+        {role === "user" && (
+          <button
+            className="primary-btn"
+            onClick={() => navigate("/loan-types")}
+          >
+            Apply for a New Loan →
+          </button>
+        )}
       </div>
     </aside>
   );

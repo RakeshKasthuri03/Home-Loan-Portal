@@ -1,0 +1,340 @@
+
+.admin-dash-header{
+  display: flex;;
+  justify-content: space-between;
+  margin: 10px;
+}
+
+
+
+
+/* =============================
+   ADMIN EXTENSIONS
+============================= */
+
+.admin-stat-card {
+  position: relative;
+  margin-left: 10px;
+  margin-right: 10px;
+}
+
+.admin-badge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  font-size: 11px;
+  padding: 3px 8px;
+  border-radius: 999px;
+  font-weight: 500;
+}
+
+.admin-badge.green {
+  background: #e7f6ed;
+  color: #1e8e3e;
+}
+
+.admin-badge.orange {
+  background: #fff4e5;
+  color: #e37400;
+}
+
+.admin-badge.red {
+  background: #fdeaea;
+  color: #d93025;
+}
+
+.orange {
+  color: #e37400;
+}
+
+.admin-actions{
+  display: flex;
+  justify-content: space-around;
+}
+
+.agent-info{
+  display: flex;
+  flex-direction: row-reverse;
+  
+}
+.agent-info button{
+  margin-right: 20px;
+  padding: 0px 20px;
+  border-radius: 5px;
+  color: white;
+  ;
+  
+}
+
+
+
+
+
+/* =============================
+   LOAN CONFIGURATION (ADMIN)
+============================= */
+
+.loan-config-section {
+  margin-top: 40px;
+  margin-left: 15px;
+  margin-right: 15px;
+}
+
+.loan-config-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.loan-config-header h3 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.link-btn {
+  background: none;
+  border: none;
+  color: #0f4c8a;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.loan-config-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.loan-config-table th {
+  text-align: left;
+  font-size: 12px;
+  color: #777;
+  padding: 12px 8px;
+  border-bottom: 1px solid #eaeaea;
+}
+
+.loan-config-table td {
+  padding: 14px 8px;
+  border-bottom: 1px solid #f0f0f0;
+  font-size: 14px;
+}
+
+/* Status badge */
+.status.active {
+  background: #e7f6ed;
+  color: #1e8e3e;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+}
+
+/* Colored dots */
+.loan-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: inline-block;
+  margin-right: 10px;
+}
+
+.loan-dot.blue { background: #1a73e8; }
+.loan-dot.green { background: #1e8e3e; }
+.loan-dot.orange { background: #e37400; }
+.loan-dot.purple { background: #6f42c1; }
+
+.blue-text { color: #1a73e8; }
+.purple { color: #6f42c1; }
+
+/* Edit action */
+.edit-btn-link {
+  background: #eef5ff;
+  color: #0f4c8a;
+  border: 1px solid #cfe0ff;
+  padding: 4px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+
+
+
+
+
+
+/* =============================
+   ADMIN APPLICATIONS PAGE
+============================= */
+
+.admin-app-header {
+  display: flex;
+  flex-direction: row-reverse;
+  margin-bottom: 12px;
+  margin-top: 5px;
+ 
+}
+
+.apps-tabs {
+  display: flex;
+  gap: 14px;
+  margin-bottom: 18px;
+   margin-left: 30px;
+  margin-right: 15px;
+}
+
+.tab {
+  background: none;
+  border: none;
+  font-size: 14px;
+  cursor: pointer;
+  padding: 6px 14px;
+  border-radius: 999px;
+}
+
+.tab.active {
+  background: #0f4c8a;
+  color: #fff;
+}
+
+.apps-search {
+  padding: 6px 14px;
+  font-size: 13px;
+  border-radius: 6px;
+  border: 1px solid #ddd;
+}
+
+/* Table */
+.apps-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-left: 15px;
+}
+
+.apps-table th {
+  text-align: left;
+  font-size: 12px;
+  padding: 12px 6px;
+  color: #777;
+  border-bottom: 1px solid #eaeaea;
+}
+
+.apps-table td {
+  padding: 14px 6px;
+  font-size: 14px;
+}
+
+/* Links */
+.link {
+  color: #1a73e8;
+  cursor: pointer;
+}
+
+/* Status pills */
+.status {
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+}
+
+.status.pending { background: #e8f0fe; color: #1a73e8; }
+.status.review  { background: #fff4e5; color: #e37400; }
+.status.approved{ background: #e7f6ed; color: #1e8e3e; }
+.status.rejected{ background: #fdeaea; color: #d93025; }
+
+/* Actions */
+.approve {
+  background: #e7f6ed;
+  border: none;
+  color: #1e8e3e;
+  padding: 4px 10px;
+  border-radius: 6px;
+  margin-right: 6px;
+}
+
+.reject {
+  background: #fdeaea;
+  border: none;
+  color: #d93025;
+  padding: 4px 10px;
+  border-radius: 6px;
+}
+
+.link-only {
+  color: #0f4c8a;
+  cursor: pointer;
+}
+
+
+
+/* =============================
+   USERS & AGENTS CARDS
+============================= */
+
+.page-title {
+  margin-bottom: 20px;
+}
+
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 24px;
+}
+
+.profile-card {
+  border: 1px solid #f0f0f0; /* very light border */
+  border-radius: 10px;
+  padding: 20px;
+  background: #fff;
+  margin: 15px;
+  margin-top: 20px;
+}
+
+.profile-top {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+}
+
+.avatar-circle {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: #eef3f8;
+  color: #0f4c8a;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sub-text {
+  font-size: 13px;
+  color: #666;
+}
+
+.profile-stats {
+  display: flex;
+  justify-content: space-between;
+  margin: 20px 0;
+}
+
+.profile-stats strong {
+  display: block;
+  font-size: 18px;
+}
+
+.profile-stats span {
+  font-size: 12px;
+  color: #777;
+}
+
+.manage-btn {
+  width: 100%;
+  background: #0d6efd;
+  color: white;
+  border: none;
+  padding: 10px;
+  border-radius: 6px;
+  cursor: pointer;
+}

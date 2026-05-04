@@ -1,0 +1,120 @@
+
+.hdr-main {
+  background: #fff;
+  border-bottom: 1px solid #eaeaea;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.hdr-inner {
+  max-width: 100%;
+  padding: 12px 28px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* =============================
+   LOGO
+============================= */
+
+.hdr-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+}
+
+.hdr-logo-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.1;
+}
+
+.hdr-logo-name {
+  font-size: 18px;
+  font-weight: 700;
+  color: #0f4c8a;
+}
+
+.hdr-logo-sub {
+  font-size: 11px;
+  color: #666;
+}
+
+/* =============================
+   RIGHT ACTIONS
+============================= */
+
+.hdr-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Add Agent button */
+.primary-btn {
+  background: #0f4c8a;
+  color: #fff;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Icon buttons (Settings, Account) */
+.icon-btn {
+  background: #f4f6f8;
+  border: none;
+  padding: 8px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.icon-btn:hover {
+  background: #e6eef8;
+}
+
+/* Logout button */
+.logout-btn {
+  background: none;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  padding: 6px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.logout-btn:hover {
+  background: #fee2e2;
+  color: #b91c1c;
+  border-color: #fecaca;
+}
+
+/* =============================
+   ✅ SVG ICON ALIGNMENT FIX
+============================= */
+
+/* Settings & Account icons */
+.icon-btn svg {
+  vertical-align: middle;
+}
+
+/* Add Agent & Logout icons */
+.primary-btn svg,
+.logout-btn svg {
+  vertical-align: middle;
+}

@@ -1,9 +1,9 @@
-.dashboard-layout {
+.UserDashboard .dashboard-layout {
   display: flex;
   min-height: 100vh;
 }
 
-.dashboard-content {
+.UserDashboard .dashboard-content {
   flex: 1;
   display: flex;
   flex-direction: column;
@@ -13,7 +13,7 @@
    HEADER (Head.jsx)
 ============================= */
 
-.dashboard-header {
+.UserDashboard .dashboard-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -22,7 +22,7 @@
   background: #fff;
 }
 
-.header-left h3 {
+ .UserDashboard .header-left h3 {
   margin: 0;
   font-weight: 600;
 }

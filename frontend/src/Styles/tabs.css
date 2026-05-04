@@ -1,0 +1,30 @@
+.tabs-container {
+  display: flex;
+  margin: 0px 50px;
+
+}
+
+.tab-item {
+  flex: 1;
+  padding: 18px;
+  text-align: center;
+  text-decoration: none;
+  background: #eee;
+  border-right: 1px solid #ccc;
+  color: black;
+}
+
+.tab-item.active {
+  background-color: #0f2557;
+  color: white;
+}
+
+.fixed-tabs {
+  position: sticky;
+  top: 70px; /* adjust based on your header height */
+  z-index: 999;
+}
+
+.tab-content {
+  padding: 20px;
+}
