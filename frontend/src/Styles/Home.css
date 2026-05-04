@@ -220,14 +220,15 @@
 .loan-type-card {
   background: #ffffff;
   border: 1.5px solid #e5e7eb;
-  border-radius: 18px;
-  padding: 32px 24px;
-  text-align: center;
+  border-radius: 16px;
+  padding: 24px;
   cursor: pointer;
   transition: all 0.25s ease;
   height: 100%;
   position: relative;
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
 
 .loan-type-card::before {
@@ -235,6 +236,7 @@
   position: absolute;
   top: 0; left: 0; right: 0;
   height: 3px;
+  background: linear-gradient(90deg, #2771e2, #a78bfa);
   opacity: 0;
   transition: opacity 0.25s ease;
 }
@@ -245,13 +247,18 @@
   transform: translateY(-4px);
 }
 
-.loan-type-card:hover::before {
-  opacity: 1;
+.loan-type-card:hover::before { opacity: 1; }
+
+/* Top row: icon + rate */
+.loan-type-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
 }
 
 .loan-type-icon {
-  font-size: 2.4rem;
-  margin-bottom: 14px;
+  font-size: 2rem;
   display: block;
 }
 
@@ -267,20 +274,46 @@
   color: #6b7280;
   margin: 0;
   line-height: 1.5;
+  flex: 1;
+}
+
+.loan-type-card .card-rate {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #2771e2;
+  background: #eff6ff;
+  padding: 3px 10px;
+  border-radius: 100px;
+}
+
+/* Footer row: meta + arrow */
+.loan-type-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid #f3f4f6;
+}
+
+.card-meta {
+  font-size: 0.75rem;
+  color: #9ca3af;
+  font-weight: 500;
 }
 
 .loan-type-card .card-arrow {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 32px;
-  height: 32px;
+  width: 28px;
+  height: 28px;
   background: #eff6ff;
   border-radius: 50%;
   color: #2771e2;
-  font-size: 0.9rem;
-  margin-top: 16px;
+  font-size: 0.85rem;
   transition: all 0.2s ease;
+  flex-shrink: 0;
 }
 
 .loan-type-card:hover .card-arrow {

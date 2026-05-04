@@ -9,7 +9,7 @@ import login from "../../assets/login.png";
 import { loginUser } from "../../utils/auth";
 import '../../Styles/Login.css';
 
-const Login = ({ closeModal,openRegister }) => {
+const Login = ({ closeModal, openRegister }) => {
   const navigate = useNavigate();
   const [identifier, setIdentifier] = useState("");
   const [password, setPassword]     = useState("");
@@ -27,8 +27,10 @@ const Login = ({ closeModal,openRegister }) => {
 
       if (result.success) {
         if (closeModal) closeModal();
-        if (result.user.role === "agent") {
-          navigate("/agent");
+        if (result.user.role === "admin") {
+          navigate("/admin/dashboard");
+        } else if (result.user.role === "agent") {
+          navigate("/agent/dashboard");
         } else {
           navigate("/dashboard");
         }
@@ -48,13 +50,15 @@ const Login = ({ closeModal,openRegister }) => {
 
           <Col md={6}>
             <div className="login-box position-relative">
-              <Button
-                type="button"
-                className="btn btn-light position-absolute top-0 end-0"
-                onClick={closeModal}
-              >
-                <FontAwesomeIcon icon={faXmark} />
-              </Button>
+              {closeModal && (
+                <Button
+                  type="button"
+                  className="btn btn-light position-absolute top-0 end-0"
+                  onClick={closeModal}
+                >
+                  <FontAwesomeIcon icon={faXmark} />
+                </Button>
+              )}
 
               <div className="text-center mb-4">
                 <Image src={logo} height={60} className="mb-3" />
@@ -105,7 +109,9 @@ const Login = ({ closeModal,openRegister }) => {
 
                 {/* Demo hint */}
                 <div className="demo-hint">
-                  <strong>Demo:</strong> rahul@gmail.com / rahul123
+                  <strong>Customer:</strong> rahul@gmail.com / rahul123<br/>
+                  <strong>Agent:</strong> agent@mlrr.com / agent123<br/>
+                  <strong>Admin:</strong> admin@mlrr.com / admin123
                 </div>
 
                 <div className="d-flex flex-column align-items-center mt-3">
@@ -118,17 +124,17 @@ const Login = ({ closeModal,openRegister }) => {
                     {loading ? "Signing in..." : "Login"}
                   </Button>
                   <p>
-                Don't have an account?{" "}
-                <a
-                  href="#"
-                  onClick={(e) => {
-                    e.preventDefault();   // stop page navigation
-                    openRegister();       // switch to Register modal
-                  }}
-                >
-                  Create Account
-                </a>
-              </p>
+                    Don't have an account?{" "}
+                    <a
+                      href="#"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        if (openRegister) openRegister();
+                      }}
+                    >
+                      Create Account
+                    </a>
+                  </p>
 
                 </div>
               </Form>

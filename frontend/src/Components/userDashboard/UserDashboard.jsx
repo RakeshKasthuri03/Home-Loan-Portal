@@ -4,33 +4,32 @@ import DashboardMain from "./DashboardMain";
 import Applications from "./Applications";
 import Documents from "./Documents";
 import Profile from "./Profile";
+import LoanTracker from "./LoanTracker";
 import { getUser } from "../../utils/auth";
 import "../../Styles/UserDashboard.css";
+
 const menuSections = [
   {
     heading: "MAIN",
     items: [
-      { label: "Dashboard", to: "/dashboard" },
+      { label: "Dashboard",       to: "/dashboard" },
       { label: "My applications", to: "/dashboard/applications", badge: "2" },
-      { label: "My documents", to: "/dashboard/mydocuments", badge: "1" },
-      { label: "Loan tracker", to: "/dashboard/loan-tracker" },
+      { label: "My documents",    to: "/dashboard/mydocuments",  badge: "1" },
+      { label: "Loan tracker",    to: "/dashboard/loan-tracker" },
     ],
   },
   {
-    heading: "ACCOUNT", 
+    heading: "TOOLS",
+    items: [
+      { label: "EMI calculator",    to: "/calculator/emi" },
+      { label: "Eligibility check", to: "/calculator/eligibility" },
+    ],
+  },
+  {
+    heading: "ACCOUNT",
     items: [{ label: "My profile", to: "/dashboard/profile" }],
   },
 ];
-
-
-function PagePlaceholder({ title }) {
-  return (
-    <div className="dashboard-main">
-      <h2>{title}</h2>
-      <p>This section is coming soon.</p>
-    </div>
-  );
-}
 
 export default function UserDashboard() {
   const storedUser = getUser();
@@ -59,22 +58,20 @@ export default function UserDashboard() {
   };
 
   return (
-  <div className="UserDashboard">
-
-   <div className="dashboard-layout">
-  <Sidebar user={user} sections={menuSections} />
-
-  <div className="dashboard-content">
-    <Routes>
-      <Route path="/dashboard" element={<DashboardMain dashboardData={dashboardData} />} />
-      <Route path="/dashboard/applications" element={<Applications user={user} />} />
-      <Route path="/dashboard/mydocuments" element={<Documents user={user} />} />
-      <Route path="/dashboard/loan-tracker" element={<PagePlaceholder title="Loan tracker" />} />
-      <Route path="/dashboard/profile" element={<Profile user={userProfile} />} />
-    </Routes>
-  </div>
-</div>
-
-  </div>
+    <div className="UserDashboard">
+      <div className="dashboard-layout">
+        <Sidebar user={user} sections={menuSections} />
+        <div className="dashboard-content">
+          <Routes>
+            <Route index                    element={<DashboardMain dashboardData={dashboardData} />} />
+            <Route path="applications"      element={<Applications user={user} />} />
+            <Route path="mydocuments"       element={<Documents user={user} />} />
+            <Route path="loan-tracker"      element={<LoanTracker />} />
+            <Route path="profile"           element={<Profile user={userProfile} />} />
+            <Route path="*"                 element={<Navigate replace to="/dashboard" />} />
+          </Routes>
+        </div>
+      </div>
+    </div>
   );
 }

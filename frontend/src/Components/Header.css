@@ -241,3 +241,19 @@
     display: none;
   }
 }
+
+/* ─── AGENT AVATAR INITIALS ────────────────────────────────────────────────── */
+.hdr-avatar-initials {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #0f2557, #2771e2);
+  color: white;
+  font-size: 0.8rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+}
