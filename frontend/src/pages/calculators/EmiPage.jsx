@@ -5,7 +5,7 @@ function EmiPage(){
     return(
         <>
         <div>
-            <h1 className="title">Home Loan EMI Calculator</h1>
+            <h1 className="title">EMI Calculator</h1>
             <EMI/>
             <div className="info">
                 <p>These calculators are provided only as general self-help Planning Tools. 

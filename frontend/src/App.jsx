@@ -10,6 +10,8 @@ import LeadsDetails from './pages/Agent/LeadsDetails';
 import { isLoggedIn } from './utils/auth';
 import MainLayout from './Layout/MainLayout';
 import EmiPage from './pages/calculators/EmiPage';
+import EligibilityPage  from './pages/calculators/EligibilityPage';
+import CalculatorLayout from './Components/calculator/NavBarCal'
 
 // Redirect to home if not logged in
 const ProtectedRoute = ({ children }) => {
@@ -24,7 +26,13 @@ function App() {
         <Route index element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/loan-types" element={<LoanTypes />} />
-        <Route path="/calculator" element={<EmiPage />} />
+        
+        <Route path="/calculator" element={<CalculatorLayout />}>
+            <Route index element={<Navigate to="emi" />} />
+            <Route path="emi" element={<EmiPage />} />
+            <Route path="eligibility" element={<EligibilityPage />} />
+          </Route>
+
         <Route path="/apply" element={<LoanApply />} />
         <Route path="/agent" element={<LeadsDetails />} />
         <Route
