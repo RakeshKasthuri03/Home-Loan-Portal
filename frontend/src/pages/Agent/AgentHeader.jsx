@@ -3,76 +3,54 @@ import { useNavigate } from "react-router-dom";
 import Image from "react-bootstrap/Image";
 import logo from "../../assets/logo.png";
 import AgentDashboard from "./AgentDashboard";
+import { getUser, logoutUser } from "../../utils/auth";
 import "../../Components/Header.css";
 
-
-/* ✅ Safe localStorage reader */
-const getAgentFromStorage = () => {
-  return {
-    
-    name: "Arun Kumar",
-    email: "arun.kumar@loanportal.com",
-    gender: "Male",
-    phone: "+91 98765 43210",
-    address: "Coimbatore, Tamil Nadu",
-    loansGiven: 42,
-    photo: "https://via.placeholder.com/100",
-  };
-};
-
 const AGENT_NAV_LINKS = [
-  { label: "Lead Details", href: "/leaddetails" },
-  { label: "Application Submission", href: "/appsub" },
-  { label: "Doc Action", href: "/docaction" },
+  { label: "Lead Details",           href: "/agent/dashboard" },
+  { label: "Application Submission", href: "/agent/applications" },
+  { label: "Doc Action",             href: "/agent/docaction" },
 ];
 
 function AgentHeader() {
-  const navigate = useNavigate();
+  const navigate  = useNavigate();
+  const agentUser = getUser();
 
-  const [agent, setAgent] = useState(getAgentFromStorage());
+  const agent = {
+    name:  agentUser?.name  || "Agent",
+    email: agentUser?.email || "",
+    photo: null,
+  };
+
   const [showProfile, setShowProfile] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
-  const [menuOpen, setMenuOpen] = useState(false);
- const [showLogin, setShowLogin] = useState(false);
+  const [scrolled,    setScrolled]    = useState(false);
+  const [menuOpen,    setMenuOpen]    = useState(false);
 
-  /* ✅ Protect route */
-
-
-
-  /* ✅ Scroll shadow */
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
     window.addEventListener("scroll", onScroll);
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  /* ✅ Body scroll lock */
   useEffect(() => {
     document.body.style.overflow = showProfile ? "hidden" : "auto";
   }, [showProfile]);
 
+  const handleLogout = () => {
+    logoutUser();
+    navigate("/agent");
+  };
+
+  const initials = agent.name
+    .split(" ").map(n => n[0]).join("").toUpperCase().slice(0, 2);
+
   return (
     <>
-      {/* ── TOP BAR ───────────────────────────────── */}
-      <div className="hdr-topbar">
-        <div className="hdr-topbar-inner">
-          <div className="hdr-topbar-left">
-            <span>📞 +91 98485 70949</span>
-            <span className="hdr-topbar-divider" />
-            <span>✉️ mlrrhomeloan@gmail.com</span>
-          </div>
-          <div className="hdr-topbar-right">
-            <span>Agent Panel</span>
-          </div>
-        </div>
-      </div>
-
-      {/* ── MAIN HEADER ───────────────────────────── */}
       <header className={`hdr-main ${scrolled ? "hdr-main--scrolled" : ""}`}>
         <div className="hdr-inner">
 
-          {/* Logo */}
-          <div className="hdr-logo" onClick={() => navigate("/agent")}>
+          {/* Logo — goes to home, not agent login */}
+          <div className="hdr-logo" onClick={() => navigate("/")}>
             <Image src={logo} alt="MLRR" height={52} width={52} />
             <div className="hdr-logo-text">
               <span className="hdr-logo-name">MLRR</span>
@@ -87,44 +65,26 @@ function AgentHeader() {
                 key={link.label}
                 className="hdr-nav-link"
                 href={link.href}
-                onClick={e => {
-                  e.preventDefault();
-                  navigate(link.href);
-                }}
+                onClick={e => { e.preventDefault(); navigate(link.href); }}
               >
                 {link.label}
               </a>
             ))}
           </nav>
 
-          {/* ✅ DESKTOP ACTIONS */}
+          {/* Actions */}
           <div className="hdr-actions">
-
-            {/* Notifications */}
-            <div className="hdr-notification">
-              <span className="hdr-bell">🔔</span>
-              {agent.notifications > 0 && (
-                <span className="hdr-notification-badge">
-                  {agent.notifications}
-                </span>
-              )}
-            </div>
-
-            {/* Agent Name */}
-            <span className="hdr-agent-name">
-              {agent.name || "Agent"}
-            </span>
-
-            {/* Profile Image */}
-            <Image
-              src={agent.photo || logo}
-              alt="Agent Profile"
-              width={38}
-              height={38}
-              roundedCircle
-              className="hdr-avatar"
+            <span className="hdr-agent-name">{agent.name}</span>
+            <div
+              className="hdr-avatar-initials"
               onClick={() => setShowProfile(true)}
-            />
+              title="View profile"
+            >
+              {initials}
+            </div>
+            <button className="hdr-btn hdr-btn--ghost" onClick={handleLogout}>
+              Logout
+            </button>
           </div>
 
           {/* Mobile Hamburger */}
@@ -133,13 +93,11 @@ function AgentHeader() {
             onClick={() => setMenuOpen(!menuOpen)}
             aria-label="Toggle menu"
           >
-            <span />
-            <span />
-            <span />
+            <span /><span /><span />
           </button>
         </div>
 
-        {/* ── MOBILE MENU ───────────────────────── */}
+        {/* Mobile Menu */}
         {menuOpen && (
           <div className="hdr-mobile-menu">
             {AGENT_NAV_LINKS.map(link => (
@@ -147,35 +105,31 @@ function AgentHeader() {
                 key={link.label}
                 className="hdr-mobile-link"
                 href={link.href}
-                onClick={e => {
-                  e.preventDefault();
-                  navigate(link.href);
-                  setMenuOpen(false);
-                }}
+                onClick={e => { e.preventDefault(); navigate(link.href); setMenuOpen(false); }}
               >
                 {link.label}
               </a>
             ))}
+            <div className="hdr-mobile-actions">
+              <button className="hdr-btn hdr-btn--ghost w-100" onClick={handleLogout}>
+                Logout
+              </button>
+            </div>
           </div>
         )}
       </header>
 
-      {/* ── PROFILE MODAL ───────────────────────── */}
+      {/* Profile Modal */}
       {showProfile && (
         <div className="overlay" onClick={() => setShowProfile(false)}>
           <div onClick={e => e.stopPropagation()}>
             <AgentDashboard
-            agent={agent}
+              agent={{ ...agent, photo: "https://via.placeholder.com/100", gender: "—", phone: agentUser?.mobile || "—", address: "—", loansGiven: 0 }}
               closeModal={() => setShowProfile(false)}
-              onProfileUpdate={() => setAgent(getAgentFromStorage())}
             />
           </div>
         </div>
       )}
-    
-    
-  
-
     </>
   );
 }

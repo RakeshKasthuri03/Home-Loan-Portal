@@ -40,11 +40,6 @@ function Header() {
     setShowAuthModal(true);
   };
 
-  const openSignup = () => {
-    setAuthMode('signup');
-    setShowAuthModal(true);
-  };
-
   const handleCloseModal = () => {
     setShowAuthModal(false);
     setUser(getUser()); // refresh login state
@@ -99,14 +94,15 @@ function Header() {
               <>
                 <button
                   className="hdr-btn hdr-btn--ghost"
-                  onClick={() => navigate('/dashboard')}
+                  onClick={() => {
+                    if (user.role === "admin") navigate("/admin/dashboard");
+                    else if (user.role === "agent") navigate("/agent/dashboard");
+                    else navigate("/dashboard");
+                  }}
                 >
                   My Dashboard
                 </button>
-                <button
-                  className="hdr-btn hdr-btn--ghost"
-                  onClick={handleLogout}
-                >
+                <button className="hdr-btn hdr-btn--ghost" onClick={handleLogout}>
                   Logout
                 </button>
               </>

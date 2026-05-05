@@ -45,23 +45,22 @@ export const adminMenuSections = [
   {
     heading: "ADMIN PANEL",
     items: [
-      { label: "Dashboard", to: "admin/" },
-      { label: "Applications", to: "admin/applications" },
-      
+      { label: "Dashboard",    to: "/admin/dashboard" },
+      { label: "Applications", to: "/admin/applications" },
     ],
   },
   {
     heading: "PEOPLE",
     items: [
-      { label: "Users", to: "admin/users" },
-      { label: "Agents", to: "admin/agents" },
+      { label: "Users",  to: "/admin/users" },
+      { label: "Agents", to: "/admin/agents" },
     ],
   },
   {
     heading: "REPORTS",
     items: [
-      { label: "Analytics", to: "analytics" },
-      { label: "Transactions", to: "transactions" },
+      { label: "Analytics",    to: "/admin/analytics" },
+      { label: "Transactions", to: "/admin/transactions" },
     ],
   },
 ];

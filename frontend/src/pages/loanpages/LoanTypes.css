@@ -232,3 +232,33 @@
   }
 }
 
+
+/* ─── AUTH BANNER ──────────────────────────────────────────────────────────── */
+.lt-auth-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #fffbeb;
+  border: 1.5px solid #fcd34d;
+  border-radius: 10px;
+  padding: 14px 20px;
+  margin: 20px auto;
+  max-width: 900px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #92400e;
+}
+
+.lt-auth-btn {
+  background: #0f4c8a;
+  color: white;
+  border: none;
+  padding: 8px 20px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.lt-auth-btn:hover { background: #0b3b6f; }

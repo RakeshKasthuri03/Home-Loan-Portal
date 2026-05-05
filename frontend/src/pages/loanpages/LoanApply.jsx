@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { LOAN_TYPES } from "../../utils/loanTypeConfig";
 import LoanApplicationContainer from "../../Components/LoanForm/Container/LoanApplicationContainer";
+import { isLoggedIn } from "../../utils/auth";
 import "../../Components/LoanForm/Styles/LoanForm.css";
 
 const LoanApply = () => {
@@ -9,13 +10,21 @@ const LoanApply = () => {
   const navigate = useNavigate();
   const [selectedType, setSelectedType] = useState(null);
 
-  // Pre-select if ?type= param is present
+  // Redirect to login if not signed in
+  useEffect(() => {
+    if (!isLoggedIn()) {
+      navigate("/login", { replace: true });
+    }
+  }, [navigate]);
+
   useEffect(() => {
     const typeParam = searchParams.get("type");
     if (typeParam && LOAN_TYPES[typeParam]) {
       setSelectedType(typeParam);
     }
   }, [searchParams]);
+
+  if (!isLoggedIn()) return null;
 
   return (
     <>

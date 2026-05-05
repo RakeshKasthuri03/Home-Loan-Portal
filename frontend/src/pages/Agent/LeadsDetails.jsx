@@ -37,7 +37,7 @@ function LeadsDetails() {
 
   return (
     <>
-      <AgentHeader />
+    
 
       {/* ── DASHBOARD SUMMARY ───────────────────────── */}
       <Container className="mt-4">

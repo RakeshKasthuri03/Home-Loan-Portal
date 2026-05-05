@@ -2,9 +2,9 @@ import { useNavigate } from 'react-router-dom';
 import { types } from '../../utils/loanTypes';
 import Card from 'react-bootstrap/Card';
 import Button from 'react-bootstrap/Button';
+import { isLoggedIn } from '../../utils/auth';
 import './LoanTypes.css';
 
-// Map loanTypes title → loanTypeConfig key
 const TITLE_TO_KEY = {
   "Home Loan":            "PURCHASE",
   "Plot Loan":            "PLOT",
@@ -15,8 +15,16 @@ const TITLE_TO_KEY = {
 
 function LoanTypes() {
   const navigate = useNavigate();
+  const loggedIn = isLoggedIn();
 
   const handleApply = (title) => {
+    if (!loggedIn) {
+      // store intended destination and prompt login via header
+      sessionStorage.setItem("redirectAfterLogin", `/apply?type=${TITLE_TO_KEY[title] || "PURCHASE"}`);
+      // trigger login by navigating to login page
+      navigate("/login");
+      return;
+    }
     const key = TITLE_TO_KEY[title] || "PURCHASE";
     navigate(`/apply?type=${key}`);
   };
@@ -24,6 +32,14 @@ function LoanTypes() {
   return (
     <>
       <div className="loan-types-page">
+
+        {/* Auth prompt banner */}
+        {!loggedIn && (
+          <div className="lt-auth-banner">
+            <span>🔒 Please sign in to apply for a loan</span>
+            <button className="lt-auth-btn" onClick={() => navigate("/login")}>Sign In</button>
+          </div>
+        )}
 
         {/* Cards */}
         <div className="loan-types-grid">

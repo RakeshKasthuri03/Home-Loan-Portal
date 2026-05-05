@@ -37,7 +37,7 @@ function Applicationsub() {
 
   return (
     <>
-      <AgentHeader />
+    
 
       <Container className="mt-4">
         <h4 className="mb-4 fw-bold">📄 Applications Submitted</h4>
