@@ -40,11 +40,6 @@ function Header() {
     setShowAuthModal(true);
   };
 
-  const openSignup = () => {
-    setAuthMode('signup');
-    setShowAuthModal(true);
-  };
-
   const handleCloseModal = () => {
     setShowAuthModal(false);
     setUser(getUser()); // refresh login state
@@ -58,22 +53,6 @@ function Header() {
 
   return (
     <>
-      {/* ── TOP BAR ───────────────────────────────── */}
-      <div className="hdr-topbar">
-        <div className="hdr-topbar-inner">
-          <div className="hdr-topbar-left">
-            <span>📞 +91 98485 70949</span>
-            <span className="hdr-topbar-divider" />
-            <span>✉️ mlrrhomeloan@gmail.com</span>
-          </div>
-          <div className="hdr-topbar-right">
-            <span>⏰ Mon – Sat, 9 AM – 6 PM</span>
-            <span className="hdr-topbar-divider" />
-            <span>🇮🇳 India</span>
-          </div>
-        </div>
-      </div>
-
       {/* ── HEADER ───────────────────────────────── */}
       <header className={`hdr-main ${scrolled ? 'hdr-main--scrolled' : ''}`}>
         <div className="hdr-inner">
@@ -114,14 +93,15 @@ function Header() {
               <>
                 <button
                   className="hdr-btn hdr-btn--ghost"
-                  onClick={() => navigate('/dashboard')}
+                  onClick={() => {
+                    if (user.role === "admin") navigate("/admin/dashboard");
+                    else if (user.role === "agent") navigate("/agent/dashboard");
+                    else navigate("/dashboard");
+                  }}
                 >
                   My Dashboard
                 </button>
-                <button
-                  className="hdr-btn hdr-btn--ghost"
-                  onClick={handleLogout}
-                >
+                <button className="hdr-btn hdr-btn--ghost" onClick={handleLogout}>
                   Logout
                 </button>
               </>

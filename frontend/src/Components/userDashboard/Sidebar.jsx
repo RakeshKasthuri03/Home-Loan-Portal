@@ -1,53 +1,37 @@
 import { NavLink, useNavigate } from "react-router-dom";
 import "../../Styles/Sidebar.css";
 
-export default function Sidebar({
-  user,
-  sections = [],
-  role = "user",
-  basePath = "",   // ✅ ADD THIS
-}) {
+export default function Sidebar({ user, sections = [], role = "user" }) {
   const navigate = useNavigate();
 
-  const generateInitials = (fullName) => {
-    if (!fullName) return "";
-    const names = fullName.trim().split(" ");
-    return names.length >= 2
-      ? `${names[0][0]}${names[1][0]}`.toUpperCase()
-      : names[0][0].toUpperCase();
-  };
-
-  // ✅ Builds absolute path safely
-  const resolvePath = (to) => {
-    if (!to) return basePath;
-    if (to.startsWith("/")) return to;
-    return `${basePath}/${to}`.replace(/\/+/g, "/");
-  };
+  const initials = user?.name
+    ? user.name.split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2)
+    : "U";
 
   return (
     <aside className="sidebar">
+
+      {/* User card */}
       <div className="user-card">
-        <div className="avatar">{generateInitials(user.name)}</div>
-        <h4>{user.name}</h4>
-        <p>{user.email}</p>
+        <div className="avatar">{initials}</div>
+        <h4>{user?.name || "User"}</h4>
+        <p>{user?.email}</p>
         <span className="badge">
-          {role === "admin" ? "Administrator" : "✔ Verified customer"}
+          {role === "admin" ? "Administrator" : "✔ Verified"}
         </span>
       </div>
 
+      {/* Nav */}
       <div className="menu">
         {sections.map((section) => (
           <div key={section.heading}>
             <h5>{section.heading}</h5>
-
             {section.items.map((item) => (
               <NavLink
                 key={item.label}
-                to={resolvePath(item.to)}
-                end={item.to}
-                className={({ isActive }) =>
-                  isActive ? "active" : ""
-                }
+                to={item.to}
+                end={item.to === "/dashboard"}
+                className={({ isActive }) => (isActive ? "active" : "")}
               >
                 <span>{item.label}</span>
                 {item.badge && <span>{item.badge}</span>}
@@ -57,14 +41,17 @@ export default function Sidebar({
         ))}
 
         {role === "user" && (
-          <button
-            className="primary-btn"
-            onClick={() => navigate("/loan-types")}
-          >
+          <button className="primary-btn" style={{ marginTop: "12px", width: "100%", fontSize: "0.85rem" }} onClick={() => navigate("/loan-types")}>
             Apply for a New Loan →
           </button>
         )}
       </div>
+
+      {/* Back to home */}
+      <div className="sidebar-home-link" onClick={() => navigate("/")}>
+        ← Back to Home
+      </div>
+
     </aside>
   );
 }

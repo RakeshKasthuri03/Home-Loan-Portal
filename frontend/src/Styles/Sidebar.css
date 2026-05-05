@@ -95,3 +95,48 @@
 .sidebar-home-link:hover {
   color: #2771e2;
 }
+
+/* ─── SIDEBAR BRAND ────────────────────────────────────────────────────────── */
+.sidebar-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 20px;
+  border-bottom: 1px solid #e5e7eb;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.sidebar-brand-name {
+  font-size: 1rem;
+  font-weight: 800;
+  color: #0f2557;
+  letter-spacing: 0.02em;
+  display: block;
+}
+
+.sidebar-brand-sub {
+  font-size: 0.65rem;
+  color: #2771e2;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  display: block;
+}
+
+/* ─── SIDEBAR HOME LINK ────────────────────────────────────────────────────── */
+.sidebar-home-link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 20px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #6b7280;
+  cursor: pointer;
+  border-top: 1px solid #e5e7eb;
+  margin-top: auto;
+  transition: color 0.2s;
+}
+
+.sidebar-home-link:hover { color: #2771e2; }

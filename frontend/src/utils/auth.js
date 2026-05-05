@@ -2,9 +2,10 @@ const AUTH_KEY = "mlrr_user";
 
 // Mock users — replace with API call later
 const MOCK_USERS = [
-  { id: 1, name: "Rahul Nani",       email: "rahul@gmail.com",   mobile: "9999999999", password: "rahul123",   role: "customer" },
-  { id: 2, name: "Manohar V",        email: "manohar@gmail.com", mobile: "8888888888", password: "manohar123", role: "customer" },
-  { id: 3, name: "Agent Karthik",    email: "agent@mlrr.com",    mobile: "7777777777", password: "agent123",   role: "agent" },
+  { id: 1, name: "Rahul Nani",    email: "rahul@gmail.com",   mobile: "9999999999", password: "rahul123",   role: "customer" },
+  { id: 2, name: "Manohar V",     email: "manohar@gmail.com", mobile: "8888888888", password: "manohar123", role: "customer" },
+  { id: 3, name: "Agent Karthik", email: "agent@mlrr.com",    mobile: "7777777777", password: "agent123",   role: "agent" },
+  { id: 4, name: "Admin User",    email: "admin@mlrr.com",    mobile: "6666666666", password: "admin123",   role: "admin" },
 ];
 
 export const loginUser = (identifier, password) => {
