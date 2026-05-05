@@ -1,7 +1,4 @@
 /* ─── GLOBAL HOME ──────────────────────────────────────────────────────────── */
-
-
-
 .Home {
   font-family: 'Inter', 'Poppins', sans-serif;
   
@@ -30,13 +27,47 @@
 }
 .hero-corner-image {
   position: absolute;
-  right: 0px;
-  top:0px;
-  width: 420px;
+  right: 0;
+  top: 0;
+  width: 1200px;
   max-width: 45vw;
   height: auto;
   z-index: 1;
   pointer-events: none;
+}
+
+/* Large screens (laptops/desktops) */
+@media (max-width: 1200px) {
+  .hero-corner-image {
+    width: 800px;
+    max-width: 40vw;
+  }
+}
+
+/* Tablets */
+@media (max-width: 992px) {
+  .hero-corner-image {
+    width: 600px;
+    max-width: 50vw;
+  }
+}
+
+/* Mobile devices */
+@media (max-width: 768px) {
+  .hero-corner-image {
+    width: 400px;
+    max-width: 60vw;
+    opacity: 0.8; /* optional: reduce visual weight */
+  }
+}
+
+/* Small mobiles */
+@media (max-width: 480px) {
+  .hero-corner-image {
+    width: 250px;
+    max-width: 70vw;
+    display: none; /* optional: hide for very small screens */
+  }
 }
 
 .hero-section::before {
@@ -94,9 +125,7 @@
   letter-spacing: -0.02em;
 }
 .hero-section h1 .highlight, .side-head {
-  background: linear-gradient(90deg, #60a5fa, #a78bfa);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  color: #a78bfa;
   background-clip: text;
 }
 

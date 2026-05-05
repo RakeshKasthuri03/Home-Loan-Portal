@@ -27,6 +27,7 @@ import AgentLogin from "./pages/auth/AgentLogin";
 import UserDashboard from "./Components/userDashboard/UserDashboard";
 import { isLoggedIn, getUser } from "./utils/auth";
 import ScrollToTop from "./Components/ScrollToTop";
+import Contact from "./pages/Contact";
 
 const ProtectedRoute = ({ children, requiredRole }) => {
   const user = getUser();
@@ -52,7 +53,7 @@ function App() {
           <Route path="/loan-types" element={<LoanTypes />} />
           <Route path="/apply"      element={<LoanApply />} />
           <Route path="/login"      element={<Login />} />
-
+          <Route path="/contact" element={<Contact/>}/>
           <Route path="/calculator" element={<NavBarCal />}>
             <Route index element={<Navigate to="emi" replace />} />
             <Route path="emi"         element={<EmiPage />} />

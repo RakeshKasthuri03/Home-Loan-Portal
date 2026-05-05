@@ -277,7 +277,7 @@ function FaqSection() {
 
 // ── Main Export ───────────────────────────────────────────────
 
-export default function MLRRContactPage() {
+export default function Contact() {
   return (
     <>
       <div className="mlrr-root">
