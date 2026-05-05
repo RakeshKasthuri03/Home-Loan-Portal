@@ -88,6 +88,21 @@ function LoanTypes() {
               </table>
               <p><span className="required-star">*</span> Borrower is required to pay subsequent EMIs at the end of each respective month and shall in any case pay on or before the 5th of the following month.</p>
             </section>
+            <section className="table-wrapper">
+              <table className="repayment-table">
+                <thead>
+                  <tr><th>Repayment of EMI</th><th>Due date of payment</th></tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Due date of 1st  PEMI</td>
+                    <td><span className="required-star">*</span> 5th day of the month.</td>
+                  </tr>
+                </tbody>
+              </table>
+              <p><span className="required-star">*</span> Borrower is required to pay subsequent PEMIs at the end of each respective month  and shall in any case
+                                                          pay on or before the 5th of the following month.</p>
+            </section>
 
             <section className="classification-wrapper">
               <div className="classification-header">Classification of Account</div>
@@ -96,6 +111,10 @@ function LoanTypes() {
                   <li>Borrower shall pay the EMI / PEMI on or prior to the Due date as mentioned above.</li>
                   <li>Non payment or delay in payment of EMI or PEMI by the Due date shall render the Borrower liable to pay delayed payment charges as mentioned in the MITC.</li>
                   <li>If the PEMI / EMI are not being paid by the borrower on the due dates, the borrower's loan account shall be downgraded as under:</li>
+                  <li>All total overdues should be paid by the borrower on or before the due date of the payment. Failing whichthe account would be downgraded in accordance with the RBI guidelines as explained above.</li>
+                  <li>Once the loan is classified as an NPA, it shall remain so until and unless  the entire full overdue amount has been paid. The reporting to Credit Bureaus and Regulatory Authorities  would be in accordance.</li>
+                  <li>The Account can be upgraded to a  standard classification  on payment of entire overdues  in full i.e <i>there should be  zero outstanding in the  account</i>.</li>
+                  <li>The term " repayment" means the repayment of the principal amount of the loan , interest thereon , commitment and/ or any other charges, premium, fees or other dues payable in terms of  this agreement to MLRR</li>
                 </ol>
                 <table className="repayment-table">
                   <thead>

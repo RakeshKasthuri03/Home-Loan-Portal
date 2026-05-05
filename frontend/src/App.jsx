@@ -17,6 +17,7 @@ import AdminDashboard from './pages/Admin/AdminDashboard';
 import AdminApplications from './pages/Admin/AdminApplications';
 import AdminUsers from './pages/Admin/AdminUsers';
 import AdminAgents from './pages/Admin/AdminAgents';
+import Contact from './pages/Contact';
 // Redirect to home if not logged in
 const ProtectedRoute = ({ children }) => {
   return isLoggedIn() ? children : <Navigate to="/" replace />;
@@ -30,33 +31,21 @@ function App() {
         <Route index element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/loan-types" element={<LoanTypes />} />
-        
+        <Route path="/contact" element={<Contact/>}/>
         <Route path="/calculator" element={<NavBarCal />}>
-            <Route index element={<Navigate to="emi" />} />
-            <Route path="emi" element={<EmiPage />} />
-            <Route path="eligibility" element={<EligibilityPage />} />
-          </Route>
-
-        <Route path="/apply" element={<LoanApply />} />
-        <Route path="/agent" element={<LeadsDetails />} />
-        <Route path="/*" element={
-                                            <ProtectedRoute>
-                                              <UserDashboard />
-                                            </ProtectedRoute>
-                                          }/>
+          <Route index element={<Navigate to="emi" />} />
+          <Route path="emi" element={<EmiPage />} />
+          <Route path="eligibility" element={<EligibilityPage />} />
+        </Route>
+        <Route path="/*" element={ <UserDashboard />}/>
        </Route>
-       <Route
-            path="/admin"
-            element={
-              <ProtectedRoute role="admin">
-                <AdminLayout />
-              </ProtectedRoute>
-            }
-          >
-          <Route index element={<AdminDashboard />} />
-          <Route path="/admin/applications" element={<AdminApplications />} />
-          <Route path="/admin/users" element={<AdminUsers />} />
-          <Route path="/admin/agents" element={<AdminAgents />} />
+        <Route path="/agent/apply" element={<LoanApply />} />
+        <Route path="/agent" element={<LeadsDetails />} />
+        <Route path="/admin" element={<AdminLayout />}>
+            <Route index element={<AdminDashboard />} />
+            <Route path="/admin/applications" element={<AdminApplications />} />
+            <Route path="/admin/users" element={<AdminUsers />} />
+            <Route path="/admin/agents" element={<AdminAgents />} />
         </Route>
       </Routes>
     </BrowserRouter>

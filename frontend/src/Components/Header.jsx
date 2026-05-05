@@ -10,10 +10,10 @@ import { getUser, logoutUser } from '../utils/auth';
 import './Header.css';
 
 const NAV_LINKS = [
+  { label: 'About Us', href: '/'},
   { label: 'Loans', href: '/loan-types' },
   { label: 'Calculators', href: '/calculator' },
-  { label: 'About Us', href: '#key-benefits' },
-  { label: 'Contact Us', href: '#contact' },
+  { label: 'Contact Us', href: '/contact' },
 ];
 
 function Header() {
@@ -58,21 +58,6 @@ function Header() {
 
   return (
     <>
-      {/* ── TOP BAR ───────────────────────────────── */}
-      <div className="hdr-topbar">
-        <div className="hdr-topbar-inner">
-          <div className="hdr-topbar-left">
-            <span>📞 +91 98485 70949</span>
-            <span className="hdr-topbar-divider" />
-            <span>✉️ mlrrhomeloan@gmail.com</span>
-          </div>
-          <div className="hdr-topbar-right">
-            <span>⏰ Mon – Sat, 9 AM – 6 PM</span>
-            <span className="hdr-topbar-divider" />
-            <span>🇮🇳 India</span>
-          </div>
-        </div>
-      </div>
 
       {/* ── HEADER ───────────────────────────────── */}
       <header className={`hdr-main ${scrolled ? 'hdr-main--scrolled' : ''}`}>

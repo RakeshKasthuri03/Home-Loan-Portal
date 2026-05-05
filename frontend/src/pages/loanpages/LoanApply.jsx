@@ -2,8 +2,6 @@ import { useState, useEffect } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { LOAN_TYPES } from "../../utils/loanTypeConfig";
 import LoanApplicationContainer from "../../Components/LoanForm/Container/LoanApplicationContainer";
-import Header from "../../Components/Header";
-import Footer from "../../Components/Footer";
 import "../../Components/LoanForm/Styles/LoanForm.css";
 
 const LoanApply = () => {
