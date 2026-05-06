@@ -7,7 +7,7 @@ import Login from '../pages/auth/Login';
 import SignUp from '../pages/auth/SignUp';
 
 import { getUser, logoutUser } from '../utils/auth';
-import './Header.css';
+import '../Styles/Header.css';
 
 const NAV_LINKS = [
   { label: 'About Us', href: '/'},

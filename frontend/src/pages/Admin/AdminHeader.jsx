@@ -2,7 +2,7 @@ import { useNavigate } from "react-router-dom";
 import Image from "react-bootstrap/Image";
 import { FiSettings, FiUser, FiLogOut, FiUserPlus } from "react-icons/fi";
 import logo from "../../assets/logo.png";
-import "../../Components/Header.css";
+import "../../Styles/Header.css";
 import "../../Styles/AdminHeader.css";
 
 function AdminHeader() {

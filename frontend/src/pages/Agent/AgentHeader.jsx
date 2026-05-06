@@ -4,7 +4,7 @@ import Image from "react-bootstrap/Image";
 import logo from "../../assets/logo.png";
 import AgentDashboard from "./AgentDashboard";
 import { getUser, logoutUser } from "../../utils/auth";
-import "../../Components/Header.css";
+import "../../Styles/Header.css";
 
 const AGENT_NAV_LINKS = [
   { label: "Lead Details",           href: "/agent/dashboard" },

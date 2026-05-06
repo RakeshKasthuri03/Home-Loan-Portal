@@ -29,10 +29,6 @@ const LoanApply = () => {
   return (
     <>
       <div className="lf-page">
-        <div className="lf-page-header">
-          <h1>Apply for a Home Loan</h1>
-          <p>Simple, fast, and transparent — get started in minutes</p>
-        </div>
 
         {/* Form */}
         {selectedType ? (

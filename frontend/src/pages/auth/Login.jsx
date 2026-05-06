@@ -125,8 +125,8 @@ const Login = ({ closeModal, openRegister }) => {
                   </Button>
                   <p>
                     Don't have an account?{" "}
-                    <a
-                      href="#"
+                    <a 
+                      href=""
                       onClick={(e) => {
                         e.preventDefault();
                         if (openRegister) openRegister();

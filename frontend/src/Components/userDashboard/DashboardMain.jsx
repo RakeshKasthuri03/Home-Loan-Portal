@@ -13,12 +13,9 @@ export default function DashboardMain({ dashboardData }) {
           <h2>Welcome back, {user.name} 👋</h2>
           <p>Manage your home loan applications and track your progress here.</p>
         </div>
-        <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
+        <div>
           <button className="outline-btn" onClick={() => navigate("/dashboard/loan-tracker")}>
             Track Loan
-          </button>
-          <button className="primary-btn" onClick={() => navigate("/loan-types")}>
-            Apply for Loan
           </button>
         </div>
       </div>
