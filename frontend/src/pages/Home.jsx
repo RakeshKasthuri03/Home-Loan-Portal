@@ -113,60 +113,6 @@ function Home() {
       />
         </section>
 
-        {/* ── LOAN TYPES ───────────────────────────────────────────────────── */}
-        <AnimateOnScroll>
-          <section className="loan-types-section">
-            <Container>
-              <div className="text-center">
-                <span className="section-tag">Loan Products</span>
-                <h2 className="section-title">Choose Your Loan Type</h2>
-                <p className="section-subtitle">Pick the right product for your home journey</p>
-              </div>
-
-              {/* Row 1 — 3 cards */}
-              <Row className="g-4 mb-4">
-                {LOAN_TYPES.slice(0, 3).map((lt) => (
-                  <Col md={4} key={lt.title}>
-                    <div className="loan-type-card" onClick={() => navigate("/loan-types")}>
-                      <div className="loan-type-card-top">
-                        <span className="loan-type-icon">{lt.icon}</span>
-                        <span className="card-rate">{lt.intrest}</span>
-                      </div>
-                      <h5>{lt.title}</h5>
-                      <p>{lt.desc}</p>
-                      <div className="loan-type-card-footer">
-                        <span className="card-meta">Max {lt.maxAmount} · {lt.maxtenure}</span>
-                        <div className="card-arrow">→</div>
-                      </div>
-                    </div>
-                  </Col>
-                ))}
-              </Row>
-
-              {/* Row 2 — 2 cards centered */}
-              <Row className="g-4 justify-content-center">
-                {LOAN_TYPES.slice(3).map((lt) => (
-                  <Col md={4} key={lt.title}>
-                    <div className="loan-type-card" onClick={() => navigate("/loan-types")}>
-                      <div className="loan-type-card-top">
-                        <span className="loan-type-icon">{lt.icon}</span>
-                        <span className="card-rate">{lt.intrest}</span>
-                      </div>
-                      <h5>{lt.title}</h5>
-                      <p>{lt.desc}</p>
-                      <div className="loan-type-card-footer">
-                        <span className="card-meta">Max {lt.maxAmount} · {lt.maxtenure}</span>
-                        <div className="card-arrow">→</div>
-                      </div>
-                    </div>
-                  </Col>
-                ))}
-              </Row>
-
-            </Container>
-          </section>
-        </AnimateOnScroll>
-
         {/* ── HOW IT WORKS ─────────────────────────────────────────────────── */}
         <AnimateOnScroll>
           <section id="how-it-works" className="how-it-works">

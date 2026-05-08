@@ -2,13 +2,11 @@ import React from "react";
 import { Container, Row, Col, Form, Button, Image } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
-
 import signup from "../../assets/signup.png";
 import logo from "../../assets/logo.png";
-
 import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { signupSchema } from "../../Validations/auth.schema";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { signupSchema } from "../../Validations/signupValidation";
 
 import "../../Styles/signup.css";
 
@@ -20,7 +18,7 @@ function SignUp({ closeModal, openLogin }) {
     handleSubmit,
     formState: { errors },
   } = useForm({
-    resolver: zodResolver(signupSchema),
+    resolver: yupResolver(signupSchema),
   });
 
   /* ✅ Submit */
@@ -83,9 +81,10 @@ function SignUp({ closeModal, openLogin }) {
                   <Form.Group className="form-group">
                     <Form.Label className="heading">Last Name</Form.Label>
                     <Form.Control {...register("lastName")} />
+                    <small className="text-danger">{errors.lastName?.message}</small>
                   </Form.Group>
                 </div>
-                    <small className="text-danger">{errors.lastName?.message}</small>
+                    
 
                 {/* Email */}
                 <Form.Group className="mb-2">

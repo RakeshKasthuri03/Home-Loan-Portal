@@ -5,7 +5,6 @@ function EligibilityPage(){
     return(
         <>
         <div>
-            <h1 className="title">Eligibilty Calculator</h1>
             <Eligibilty/>
             <div className="info">
   <p>

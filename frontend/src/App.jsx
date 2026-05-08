@@ -1,10 +1,9 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-
+import { Toaster } from "react-hot-toast";
 import Home from "./pages/Home";
 import Login from "./pages/auth/Login";
 import LoanApply from "./pages/loanpages/LoanApply";
 import LoanTypes from "./pages/loanpages/LoanTypes";
-
 import MainLayout from "./Layout/MainLayout";
 import AgentLayout from "./Layout/AgentLayout";
 import AdminLayout from "./Layout/AdminLayout";
@@ -27,6 +26,7 @@ import AgentLogin from "./pages/auth/AgentLogin";
 import UserDashboard from "./Components/userDashboard/UserDashboard";
 import { isLoggedIn, getUser } from "./utils/auth";
 import ScrollToTop from "./Components/ScrollToTop";
+import Contact from "./Layout/ContactLayout"
 
 const ProtectedRoute = ({ children, requiredRole }) => {
   const user = getUser();
@@ -42,6 +42,8 @@ const ProtectedRoute = ({ children, requiredRole }) => {
 
 function App() {
   return (
+    <>
+    <Toaster position="top-right" reverseOrder={false} />
     <BrowserRouter>
       <ScrollToTop />
       <Routes>
@@ -52,7 +54,7 @@ function App() {
           <Route path="/loan-types" element={<LoanTypes />} />
           <Route path="/apply"      element={<LoanApply />} />
           <Route path="/login"      element={<Login />} />
-
+          <Route path="/contact" element={<Contact/>}/>
           <Route path="/calculator" element={<NavBarCal />}>
             <Route index element={<Navigate to="emi" replace />} />
             <Route path="emi"         element={<EmiPage />} />
@@ -88,6 +90,7 @@ function App() {
 
       </Routes>
     </BrowserRouter>
+    </>
   );
 }
 

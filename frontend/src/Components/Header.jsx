@@ -7,13 +7,13 @@ import Login from '../pages/auth/Login';
 import SignUp from '../pages/auth/SignUp';
 
 import { getUser, logoutUser } from '../utils/auth';
-import './Header.css';
+import '../Styles/Header.css';
 
 const NAV_LINKS = [
+  { label: 'About Us', href: '/'},
   { label: 'Loans', href: '/loan-types' },
   { label: 'Calculators', href: '/calculator' },
-  { label: 'About Us', href: '#key-benefits' },
-  { label: 'Contact Us', href: '#contact' },
+  { label: 'Contact Us', href: '/contact' },
 ];
 
 function Header() {
@@ -53,6 +53,7 @@ function Header() {
 
   return (
     <>
+
       {/* ── HEADER ───────────────────────────────── */}
       <header className={`hdr-main ${scrolled ? 'hdr-main--scrolled' : ''}`}>
         <div className="hdr-inner">
@@ -113,13 +114,6 @@ function Header() {
                 Sign In
               </button>
             )}
-
-            <button
-              className="hdr-btn hdr-btn--primary"
-              onClick={() => navigate('/loan-types')}
-            >
-              Apply Now
-            </button>
           </div>
 
           {/* Mobile hamburger */}
@@ -153,29 +147,6 @@ function Header() {
                 {link.label}
               </a>
             ))}
-
-            <div className="hdr-mobile-actions">
-              {!user && (
-                <button
-                  className="hdr-btn hdr-btn--ghost w-100"
-                  onClick={() => {
-                    openLogin();
-                    setMenuOpen(false);
-                  }}
-                >
-                  Sign In
-                </button>
-              )}
-              <button
-                className="hdr-btn hdr-btn--primary w-100"
-                onClick={() => {
-                  navigate('/loan-types');
-                  setMenuOpen(false);
-                }}
-              >
-                Apply Now
-              </button>
-            </div>
           </div>
         )}
       </header>
