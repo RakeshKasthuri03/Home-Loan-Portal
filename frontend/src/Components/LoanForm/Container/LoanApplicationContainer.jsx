@@ -1,6 +1,5 @@
-import React, { useState } from "react";
-import { LOAN_TYPES } from "../../../utils/loanTypeConfig";
-import { FIELD_VALIDATORS } from "../../../Validations/loan.schema";
+import { LOAN_TYPES } from "@utils/loanTypeConfig";
+import { FIELD_VALIDATORS } from "@validations/LoanValidation";
 import StepProgressBar from "../Steps/StepProgressBar";
 import StepRenderer from "../Steps/StepRenderer";
 import "../Styles/LoanForm.css";

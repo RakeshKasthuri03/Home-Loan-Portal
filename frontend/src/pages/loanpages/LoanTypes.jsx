@@ -1,9 +1,9 @@
 import { useNavigate } from 'react-router-dom';
-import { types } from '../../utils/loanTypes';
+import { types } from '@utils/loanTypes';
 import Card from 'react-bootstrap/Card';
 import Button from 'react-bootstrap/Button';
-import { isLoggedIn } from '../../utils/auth';
-import '../../Styles/LoanTypes.css';
+import { isLoggedIn } from '@utils/auth';
+import '@styles/LoanTypes.css';
 
 const TITLE_TO_KEY = {
   "Home Loan":            "PURCHASE",

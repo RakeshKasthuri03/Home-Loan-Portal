@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
-import { LOAN_TYPES } from "../../utils/loanTypeConfig";
-import LoanApplicationContainer from "../../Components/LoanForm/Container/LoanApplicationContainer";
-import { isLoggedIn } from "../../utils/auth";
-import "../../Components/LoanForm/Styles/LoanForm.css";
+import { LOAN_TYPES } from "@utils/loanTypeConfig";
+import LoanApplicationContainer from "@components/LoanForm/Container/LoanApplicationContainer";
+import { isLoggedIn } from "@utils/auth";
+import "@components/LoanForm/Styles/LoanForm.css";
 
 const LoanApply = () => {
   const [searchParams] = useSearchParams();

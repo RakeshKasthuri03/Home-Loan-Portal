@@ -1,4 +1,3 @@
-import React from "react";
 import "../Styles/LoanForm.css";
 
 const FormField = ({ field, value, onChange, error, fullWidth }) => {

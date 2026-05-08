@@ -1,4 +1,4 @@
-import React from "react";
+import { Fragment } from "react";
 import "../Styles/LoanForm.css";
 
 const StepProgressBar = ({ steps, currentStep }) => {
@@ -13,7 +13,7 @@ const StepProgressBar = ({ steps, currentStep }) => {
             : "pending";
 
         return (
-          <React.Fragment key={index}>
+          <Fragment key={index}>
             <div className={`lf-step lf-step--${status}`}>
               <div className="lf-step-circle">
                 {status === "completed" ? (
@@ -27,7 +27,7 @@ const StepProgressBar = ({ steps, currentStep }) => {
             {index < steps.length - 1 && (
               <div className={`lf-step-line ${status === "completed" ? "lf-step-line--done" : ""}`} />
             )}
-          </React.Fragment>
+          </Fragment>
         );
       })}
     </div>
