@@ -310,43 +310,6 @@ export const LOAN_TYPES = {
       },
     ],
   },
-
-  // 6. CONSTRUCTION (kept from before)
-  CONSTRUCTION: {
-    key: "CONSTRUCTION",
-    label: "Home Construction Loan",
-    icon: "🏗️",
-    steps: [
-      { title: "Basic Details",      subtitle: "Tell us about yourself",  fields: basicDetailsFields },
-      { title: "Employment Details", subtitle: "Tell us about your work", fields: employmentFields },
-      {
-        title: "Construction Details",
-        subtitle: "About your construction project",
-        fields: [
-          { name: "plotOwned",         label: "Do you own the plot?",              type: "select", required: true,  options: ["Select", "Yes", "No - Will Purchase"] },
-          { name: "plotLocation",      label: "Plot Location",                     type: "text",   required: true,  placeholder: "City, State" },
-          { name: "plotArea",          label: "Plot Area (sq ft)",                 type: "number", required: true,  placeholder: "e.g. 1200" },
-          { name: "constructionCost",  label: "Estimated Construction Cost (₹)",  type: "number", required: true,  placeholder: "e.g. 3000000" },
-          { name: "loanAmount",        label: "Loan Amount Required (₹)",          type: "number", required: true,  placeholder: "e.g. 2500000" },
-          { name: "loanTenure",        label: "Loan Tenure",                       type: "select", required: true,  options: ["Select Tenure", "5 years", "10 years", "15 years", "20 years", "25 years"] },
-          { name: "constructionStage", label: "Current Construction Stage",        type: "select", required: true,  options: ["Select", "Planning Stage", "Foundation Done", "Structure In Progress", "Finishing Stage"] },
-          { name: "architectName",     label: "Architect / Engineer Name",         type: "text",   required: false, placeholder: "If appointed" },
-        ],
-      },
-      {
-        title: "Documents",
-        subtitle: "Upload required documents",
-        fields: [
-          { name: "panDoc",        label: "PAN Card",                    type: "file", required: true,  accept: ".pdf,.jpg,.jpeg,.png" },
-          { name: "aadharDoc",     label: "Aadhar Card",                 type: "file", required: true,  accept: ".pdf,.jpg,.jpeg,.png" },
-          { name: "photoDoc",      label: "Passport Size Photo",         type: "file", required: true,  accept: ".jpg,.jpeg,.png" },
-          { name: "salarySlip",    label: "Last 3 Salary Slips",         type: "file", required: true,  accept: ".pdf,.jpg,.jpeg,.png" },
-          { name: "bankStatement", label: "Bank Statement (6 months)",   type: "file", required: true,  accept: ".pdf" },
-          { name: "plotDoc",       label: "Plot / Land Documents",       type: "file", required: true,  accept: ".pdf,.jpg,.jpeg,.png" },
-          { name: "approvedPlan",  label: "Approved Building Plan",      type: "file", required: true,  accept: ".pdf,.jpg,.jpeg,.png" },
-          { name: "itr",           label: "ITR / Form 16",               type: "file", required: false, accept: ".pdf" },
-        ],
-      },
-    ],
-  },
 };
+
+  
