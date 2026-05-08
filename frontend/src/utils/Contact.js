@@ -7,9 +7,10 @@ export const LOAN_CHIPS = [
 ];
 
 export const STATS = [
-  { num: "₹50K Cr+", label: "Loans Disbursed" },
+  { num: "₹2.5K Cr+", label: "Loans Disbursed" },
   { num: "2.4 Lakh+", label: "Happy Families" },
   { num: "48 hrs", label: "Avg. Approval Time" },
+  { num: "30+ Banks", label: "Our Partners" },
 ];
 
 export const FEATURES = [

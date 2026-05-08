@@ -48,7 +48,7 @@
     border-radius: 14px;
     padding: 22px 20px;
     text-align: center;
-    backdrop-filter: blur(4px);
+    backdrop-filter: blur(10px);
     transition: transform 0.25s, background 0.25s;
     cursor: default;
   }
