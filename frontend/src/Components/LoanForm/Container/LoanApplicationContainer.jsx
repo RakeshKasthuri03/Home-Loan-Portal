@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { LOAN_TYPES } from "@utils/loanTypeConfig";
 import { FIELD_VALIDATORS } from "@validations/LoanValidation";
 import StepProgressBar from "../Steps/StepProgressBar";
