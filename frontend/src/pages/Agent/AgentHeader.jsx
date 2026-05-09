@@ -49,8 +49,8 @@ function AgentHeader() {
       <header className={`hdr-main ${scrolled ? "hdr-main--scrolled" : ""}`}>
         <div className="hdr-inner">
 
-          {/* Logo — goes to home, not agent login */}
-          <div className="hdr-logo" onClick={() => navigate("/")}>
+          {/* Logo — no routing, just branding */}
+          <div className="hdr-logo" style={{ cursor: "default" }}>
             <Image src={logo} alt="MLRR" height={52} width={52} />
             <div className="hdr-logo-text">
               <span className="hdr-logo-name">MLRR</span>

@@ -56,13 +56,6 @@ export const adminMenuSections = [
       { label: "Agents", to: "/admin/agents" },
     ],
   },
-  {
-    heading: "REPORTS",
-    items: [
-      { label: "Analytics",    to: "/admin/analytics" },
-      { label: "Transactions", to: "/admin/transactions" },
-    ],
-  },
 ];
 
 
