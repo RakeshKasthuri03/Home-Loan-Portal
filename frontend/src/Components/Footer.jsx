@@ -9,25 +9,25 @@ import {
 } from "react-icons/fa";
 import "../Styles/Footer.css";
 import Image from 'react-bootstrap/Image';
- import logo from '../assets/logo.png'
-function Footer(){
+import logo from '../assets/logo.png';
+
+function Footer() {
   return (
     <footer className="footer light-blue">
       <Container>
         <Row className="py-5">
           {/* Logo & About */}
           <Col md={3} sm={12}>
-            <Image className="footer-logo" src={logo}  />
-            
+            <Image className="footer-logo" src={logo} />
             <h6>About Us</h6>
             <p className="footer-text">
-               We help turn your dream of owning a home into reality with simple, transparent, and affordable home loan solutions.
+              We help turn your dream of owning a home into reality with simple, transparent, and affordable home loan solutions.
             </p>
             <h6>Contact Us</h6>
             <p className="mb-1">📞 +91 98485 70949</p>
             <p>✉️ mlrrhomeloan@gmail.com</p>
           </Col>
- 
+
           {/* Information */}
           <Col md={3} sm={6} className="mb-4">
             <h5 className="footer-title">Information</h5>
@@ -38,7 +38,7 @@ function Footer(){
               <li>Calculators</li>
             </ul>
           </Col>
- 
+
           {/* Helpful Links */}
           <Col md={3} sm={6} className="mb-4">
             <h5 className="footer-title">Helpful Links</h5>
@@ -49,7 +49,7 @@ function Footer(){
               <li>Privacy Policy</li>
             </ul>
           </Col>
- 
+
           {/* Subscribe */}
           <Col md={3} sm={12}>
             <h5 className="footer-title">Talk to a Home Loan Expert</h5>
@@ -65,12 +65,11 @@ function Footer(){
             </Form>
           </Col>
         </Row>
- 
+
         {/* Social & Copyright */}
         <Row className="footer-bottom py-3 align-items-center">
           <Col md={6} className="text-md-start text-center">
             <div className="social-icons">
-              
               <FaFacebookF />
               <FaGooglePlusG />
               <FaTwitter />
@@ -85,5 +84,5 @@ function Footer(){
     </footer>
   );
 }
- 
+
 export default Footer;

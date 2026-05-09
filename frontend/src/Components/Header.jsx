@@ -3,38 +3,34 @@ import { useNavigate } from 'react-router-dom';
 import Image from 'react-bootstrap/Image';
 import logo from '../assets/logo.png';
 
-import Login from '../pages/auth/Login';
-import SignUp from '../pages/auth/SignUp';
+import Login from '../modules/user/Login';
+import SignUp from '../modules/user/SignUp';
 
 import { getUser, logoutUser } from '../utils/auth';
 import '../Styles/Header.css';
 
 const NAV_LINKS = [
-  { label: 'About Us', href: '/'},
-  { label: 'Loans', href: '/loan-types' },
+  { label: 'About Us',    href: '/' },
+  { label: 'Loans',       href: '/loan-types' },
   { label: 'Calculators', href: '/calculator' },
-  { label: 'Contact Us', href: '/contact' },
+  { label: 'Contact Us',  href: '/contact' },
 ];
 
 function Header() {
   const navigate = useNavigate();
 
-  /* ✅ AUTH MODAL STATE */
   const [showAuthModal, setShowAuthModal] = useState(false);
-  const [authMode, setAuthMode] = useState('login'); // "login" | "signup"
+  const [authMode, setAuthMode]           = useState('login');
+  const [scrolled, setScrolled]           = useState(false);
+  const [menuOpen, setMenuOpen]           = useState(false);
+  const [user, setUser]                   = useState(getUser());
 
-  const [scrolled, setScrolled] = useState(false);
-  const [menuOpen, setMenuOpen] = useState(false);
-  const [user, setUser] = useState(getUser());
-
-  /* ✅ Scroll effect */
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
     window.addEventListener('scroll', onScroll);
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  /* ✅ OPEN / CLOSE AUTH MODAL */
   const openLogin = () => {
     setAuthMode('login');
     setShowAuthModal(true);
@@ -42,7 +38,7 @@ function Header() {
 
   const handleCloseModal = () => {
     setShowAuthModal(false);
-    setUser(getUser()); // refresh login state
+    setUser(getUser());
   };
 
   const handleLogout = () => {
@@ -53,8 +49,6 @@ function Header() {
 
   return (
     <>
-
-      {/* ── HEADER ───────────────────────────────── */}
       <header className={`hdr-main ${scrolled ? 'hdr-main--scrolled' : ''}`}>
         <div className="hdr-inner">
 
@@ -76,10 +70,7 @@ function Header() {
                 href={link.href}
                 onClick={
                   link.href.startsWith('/')
-                    ? e => {
-                        e.preventDefault();
-                        navigate(link.href);
-                      }
+                    ? e => { e.preventDefault(); navigate(link.href); }
                     : undefined
                 }
               >
@@ -107,10 +98,7 @@ function Header() {
                 </button>
               </>
             ) : (
-              <button
-                className="hdr-btn hdr-btn--ghost"
-                onClick={openLogin}
-              >
+              <button className="hdr-btn hdr-btn--ghost" onClick={openLogin}>
                 Sign In
               </button>
             )}
@@ -122,13 +110,11 @@ function Header() {
             onClick={() => setMenuOpen(!menuOpen)}
             aria-label="Toggle menu"
           >
-            <span />
-            <span />
-            <span />
+            <span /><span /><span />
           </button>
         </div>
 
-        {/* ── MOBILE MENU ───────────────────────── */}
+        {/* Mobile Menu */}
         {menuOpen && (
           <div className="hdr-mobile-menu">
             {NAV_LINKS.map(link => (
@@ -151,7 +137,7 @@ function Header() {
         )}
       </header>
 
-      {/* ── AUTH MODAL ─────────────────────────── */}
+      {/* Auth Modal */}
       {showAuthModal && (
         <div className="overlay">
           {authMode === 'login' && (
@@ -160,7 +146,6 @@ function Header() {
               openRegister={() => setAuthMode('signup')}
             />
           )}
-
           {authMode === 'signup' && (
             <SignUp
               closeModal={handleCloseModal}
