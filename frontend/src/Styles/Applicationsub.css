@@ -25,9 +25,3 @@
   background: linear-gradient(90deg, #f87171 60%, #ef4444 100%);
   border: none;
 }
-.application-card .badge-success {
-  background: linear-gradient(90deg, #34d399 60%, #10b981 100%);
-}
-.application-card .badge-danger {
-  background: linear-gradient(90deg, #f87171 60%, #ef4444 100%);
-}

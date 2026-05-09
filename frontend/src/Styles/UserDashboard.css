@@ -27,19 +27,6 @@
   font-weight: 600;
 }
 
-.header-right {
-  display: flex;
-  align-items: center;
-  gap: 18px;
-}
-
-.notify-dot {
-  width: 8px;
-  height: 8px;
-  background: red;
-  border-radius: 50%;
-}
-
 .primary-btn {
   background: #0f4c8a;
   color: #fff;
@@ -1093,61 +1080,6 @@
     padding: 20px;
     font-size: 15px;
   }
-}
-
-/* ─── HEAD USER INFO ───────────────────────────────────────────────────────── */
-.header-user {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.header-avatar {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #1a3c6e, #2771e2);
-  color: white;
-  font-weight: 700;
-  font-size: 0.85rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-
-.header-user-info {
-  display: flex;
-  flex-direction: column;
-  line-height: 1.2;
-}
-
-.header-user-name {
-  font-size: 0.85rem;
-  font-weight: 700;
-  color: #111827;
-}
-
-.header-user-email {
-  font-size: 0.72rem;
-  color: #6b7280;
-}
-
-.logout-btn {
-  background: none;
-  border: 1.5px solid #e5e7eb;
-  border-radius: 8px;
-  padding: 6px 14px;
-  font-size: 0.82rem;
-  font-weight: 600;
-  color: #6b7280;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.logout-btn:hover {
-  border-color: #dc2626;
-  color: #dc2626;
 }
 
 /* ─── LOGIN DEMO HINT ──────────────────────────────────────────────────────── */

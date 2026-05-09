@@ -5,15 +5,7 @@
 }
 
 /* ─── SCROLL ANIMATION ─────────────────────────────────────────────────────── */
-.scroll-animate {
-  opacity: 0;
-  transform: translateY(36px);
-  transition: opacity 0.8s ease, transform 0.8s ease;
-}
-.scroll-animate.show {
-  opacity: 1;
-  transform: translateY(0);
-}
+/* Used by AnimationOnScroll component via inline styles */
 
 /* ─── HERO ─────────────────────────────────────────────────────────────────── */
 .hero-section {
@@ -70,30 +62,6 @@
   }
 }
 
-
-.hero-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  background: rgba(255,255,255,0.12);
-  border: 1px solid rgba(255,255,255,0.2);
-  color: #93c5fd;
-  font-size: 0.8rem;
-  font-weight: 600;
-  padding: 6px 14px;
-  border-radius: 100px;
-  margin-bottom: 24px;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-}
-
-.hero-badge span {
-  width: 6px;
-  height: 6px;
-  background: #4ade80;
-  border-radius: 50%;
-  display: inline-block;
-}
 
 .hero-section h1 {
   font-size: 3.2rem;
@@ -502,7 +470,6 @@
 /* ─── RESPONSIVE ───────────────────────────────────────────────────────────── */
 @media (max-width: 768px) {
   .hero-section h1 { font-size: 2.1rem; }
-  .hero-floating-badge { display: none; }
   .section-title { font-size: 1.6rem; }
   .stat-divider { display: none; }
   .stats-section .d-flex { flex-wrap: wrap; }

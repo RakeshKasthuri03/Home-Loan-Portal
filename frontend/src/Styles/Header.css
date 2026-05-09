@@ -1,37 +1,3 @@
-/* ─── TOP BAR ──────────────────────────────────────────────────────────────── */
-.hdr-topbar {
-  background: #0f2557;
-  color: rgba(255, 255, 255, 0.75);
-  font-size: 0.78rem;
-  font-family: 'Inter', 'Poppins', sans-serif;
-  padding: 7px 0;
-}
-
-.hdr-topbar-inner {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 24px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 6px;
-}
-
-.hdr-topbar-left,
-.hdr-topbar-right {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-}
-
-.hdr-topbar-divider {
-  width: 1px;
-  height: 12px;
-  background: rgba(255, 255, 255, 0.25);
-  display: inline-block;
-}
-
 /* ─── MAIN HEADER ──────────────────────────────────────────────────────────── */
 .hdr-main {
   position: sticky;

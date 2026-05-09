@@ -53,22 +53,7 @@
   gap: 12px;
 }
 
-/* Add Agent button */
-.primary-btn {
-  background: #0f4c8a;
-  color: #fff;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 6px;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-}
-
-/* Icon buttons (Settings, Account) */
+/* Icon buttons */
 .icon-btn {
   background: #f4f6f8;
   border: none;
@@ -84,37 +69,6 @@
   background: #e6eef8;
 }
 
-/* Logout button */
-.logout-btn {
-  background: none;
-  border: 1px solid #e5e7eb;
-  border-radius: 6px;
-  padding: 6px 14px;
-  font-size: 13px;
-  font-weight: 600;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.logout-btn:hover {
-  background: #fee2e2;
-  color: #b91c1c;
-  border-color: #fecaca;
-}
-
-/* =============================
-   ✅ SVG ICON ALIGNMENT FIX
-============================= */
-
-/* Settings & Account icons */
 .icon-btn svg {
-  vertical-align: middle;
-}
-
-/* Add Agent & Logout icons */
-.primary-btn svg,
-.logout-btn svg {
   vertical-align: middle;
 }

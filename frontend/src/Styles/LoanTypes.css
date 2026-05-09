@@ -71,34 +71,6 @@
   font-weight: 600;
 }
 
-.loan-eligibility {
-  list-style: none;
-  padding-left: 0;
-  margin-bottom: 1rem;
-}
-
-.loan-eligibility {
-  list-style: none;
-  padding-left: 0;
-  margin-bottom: 1rem;
-  text-align: left;
-  margin-top: 1rem;
-}
-
-.loan-eligibility li {
-  font-size: 0.97rem;
-  margin-bottom: 0.25rem;
-  display: flex;
-  align-items: center;
-  gap: 0.5em;
-}
-
-.loan-eligibility li::before {
-  color: #eff6ff;
-  font-size: 1.1em;
-  margin-right: 0.5em;
-}
-
 /* Container */
 .loan-container {
   padding: 16px;

@@ -8,16 +8,6 @@
 
 }
 
-/* ===== Google Button Styling ===== */
-.google-border {
-  border-bottom: 2px solid #dee2e6;
-  display: inline-block;
-  padding-bottom: 6px;
-}
-
-
-
-
 /* ===== Login Side Image Wrapper ===== */
 .login-image-wrapper {
   display: flex;
