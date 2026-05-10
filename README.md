@@ -8,9 +8,9 @@ A full-featured home loan portal built with React + Vite. The application serves
 
 | Layer | Technology |
 |---|---|
-| Framework | React 18 |
-| Build tool | Vite |
-| Routing | React Router v6 |
+| Framework | React 19 |
+| Build tool | Vite 8 |
+| Routing | React Router v7 |
 | Styling | Plain CSS (modular per feature) |
 | UI components | React Bootstrap |
 | Forms | React Hook Form + Formik |
