@@ -5,6 +5,7 @@ import logo from "../../assets/logo.png";
 import AgentDashboard from "./AgentDashboard";
 import { getUser, logoutUser } from "../../utils/auth";
 import "../../styles/Header.css";
+import axios from "axios";
 
 const AGENT_NAV_LINKS = [
   { label: "Lead Details",           href: "/agent/dashboard" },
@@ -13,14 +14,69 @@ const AGENT_NAV_LINKS = [
 ];
 
 function AgentHeader() {
-  const navigate  = useNavigate();
-  const agentUser = getUser();
+   const [agentUser, setAgentUser] = useState(null);
+const [loading, setLoading] = useState(true);
 
-  const agent = {
-    name:  agentUser?.name  || "Agent",
-    email: agentUser?.email || "",
-    photo: null,
-  };
+const navigate = useNavigate();
+
+const getAgent = async () => {
+  try {
+    const userData = JSON.parse(localStorage.getItem("mlrr_user"));
+    const id = userData?.id;
+
+    if (!id) {
+      console.warn("No user ID found");
+      navigate("/login");
+      return;
+    }
+
+    const token = localStorage.getItem("mlrr_token");
+
+    const res = await axios.get(
+      `http://localhost:5000/api/agent/${id}`,
+      {
+        headers: { Authorization: `Bearer ${token}` }
+      }
+    );
+
+    setAgentUser(res.data);
+    console.log("Agent Data Response:", res.data);
+
+    
+  } catch (err) {
+    console.error("Failed to fetch agent data", err);
+    
+    // Optional: redirect if unauthorized
+    if (err.response?.status === 401) {
+      navigate("/login");
+    }
+
+  } finally {
+    setLoading(false);
+  }
+};
+
+useEffect(() => {
+ // console.log("Agent User State Updated:", agentUser);
+  getAgent();
+}, []);
+
+useEffect(() => {
+  console.log("✅ AgentUser updated:", agentUser);
+}, [agentUser]);
+
+
+const agent = {
+  name: agentUser
+    ? `${agentUser.firstname} ${agentUser.lastname}`
+    : "Agent",
+  email: agentUser?.email || "",
+  phone: agentUser?.phone || "",
+  gender: agentUser?.gender || "",
+  loansgiven: agentUser?.loansgiven || 0,
+  photo: null,
+};
+
 
   const [showProfile, setShowProfile] = useState(false);
   const [scrolled,    setScrolled]    = useState(false);
@@ -123,17 +179,20 @@ function AgentHeader() {
       {showProfile && (
         <div className="overlay" onClick={() => setShowProfile(false)}>
           <div onClick={e => e.stopPropagation()}>
-            <AgentDashboard
-              agent={{
-                ...agent,
-                photo: "https://via.placeholder.com/100",
-                gender: "—",
-                phone: agentUser?.mobile || "—",
-                address: "—",
-                loansGiven: 0,
-              }}
-              closeModal={() => setShowProfile(false)}
-            />
+          <AgentDashboard
+          agent={{
+            name: `${agentUser?.firstname || ""} ${agentUser?.lastname || ""}`,
+            email: agentUser?.email || "",
+            phone: agentUser?.phone || "",
+            gender: agentUser?.gender || "",
+            address: agentUser?.address || "—",
+            loansGiven: agentUser?.loansgiven || 0, // ✅ mapped correctly
+            photo: "https://via.placeholder.com/100",
+          }}
+          closeModal={() => setShowProfile(false)}
+        />
+
+
           </div>
         </div>
       )}

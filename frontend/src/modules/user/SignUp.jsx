@@ -8,8 +8,13 @@ import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { signupSchema } from "../../Validations/SignupValidation";
 import "../../styles/signup.css";
+import axios from "axios";
+import { ToastContainer, toast } from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
 
 function SignUp({ closeModal, openLogin }) {
+
+  
   const {
     register,
     handleSubmit,
@@ -18,9 +23,43 @@ function SignUp({ closeModal, openLogin }) {
     resolver: yupResolver(signupSchema),
   });
 
-  const onSubmit = (data) => {
-    console.log("Signup Data:", data);
-    openLogin();
+
+  const onSubmit = async (data) => {
+    try {
+      
+      data.phone = data.countryCode + data.phone; 
+      delete data.countryCode; 
+     console.log("Signup Data:", data);
+       const user={
+         firstname:data.firstName,
+         lastname:data.lastName,
+         email:data.email,
+         phone:data.phone,
+         gender:data.gender,
+          password:data.password,
+          confirmpassword:data.confirmPassword
+       }
+       console.log("User Object:", user);
+       
+      
+     const res= await axios.post('http://localhost:5000/signup', user);
+     
+      console.log("Signup Response:", res.data);
+      if (res.status === 201) {
+        toast.success("Signup successful! Please login.");
+        setTimeout(() => {
+          openLogin();
+        }, 2000);
+      } else {
+        toast.error(res.data.message || "Signup failed. Please try again.");
+      }
+       
+    } catch (error) {
+      console.error("Signup Error:", error);
+    }
+    
+
+  
   };
 
   return (
@@ -130,6 +169,7 @@ function SignUp({ closeModal, openLogin }) {
           </Col>
         </Row>
       </Container>
+      <ToastContainer position="top-right" autoClose={5000} hideProgressBar={false} newestOnTop={false} closeOnClick rtl={false} pauseOnFocusLoss draggable pauseOnHover /> 
     </div>
   );
 }

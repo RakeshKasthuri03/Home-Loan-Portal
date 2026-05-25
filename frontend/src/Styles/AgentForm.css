@@ -1,0 +1,164 @@
+
+
+/* Agent Form styles: modal overlay and page-mode centered layout */
+
+:root{
+	--af-bg: #ffffff;
+	--af-panel-shadow: 0 10px 30px rgba(2,6,23,0.12);
+	--af-border: #e6eef8;
+	--af-muted: #6b7280;
+	--af-primary: #2563eb;
+}
+
+/* Overlay modal - centers panel */
+.af-overlay{
+	position:fixed;
+	inset:0;
+	display:flex;
+	align-items:center;
+	justify-content:center;
+	background:rgba(0,0,0,0.45);
+	padding:1rem;
+	z-index:1000;
+}
+
+.af-panel{
+	background:var(--af-bg);
+	border-radius:10px;
+	width:100%;
+	max-width:600px;
+	box-shadow:var(--af-panel-shadow);
+	padding:1.25rem;
+	box-sizing:border-box;
+}
+
+.af-header{
+	display:flex;
+	align-items:center;
+	justify-content:space-between;
+	gap:0.75rem;
+	margin-bottom:0.75rem;
+}
+
+.af-title{
+	margin:0;
+	font-size:1.125rem;
+	font-weight:600;
+	color:#0f172a;
+}
+
+.af-close{
+	background:none;
+	border:none;
+	font-size:1.4rem;
+	line-height:1;
+	color:var(--af-muted);
+	cursor:pointer;
+}
+
+.af-form{
+	display:flex;
+	flex-direction:column;
+	gap:0.75rem;
+}
+
+.af-row{
+	display:flex;
+	flex-direction:column;
+	gap:0.35rem;
+}
+
+.af-row label{
+	font-size:0.9rem;
+	color:var(--af-muted);
+}
+
+.af-row input,
+.af-row select,
+.af-row textarea{
+	padding:0.55rem 0.6rem;
+	border:1px solid var(--af-border);
+	border-radius:8px;
+	font-size:0.95rem;
+	width:100%;
+	box-sizing:border-box;
+	background:#fff;
+}
+
+.af-actions{
+	display:flex;
+	gap:0.5rem;
+	justify-content:flex-end;
+	margin-top:0.5rem;
+}
+
+.af-btn{
+	padding:0.55rem 0.85rem;
+	border-radius:8px;
+	border:1px solid transparent;
+	cursor:pointer;
+	font-weight:600;
+}
+
+.af-cancel{
+	background:#f8fafc;
+	color:#0b1220;
+	border:1px solid var(--af-border);
+}
+
+.af-primary{
+	background:var(--af-primary);
+	color:#fff;
+}
+
+/* Page mode: center the panel in page and use a wider layout */
+.af-page{
+	display:flex;
+	align-items:center;
+	justify-content:center;
+	padding:2.25rem 1rem;
+}
+
+.af-panel--page{
+	width:100%;
+	max-width:900px;
+	padding:1.5rem 2rem;
+	border-radius:10px;
+	box-shadow:0 8px 24px rgba(2,6,23,0.06);
+	background:var(--af-bg);
+	box-sizing:border-box;
+}
+
+/* Two-column form for larger screens in page mode */
+.af-form--page{
+	display:grid;
+	grid-template-columns:repeat(2, 1fr);
+	gap:1rem 1.25rem;
+	align-items:start;
+}
+
+.af-form--page .af-row{margin-bottom:0}
+
+.af-form--page .af-actions{
+	grid-column:1 / -1;
+	justify-content:flex-end;
+}
+
+/* Small screens: stack vertically and make the modal narrower */
+@media (max-width:720px){
+	.af-panel{max-width:520px}
+	.af-panel--page{max-width:95%}
+	.af-form--page{grid-template-columns:1fr}
+	.af-actions{justify-content:center}
+}
+
+/* minor accessibility focus styles */
+.af-row input:focus,
+.af-row select:focus,
+.af-row textarea:focus{
+	outline:2px solid rgba(37,99,235,0.12);
+	outline-offset:2px;
+}
+
+.af-title, .af-row label { text-align: left }
+

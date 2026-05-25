@@ -37,6 +37,7 @@ import NavBarCal from "./calculator/NavBarCal";
 
 // Contact
 import ContactLayout from "./contact/ContactLayout";
+import AgentForm from "./modules/admin/AgentForm";
 
 const ProtectedRoute = ({ children, requiredRole }) => {
   const user = getUser();
@@ -73,7 +74,7 @@ function App() {
             <Route
               path="/dashboard/*"
               element={
-                <ProtectedRoute requiredRole="customer">
+                <ProtectedRoute requiredRole="user">
                   <UserDashboard />
                 </ProtectedRoute>
               }
@@ -95,6 +96,7 @@ function App() {
             <Route path="/admin/applications" element={<ProtectedRoute><AdminApplications /></ProtectedRoute>} />
             <Route path="/admin/users"        element={<ProtectedRoute><AdminUsers /></ProtectedRoute>} />
             <Route path="/admin/agents"       element={<ProtectedRoute><AdminAgents /></ProtectedRoute>} />
+            <Route path="/admin/form"         element={<ProtectedRoute><AgentForm /></ProtectedRoute>} />
           </Route>
 
         </Routes>

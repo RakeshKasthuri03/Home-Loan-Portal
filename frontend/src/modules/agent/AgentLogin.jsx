@@ -1,32 +1,56 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { loginUser } from "../../utils/auth";
+import { loginUser, saveAuth } from "../../utils/auth";
 import logo from "../../assets/logo.png";
+import axios from "axios";
+import { toast } from "react-toastify";
+
 
 export default function AgentLogin() {
   const navigate = useNavigate();
-  const [identifier, setIdentifier] = useState("");
+  const [agentid, setAgentid] = useState("");
   const [password, setPassword]     = useState("");
   const [error, setError]           = useState("");
   const [loading, setLoading]       = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
     setLoading(true);
 
-    setTimeout(() => {
-      const result = loginUser(identifier, password);
-      setLoading(false);
+    try{
+      const result = await axios.post("http://localhost:5000/api/agent/signin", { agentid, password });
+     
+         const token = result.data.token;
+         const agent = result.data.result;
 
-      if (result.success && result.user.role === "agent") {
-        navigate("/agent/dashboard");
-      } else if (result.success) {
+         console.log("token:", token);
+         console.log("agent:", agent);
+     localStorage.setItem("mlrr_user", JSON.stringify({id: agent._id, email: agent.email,role: agent.role}));
+      localStorage.setItem("mlrr_token", token);
+      
+         
+       
+         
+      setLoading(false);
+       console.log(result);
+      if (result.status === 200 && agent.role === "agent") {
+        toast.success("Signed in successfully");
+       
+         console.log("Navigating to agent dashboard in 3 seconds...");
+          navigate("/agent/dashboard");
+        
+      } else if (result.data.success) {
         setError("Access denied. This portal is for agents only.");
       } else {
-        setError(result.error);
+        setError(result.data.message || "Something went wrong");
       }
-    }, 500);
+    }
+    catch(err){
+      setLoading(false);
+      setError(err.response?.data?.message || "Something went wrong");
+    }
+
   };
 
   return (
@@ -47,13 +71,13 @@ export default function AgentLogin() {
 
         <form onSubmit={handleSubmit}>
           <div style={{ marginBottom: "16px" }}>
-            <label style={{ display: "block", fontSize: "0.85rem", fontWeight: 600, color: "#374151", marginBottom: "6px" }}>Email / Mobile</label>
+            <label style={{ display: "block", fontSize: "0.85rem", fontWeight: 600, color: "#374151", marginBottom: "6px" }}>Agent ID</label>
             <input
               type="text"
               style={{ width: "100%", padding: "10px 14px", border: "1.5px solid #d1d5db", borderRadius: "8px", fontSize: "0.92rem", outline: "none", fontFamily: "inherit", boxSizing: "border-box" }}
-              placeholder="agent@mlrr.com"
-              value={identifier}
-              onChange={(e) => setIdentifier(e.target.value)}
+              placeholder="Agent-****"
+              value={agentid}
+              onChange={(e) => setAgentid(e.target.value)}
               required
             />
           </div>
@@ -70,9 +94,9 @@ export default function AgentLogin() {
             />
           </div>
 
-          <div style={{ background: "#f0fdf4", border: "1px solid #bbf7d0", borderRadius: "8px", padding: "8px 12px", fontSize: "0.78rem", color: "#15803d", textAlign: "center", marginBottom: "16px" }}>
+          {/* <div style={{ background: "#f0fdf4", border: "1px solid #bbf7d0", borderRadius: "8px", padding: "8px 12px", fontSize: "0.78rem", color: "#15803d", textAlign: "center", marginBottom: "16px" }}>
             <strong>Demo:</strong> agent@mlrr.com / agent123
-          </div>
+          </div> */}
 
           <button
             type="submit"
