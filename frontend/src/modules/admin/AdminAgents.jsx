@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { FiUserPlus } from "react-icons/fi";
 import "../../Styles/AdminDashboard.css";
+import { useNavigate } from "react-router-dom";
 
 const INITIAL_AGENTS = [
   { id: 1, name: "Karthik Patel", initials: "KP", tier: "Gold",     customers: 18, loanValue: "₹4.2Cr" },
@@ -55,11 +56,16 @@ function TierDropdown({ agentId, currentTier, onUpdate }) {
 }
 
 function AdminAgents() {
+
+   const navigate = useNavigate();
   const [agents, setAgents] = useState(INITIAL_AGENTS);
 
   const removeAgent = (id) => setAgents((prev) => prev.filter((a) => a.id !== id));
   const updateTier  = (id, tier) => setAgents((prev) => prev.map((a) => a.id === id ? { ...a, tier } : a));
+  const handelagentform = () => {
+   navigate("/admin/form");
 
+  }
   return (
     <div className="dashboard-main">
 
@@ -67,7 +73,7 @@ function AdminAgents() {
         <h3>Agents</h3>
         <div className="admin-table-actions">
           <input className="apps-search" type="text" placeholder="Search agents..." />
-          <button className="add-agent-btn">
+          <button className="add-agent-btn" onClick={handelagentform}>
             <FiUserPlus size={14} style={{ marginRight: 6 }} />
             Add Agent
           </button>

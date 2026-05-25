@@ -51,7 +51,7 @@ export default function Documents({ user }) {
                 ) : (
                   <div className="upload-status">
                     <label className="upload-label">
-                      <span className="upload-icon">📁</span>
+                     
                       Upload valid document
                       <input
                         type="file"

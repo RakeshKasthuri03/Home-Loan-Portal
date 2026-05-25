@@ -1,26 +1,26 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import userPhoto from "../../assets/user.png";
 
 export default function Profile({ user }) {
   const [activeTab, setActiveTab] = useState("personal"); // Default tab
   const [isEditing, setIsEditing] = useState({});
-  const [formData, setFormData] = useState({
-    fullName: "Visthargalla Manohar",
-    email: "manohar@gmail.com",
-    password: "••••••••",
-    mobileNo: "9876543210",
-    nationality: "Indian",
-    panCard: "ABCDE1234F",
-    aadharCard: "[Aadhaar Redacted]", // Security placeholder
-  });
+  const [formData, setFormData] = useState({...user});
+
+  useEffect(() => {
+    setFormData({ ...user });
+  }, [user]);
+
+   console.log("Profile Component - User Data:", user);
+     
 
   const personalDetailsFields = [
-    { label: "Full Name", key: "fullName", type: "text", editable: true },
+    { label: "Full Name", key: "firstName", type: "text", editable: true },
     { label: "Email Address", key: "email", type: "email", editable: true },
-    { label: "Mobile Number", key: "mobileNo", type: "tel", editable: true },
-    { label: "Nationality", key: "nationality", type: "text", editable: true },
-    { label: "PAN Card", key: "panCard", type: "text", editable: false, masked: true },
-    { label: "Aadhar Card", key: "aadharCard", type: "text", editable: false, masked: true },
+    { label: "Mobile Number", key: "phone", type: "tel", editable: true },
+    { label: "Gender", key: "gender", type: "text", editable: true },
+    // { label: "Nationality", key: "nationality", type: "text", editable: true },
+    // { label: "PAN Card", key: "panCard", type: "text", editable: false, masked: true },
+    // { label: "Aadhar Card", key: "aadharCard", type: "text", editable: false, masked: true },
   ];
 
   const loanDetails = [
@@ -48,18 +48,20 @@ export default function Profile({ user }) {
       {/* Compact Header Section */}
       <div className="profile-header-section">
         <div className="profile-header-content">
-          <div className="profile-avatar-container">
+            <div className="profile-avatar-container">
             <div className="profile-avatar-mini">
-              <img src={userPhoto} alt="Profile" />
+              <img src={formData.profilePhoto || userPhoto} alt="Profile" />
+
+              
               <div className="online-status"></div>
             </div>
           </div>
           <div className="profile-header-info">
             <div className="user-title-row">
-                <h1>{formData.fullName}</h1>
+                <h1>{formData.firstName} {formData.lastName}</h1>
                 <span className="user-status-badge">Verified</span>
             </div>
-            <p className="user-id">User ID: <strong>USR-00142</strong></p>
+            <p className="user-id"><strong>{formData.userId} </strong></p>
           </div>
         </div>
 
