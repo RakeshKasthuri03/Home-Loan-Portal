@@ -15,9 +15,9 @@ export default function AnimateOnScroll({ children, className = "" }) {
       { threshold: 0.1 }
     );
     if (ref.current) observer.observe(ref.current);
-    return () => observer.disconnect();
+    return () =>
+ observer.disconnect();
   }, []);
-
   return (
     <div
       ref={ref}

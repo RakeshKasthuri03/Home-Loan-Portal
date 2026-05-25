@@ -7,8 +7,6 @@ import Col from "react-bootstrap/Col";
 import AnimateOnScroll from "../components/AnimationOnScroll";
 import CountUpNumber from "../components/CountUpNumber";
 import hero from "../assets/hero.png";
-import { types as LOAN_TYPES } from "../utils/loanTypes";
-
 import "../styles/Home.css";
 
 /* ── data ──────────────────────────────────────────────────────────────────── */
