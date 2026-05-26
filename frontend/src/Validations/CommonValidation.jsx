@@ -1,6 +1,5 @@
 import * as Yup from "yup";
-export const nameValidation = Yup.string()
-  .min(2, "Too short")
+export const nameValidation = Yup.string()  
   .required("This field is required");
 
 export const emailValidation = Yup.string()

@@ -1,0 +1,141 @@
+const router = require('express').Router();
+const auth = require('../middelwares/athentications');
+const {
+  // User operations
+  createApplication,
+  saveProgress,
+  submitApplication,
+  getMyApplications,
+  getApplicationById,
+  deleteApplication,
+  
+  // Agent operations
+  getAgentApplications,
+  startReview,
+  requestDocuments,
+  addRemarks,
+  recommendApplication,
+  getAgentStats,
+  
+  // Admin operations
+  getAllApplications,
+  assignAgent,
+  approveApplication,
+  rejectApplication,
+  disburseApplication,
+  closeApplication,
+  getDashboardStats,
+  
+  // Loan types
+  getLoanTypes,
+  createLoanType,
+  updateLoanType
+} = require('../controllers/loan.controller');
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// MIDDLEWARE: Role-based access control
+// ═══════════════════════════════════════════════════════════════════════════════
+
+const isAgent = (req, res, next) => {
+  if (req.user && (req.user.role === 'agent' || req.user.role === 'admin')) {
+    next();
+  } else {
+    res.status(403).json({ message: 'Access denied. Agent role required.' });
+  }
+};
+
+const isAdmin = (req, res, next) => {
+  if (req.user && req.user.role === 'admin') {
+    next();
+  } else {
+    res.status(403).json({ message: 'Access denied. Admin role required.' });
+  }
+};
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// PUBLIC ROUTES
+// ═══════════════════════════════════════════════════════════════════════════════
+
+// Get loan types (public)
+router.get('/types', getLoanTypes);
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// USER ROUTES (Authenticated users)
+// ═══════════════════════════════════════════════════════════════════════════════
+
+// Create new application
+router.post('/apply', auth, createApplication);
+
+// Save application progress (auto-save)
+router.put('/save/:applicationId', auth, saveProgress);
+
+// Submit application for review
+router.put('/submit/:applicationId', auth, submitApplication);
+
+// Get user's applications
+router.get('/my-applications', auth, getMyApplications);
+
+// Get single application details
+router.get('/application/:applicationId', auth, getApplicationById);
+
+// Delete draft application
+router.delete('/application/:applicationId', auth, deleteApplication);
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// AGENT ROUTES
+// ═══════════════════════════════════════════════════════════════════════════════
+
+// Get agent's assigned applications
+router.get('/agent/applications', auth, isAgent, getAgentApplications);
+
+// Get agent dashboard stats
+router.get('/agent/stats', auth, isAgent, getAgentStats);
+
+// Start review
+router.put('/agent/review/:applicationId', auth, isAgent, startReview);
+
+// Request additional documents
+router.put('/agent/request-docs/:applicationId', auth, isAgent, requestDocuments);
+
+// Add remarks
+router.post('/agent/remarks/:applicationId', auth, isAgent, addRemarks);
+
+// Recommend for approval
+router.put('/agent/recommend/:applicationId', auth, isAgent, recommendApplication);
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// ADMIN ROUTES
+// ═══════════════════════════════════════════════════════════════════════════════
+
+// Get all applications (with filters)
+router.get('/admin/applications', auth, isAdmin, getAllApplications);
+
+// Get admin dashboard stats
+router.get('/admin/stats', auth, isAdmin, getDashboardStats);
+
+// Assign agent to application
+router.put('/admin/assign/:applicationId', auth, isAdmin, assignAgent);
+
+// Approve application
+router.put('/admin/approve/:applicationId', auth, isAdmin, approveApplication);
+
+// Reject application
+router.put('/admin/reject/:applicationId', auth, isAdmin, rejectApplication);
+
+// Disburse loan
+router.put('/admin/disburse/:applicationId', auth, isAdmin, disburseApplication);
+
+// Close application
+router.put('/admin/close/:applicationId', auth, isAdmin, closeApplication);
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// LOAN TYPES MANAGEMENT (Admin only)
+// ═══════════════════════════════════════════════════════════════════════════════
+
+// Create loan type
+router.post('/types', auth, isAdmin, createLoanType);
+
+// Update loan type
+router.put('/types/:id', auth, isAdmin, updateLoanType);
+
+module.exports = router;
