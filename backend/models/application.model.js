@@ -214,7 +214,8 @@ const applicationSchema = new mongoose.Schema({
 }, { 
   timestamps: true,
   toJSON: { virtuals: true },
-  toObject: { virtuals: true }
+  toObject: { virtuals: true },
+  minimize: true  // Remove empty objects from documents
 });
 
 // ─── PRE-SAVE HOOK: Generate Application ID ───────────────────────────────────

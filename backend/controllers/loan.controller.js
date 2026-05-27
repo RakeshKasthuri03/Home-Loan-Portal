@@ -7,32 +7,50 @@ const User = require('../models/user.model');
 // ═══════════════════════════════════════════════════════════════════════════════
 
 /**
- * Create new loan application (Draft)
+ * Create new loan application (Draft) or return existing draft
  * POST /api/loan/apply
  */
 const createApplication = async (req, res) => {
     const userId = req.user.id || req.user._id;
-    const { loanType, ...formData } = req.body;
+    const { loanType } = req.body;
   try {
 
-    console.log('Creating application with data:', { userId, loanType, formData });
+    console.log('Creating application with data:', { userId, loanType });
     if (!loanType) {
       return res.status(400).json({ message: 'Loan type is required' });
     }
 
+    // Check if user already has a draft application for this loan type
+    const existingDraft = await Application.findOne({
+      user: userId,
+      loanType: loanType,
+      status: 'draft'
+    });
+
+    if (existingDraft) {
+      // Return existing draft instead of creating new one
+      console.log('Returning existing draft application:', existingDraft._id);
+      return res.status(200).json({
+        message: 'Existing draft application found',
+        application: existingDraft,
+        isExisting: true
+      });
+    }
+
+    // Create new application with minimal fields only
     const application = new Application({
       user: userId,
       loanType,
       status: 'draft',
-      currentStep: 0,
-      ...formData
+      currentStep: 0
     });
 
     await application.save();
 
     res.status(201).json({
       message: 'Application created successfully',
-      application
+      application,
+      isExisting: false
     });
   } catch (error) {
     console.error('Create application error:', error);
@@ -64,17 +82,72 @@ const saveProgress = async (req, res) => {
       return res.status(404).json({ message: 'Application not found or already submitted' });
     }
 
-    // Update each section if provided
-    if (formData.basicDetails) application.basicDetails = { ...application.basicDetails, ...formData.basicDetails };
-    if (formData.coApplicant) application.coApplicant = { ...application.coApplicant, ...formData.coApplicant };
-    if (formData.employmentDetails) application.employmentDetails = { ...application.employmentDetails, ...formData.employmentDetails };
-    if (formData.financialDetails) application.financialDetails = { ...application.financialDetails, ...formData.financialDetails };
-    if (formData.propertyDetails) application.propertyDetails = { ...application.propertyDetails, ...formData.propertyDetails };
-    if (formData.plotDetails) application.plotDetails = { ...application.plotDetails, ...formData.plotDetails };
-    if (formData.renovationDetails) application.renovationDetails = { ...application.renovationDetails, ...formData.renovationDetails };
-    if (formData.balanceTransferDetails) application.balanceTransferDetails = { ...application.balanceTransferDetails, ...formData.balanceTransferDetails };
-    if (formData.documents) application.documents = { ...application.documents, ...formData.documents };
-    if (formData.consent) application.consent = { ...application.consent, ...formData.consent };
+    // Helper function to clean object data - removes empty objects and invalid values
+    const cleanObjectData = (data) => {
+      if (!data || typeof data !== 'object') return null;
+      const cleaned = {};
+      for (const [key, value] of Object.entries(data)) {
+        // Skip empty objects, null, undefined
+        if (value === null || value === undefined) continue;
+        if (typeof value === 'object' && !Array.isArray(value) && Object.keys(value).length === 0) continue;
+        // Keep valid primitive values only
+        if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') {
+          cleaned[key] = value;
+        }
+      }
+      return Object.keys(cleaned).length > 0 ? cleaned : null;
+    };
+
+    // Only update sections that have actual data
+    const cleanedBasicDetails = cleanObjectData(formData.basicDetails);
+    if (cleanedBasicDetails) {
+      application.basicDetails = { ...application.basicDetails?.toObject?.() || {}, ...cleanedBasicDetails };
+    }
+
+    const cleanedCoApplicant = cleanObjectData(formData.coApplicant);
+    if (cleanedCoApplicant) {
+      application.coApplicant = { ...application.coApplicant?.toObject?.() || {}, ...cleanedCoApplicant };
+    }
+
+    const cleanedEmploymentDetails = cleanObjectData(formData.employmentDetails);
+    if (cleanedEmploymentDetails) {
+      application.employmentDetails = { ...application.employmentDetails?.toObject?.() || {}, ...cleanedEmploymentDetails };
+    }
+
+    const cleanedFinancialDetails = cleanObjectData(formData.financialDetails);
+    if (cleanedFinancialDetails) {
+      application.financialDetails = { ...application.financialDetails?.toObject?.() || {}, ...cleanedFinancialDetails };
+    }
+
+    const cleanedPropertyDetails = cleanObjectData(formData.propertyDetails);
+    if (cleanedPropertyDetails) {
+      application.propertyDetails = { ...application.propertyDetails?.toObject?.() || {}, ...cleanedPropertyDetails };
+    }
+
+    const cleanedPlotDetails = cleanObjectData(formData.plotDetails);
+    if (cleanedPlotDetails) {
+      application.plotDetails = { ...application.plotDetails?.toObject?.() || {}, ...cleanedPlotDetails };
+    }
+
+    const cleanedRenovationDetails = cleanObjectData(formData.renovationDetails);
+    if (cleanedRenovationDetails) {
+      application.renovationDetails = { ...application.renovationDetails?.toObject?.() || {}, ...cleanedRenovationDetails };
+    }
+
+    const cleanedBalanceTransferDetails = cleanObjectData(formData.balanceTransferDetails);
+    if (cleanedBalanceTransferDetails) {
+      application.balanceTransferDetails = { ...application.balanceTransferDetails?.toObject?.() || {}, ...cleanedBalanceTransferDetails };
+    }
+
+    const cleanedDocuments = cleanObjectData(formData.documents);
+    if (cleanedDocuments) {
+      application.documents = { ...application.documents?.toObject?.() || {}, ...cleanedDocuments };
+    }
+
+    const cleanedConsent = cleanObjectData(formData.consent);
+    if (cleanedConsent) {
+      application.consent = { ...application.consent?.toObject?.() || {}, ...cleanedConsent };
+    }
     
     if (currentStep !== undefined) application.currentStep = currentStep;
 

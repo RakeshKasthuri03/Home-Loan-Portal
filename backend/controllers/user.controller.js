@@ -72,8 +72,13 @@ const signin=async (req,res)=>{
             if(!existingUser){
                 return res.status(404).json({message:"User doesn't exist"});
             }
+          
+
             
+            console.log("Comparing provided password with stored hash for user:", existingUser.password,password);
           const isPasswordCorrect = await bcrypt.compare(password, existingUser.password);
+
+          
             console.log("Password Match:", isPasswordCorrect);
             if(isPasswordCorrect){
                 jwt.sign({id:existingUser._id},process.env.secretKey,(err,token)=>{

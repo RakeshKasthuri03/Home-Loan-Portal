@@ -1,15 +1,10 @@
 const AUTH_KEY = "mlrr_user";
 const TOKEN_KEY = "mlrr_token";
 import axios from 'axios';
-import { useEffect } from 'react';
 
-
-
-
-
-
-// Mock users — replace with API call later
-
+// ═══════════════════════════════════════════════════════════════════════════════
+// AUTH UTILITIES
+// ═══════════════════════════════════════════════════════════════════════════════
 
 const MOCK_USERS = [
   { id: 1, name: "User Name",    email: "user@gmail.com",   mobile: "9999999999", password: "user123",   role: "customer" },
@@ -17,7 +12,7 @@ const MOCK_USERS = [
   { id: 3, name: "Agent Karthik", email: "agent@mlrr.com",    mobile: "7777777777", password: "agent123",   role: "agent" },
   { id: 4, name: "Admin User",    email: "admin@mlrr.com",    mobile: "6666666666", password: "admin123",   role: "admin" },
 ];
-
+ 
 export const loginUser = (identifier, password) => {
   const user = MOCK_USERS.find(
     (u) =>
@@ -48,7 +43,18 @@ export const logoutUser = () => {
 
 export const saveAuth = (user, token) => {
   try {
-    if (user) localStorage.setItem(AUTH_KEY, JSON.stringify(user));
+    if (user) {
+      // Save user with necessary fields
+      const userData = {
+        id: user._id || user.id,
+        email: user.email,
+        firstname: user.firstname,
+        lastname: user.lastname,
+        phone: user.phone,
+        role: user.role || 'customer'
+      };
+      localStorage.setItem(AUTH_KEY, JSON.stringify(userData));
+    }
     if (token) localStorage.setItem(TOKEN_KEY, token);
   } catch (e) {
     console.error('Failed to save auth', e);
@@ -64,4 +70,4 @@ export const clearAuth = () => {
   localStorage.removeItem(TOKEN_KEY);
 };
 
-export const isLoggedIn = () => !!getUser();
+export const isLoggedIn = () => !!getUser() && !!getToken();
