@@ -43,19 +43,18 @@ const handleSubmit = async (e) => {
     const user = res.data.result;
    
     console.log("Login Response:", res.data);
-     localStorage.setItem("mlrr_user", JSON.stringify({ id: user._id, email: user.email }));
-     
-
+    
+    // Save auth data with role
     saveAuth(user, token);
+    
     if (res.status === 200) {
       toast.success("Login successful..!");
       if (closeModal) closeModal();
       
-      console.log("Navigating to dashboard in 10 seconds...");
+      console.log("Navigating to dashboard...");
       setTimeout(() => {
         navigate("/dashboard");
-  
-      } , 10000);
+      }, 1000);
     }
 
   } catch (error) {

@@ -30,14 +30,23 @@ const getuser=async(req,res)=>{
 
 const updateuser=async(req,res)=>{
     const {id}=req.params;
-    const {firstname,lastname,email,phone,gender}=req.body;
+    const {firstname,lastname,email,phone,gender,profilePhoto}=req.body;
     try{
         const existingUser  =await User.findById(id);
         if(!existingUser){
             return res.status(404).json({message:"User doesn't exist"});
         }
-        const updatedUser=await User.findByIdAndUpdate(id,{firstname,lastname,email,phone,gender},{new:true});
-        res.status(200).json({message:"User updated successfully",updatedUser});
+        // Build update object with only provided fields
+        const updateData = {};
+        if (firstname !== undefined) updateData.firstname = firstname;
+        if (lastname !== undefined) updateData.lastname = lastname;
+        if (email !== undefined) updateData.email = email;
+        if (phone !== undefined) updateData.phone = phone;
+        if (gender !== undefined) updateData.gender = gender;
+        if (profilePhoto !== undefined) updateData.profilePhoto = profilePhoto;
+        
+        const updatedUser=await User.findByIdAndUpdate(id, updateData, {new:true});
+        res.status(200).json({message:"User updated successfully",user: updatedUser});
     }
     catch(error){
         res.status(500).json({message:"Something went wrong"});
@@ -72,8 +81,13 @@ const signin=async (req,res)=>{
             if(!existingUser){
                 return res.status(404).json({message:"User doesn't exist"});
             }
+          
+
             
+            console.log("Comparing provided password with stored hash for user:", existingUser.password,password);
           const isPasswordCorrect = await bcrypt.compare(password, existingUser.password);
+
+          
             console.log("Password Match:", isPasswordCorrect);
             if(isPasswordCorrect){
                 jwt.sign({id:existingUser._id},process.env.secretKey,(err,token)=>{
@@ -152,4 +166,4 @@ const forgotPassword = async (req, res) => {
         return res.status(500).json({ message: 'Something went wrong' });
     }
 };
-module.exports={signin,signup,getUsers,getuser,forgotPassword};
+module.exports={signin,signup,getUsers,getuser,updateuser,forgotPassword};

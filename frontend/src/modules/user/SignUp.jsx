@@ -104,9 +104,9 @@ function SignUp({ closeModal, openLogin }) {
                   <Form.Group className="form-group">
                     <Form.Label className="heading">Last Name</Form.Label>
                     <Form.Control {...register("lastName")} />
-                    <small className="text-danger">{errors.lastName?.message}</small>
                   </Form.Group>
                 </div>
+                    <small className="text-danger">{errors.lastName?.message}</small>
 
                 <Form.Group className="mb-2">
                   <Form.Label className="heading">Email</Form.Label>
@@ -126,9 +126,9 @@ function SignUp({ closeModal, openLogin }) {
                   <Form.Group className="form-group">
                     <Form.Label className="heading">Phone</Form.Label>
                     <Form.Control type="tel" {...register("phone")} />
-                    <small className="text-danger">{errors.phone?.message}</small>
                   </Form.Group>
                 </div>
+                    <small className="text-danger">{errors.phone?.message}</small>
 
                 <Form.Group className="mb-2">
                   <Form.Label className="heading">Gender</Form.Label>

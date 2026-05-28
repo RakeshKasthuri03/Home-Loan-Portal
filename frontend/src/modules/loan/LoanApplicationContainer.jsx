@@ -1,12 +1,12 @@
-import { useState } from "react";
-import { LOAN_TYPES } from "@utils/loanTypeConfig";
-import { FIELD_VALIDATORS } from "@validations/LoanValidation";
+import { useState, useEffect, useCallback } from "react";
+import { LOAN_TYPES } from "../../utils/loanTypeConfig";
+import { FIELD_VALIDATORS } from "../../Validations/LoanValidation";
 import StepProgressBar from "./StepProgressBar";
 import StepRenderer from "./StepRenderer";
+import { createApplication, saveProgress, submitApplication } from "../../utils/loanApi";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import "./LoanForm.css";
-
-const generateRef = () =>
-  "MLRR" + Date.now().toString().slice(-6) + Math.floor(Math.random() * 100);
 
 const LoanApplicationContainer = ({ loanTypeKey }) => {
   const loanConfig = LOAN_TYPES[loanTypeKey];
@@ -16,8 +16,93 @@ const LoanApplicationContainer = ({ loanTypeKey }) => {
   const [formData, setFormData] = useState({});
   const [errors, setErrors] = useState({});
   const [submitted, setSubmitted] = useState(false);
-  const [refNumber] = useState(generateRef);
+  const [refNumber, setRefNumber] = useState("");
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [applicationId, setApplicationId] = useState(null);
+  const [isSaving, setIsSaving] = useState(false);
+  const [saveStatus, setSaveStatus] = useState(""); // "saving", "saved", "error"
+  const [isInitialized, setIsInitialized] = useState(false);
+
+  // Create application on first load or resume existing draft
+  useEffect(() => {
+    const initApplication = async () => {
+      // Prevent multiple initializations
+      if (isInitialized || applicationId) return;
+      
+      if (loanTypeKey) {
+        const result = await createApplication(loanTypeKey);
+        if (result.success) {
+          const app = result.data.application;
+          setApplicationId(app._id);
+          
+          if (app.applicationId) {
+            setRefNumber(app.applicationId);
+          }
+          
+          // If existing draft, restore the form data
+          if (result.data.isExisting) {
+            console.log("Resuming existing draft:", app._id);
+            
+            // Restore form data from all sections
+            const restoredData = {};
+            
+            // Flatten nested objects back to form fields
+            if (app.basicDetails) Object.assign(restoredData, app.basicDetails);
+            if (app.coApplicant) Object.assign(restoredData, app.coApplicant);
+            if (app.employmentDetails) Object.assign(restoredData, app.employmentDetails);
+            if (app.financialDetails) Object.assign(restoredData, app.financialDetails);
+            if (app.propertyDetails) Object.assign(restoredData, app.propertyDetails);
+            if (app.plotDetails) Object.assign(restoredData, app.plotDetails);
+            if (app.renovationDetails) Object.assign(restoredData, app.renovationDetails);
+            if (app.balanceTransferDetails) Object.assign(restoredData, app.balanceTransferDetails);
+            if (app.documents) Object.assign(restoredData, app.documents);
+            if (app.consent) Object.assign(restoredData, app.consent);
+            
+            setFormData(restoredData);
+            setCurrentStep(app.currentStep || 0);
+          } else {
+            console.log("New application created:", app._id);
+          }
+          
+          setIsInitialized(true);
+        } else {
+          console.error("Failed to create/load application:", result.error);
+        }
+      }
+    };
+    initApplication();
+  }, [loanTypeKey, isInitialized, applicationId]);
+
+  // Auto-save function
+  const autoSave = useCallback(async () => {
+    if (!applicationId || Object.keys(formData).length === 0) return;
+    
+    setIsSaving(true);
+    setSaveStatus("saving");
+    
+    const result = await saveProgress(applicationId, formData, currentStep);
+    
+    if (result.success) {
+      setSaveStatus("saved");
+      setTimeout(() => setSaveStatus(""), 2000);
+    } else {
+      setSaveStatus("error");
+      console.error("Auto-save failed:", result.error);
+    }
+    
+    setIsSaving(false);
+  }, [applicationId, formData, currentStep]);
+
+  // Auto-save when step changes or after typing stops
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (applicationId && Object.keys(formData).length > 0) {
+        autoSave();
+      }
+    }, 2000); // Auto-save 2 seconds after last change
+
+    return () => clearTimeout(timer);
+  }, [formData, autoSave]);
 
   const handleChange = (name, value) => {
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -47,12 +132,56 @@ const LoanApplicationContainer = ({ loanTypeKey }) => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleNext = () => {
-    if (validate()) { setCurrentStep((s) => s + 1); window.scrollTo({ top: 0, behavior: "smooth" }); }
+  const handleNext = async () => {
+    if (validate()) {
+      // Save progress before moving to next step
+      if (applicationId) {
+        await saveProgress(applicationId, formData, currentStep + 1);
+      }
+      setCurrentStep((s) => s + 1);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
   };
   const handleBack = () => { setCurrentStep((s) => s - 1); window.scrollTo({ top: 0, behavior: "smooth" }); };
-  const handleSubmit = () => {
-    if (validate()) { console.log("Form submitted:", formData); setSubmitted(true); window.scrollTo({ top: 0, behavior: "smooth" }); }
+  
+  const handleSubmit = async () => {
+    if (validate()) {
+      setIsSaving(true);
+      
+      // First save the final data
+      await saveProgress(applicationId, formData, currentStep);
+      
+      // Then submit the application
+      const result = await submitApplication(applicationId);
+      
+      if (result.success) {
+        setRefNumber(result.data.application.applicationId || applicationId);
+        setSubmitted(true);
+        toast.success("🎉 Application submitted successfully!", {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+        });
+        console.log("Application submitted:", result.data);
+      } else {
+        setErrors({ submit: result.error || "Failed to submit application" });
+        toast.error(result.error || "❌ Failed to submit application. Please try again.", {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+        });
+        console.error("Submit error:", result.error);
+      }
+      
+      setIsSaving(false);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
   };
 
   // Count filled required fields across all steps
@@ -63,6 +192,7 @@ const LoanApplicationContainer = ({ loanTypeKey }) => {
   if (submitted) {
     return (
       <div className="lf-card">
+        <ToastContainer />
         <div className="lf-success">
           <div className="lf-success-icon">🎉</div>
           <h2>Application Submitted!</h2>
@@ -72,7 +202,15 @@ const LoanApplicationContainer = ({ loanTypeKey }) => {
           </p>
           <div className="lf-ref-box">Ref: {refNumber}</div>
           <br />
-          <button className="lf-btn lf-btn--next" onClick={() => { setSubmitted(false); setCurrentStep(0); setFormData({}); setErrors({}); }}>
+          <button className="lf-btn lf-btn--next" onClick={() => { 
+            setSubmitted(false); 
+            setCurrentStep(0); 
+            setFormData({}); 
+            setErrors({}); 
+            setApplicationId(null);
+            setRefNumber("");
+            setIsInitialized(false); // Allow creating new application
+          }}>
             Apply for Another Loan
           </button>
         </div>
@@ -84,6 +222,8 @@ const LoanApplicationContainer = ({ loanTypeKey }) => {
 
   return (
     <div className="lf-layout">
+      {/* Toast Container for notifications */}
+      <ToastContainer />
 
       {/* ── SIDEBAR CHECKLIST ──────────────────────────────────────────── */}
       <aside className={`lf-sidebar ${sidebarOpen ? "lf-sidebar--open" : ""}`}>
@@ -152,6 +292,15 @@ const LoanApplicationContainer = ({ loanTypeKey }) => {
 
       {/* ── MAIN FORM ──────────────────────────────────────────────────── */}
       <div className="lf-main">
+
+        {/* Save status indicator */}
+        {saveStatus && (
+          <div className={`lf-save-status lf-save-status--${saveStatus}`}>
+            {saveStatus === "saving" && "💾 Saving..."}
+            {saveStatus === "saved" && "✅ Saved"}
+            {saveStatus === "error" && "❌ Save failed"}
+          </div>
+        )}
 
         {/* Checklist toggle button */}
         <button className="lf-checklist-toggle" onClick={() => setSidebarOpen(!sidebarOpen)}>

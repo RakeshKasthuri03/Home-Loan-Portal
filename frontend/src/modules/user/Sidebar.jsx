@@ -1,25 +1,21 @@
 import { NavLink, useNavigate } from "react-router-dom";
 import "../../styles/Sidebar.css";
 import Upload from "../../Components/Upload/Upload";
+import axios from "axios";
+import { getToken } from "../../utils/auth";
 
 export default function Sidebar({ user, sections = [], role = "user", onProfileUpdated }) {
   const navigate = useNavigate();
 
-  const stored = (() => {
-    try {
-      const s = localStorage.getItem('mlrr_user');
-      return s ? JSON.parse(s) : null;
-    } catch { return null; }
-  })();
-
-  const displayUser = user || stored || { name: 'User' };
+  // Use the user prop passed from UserDashboard (which fetches from backend)
+  const displayUser = user || { name: 'User' };
   const initials = displayUser?.name
     ? displayUser.name.split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2)
     : "U";
 
-  const profilePhoto = displayUser?.profilePhoto || stored?.profilePhoto || null;
+  const profilePhoto = displayUser?.profilePhoto || null;
 
-  const handleUploaded = (res) => {
+  const handleUploaded = async (res) => {
     // server may return updated user in res.user or a file/url in other keys
     console.log('Upload result in Sidebar.handleUploaded:', res);
     const updated = res?.user;
@@ -32,19 +28,41 @@ export default function Sidebar({ user, sections = [], role = "user", onProfileU
     }
 
     if (updated) {
-      try { localStorage.setItem('mlrr_user', JSON.stringify(updated)); } catch {}
-      if (onProfileUpdated) onProfileUpdated(updated);
+      // Update user in backend
+      try {
+        const token = getToken();
+        if (token && displayUser?._id) {
+          const response = await axios.put(
+            `http://localhost:5000/user/${displayUser._id}`,
+            updated,
+            { headers: { authorization: `Bearer ${token}` } }
+          );
+          if (onProfileUpdated) onProfileUpdated(response.data.user || updated);
+        }
+      } catch (err) {
+        console.error("Failed to update user profile:", err);
+      }
       return;
     }
 
     if (url) {
       const newUser = { ...(displayUser || {}), profilePhoto: url };
-      try { localStorage.setItem('mlrr_user', JSON.stringify(newUser)); } catch {}
-      if (onProfileUpdated) onProfileUpdated(newUser);
+      // Update user profile photo in backend
+      try {
+        const token = getToken();
+        if (token && displayUser?._id) {
+          const response = await axios.put(
+            `http://localhost:5000/user/${displayUser._id}`,
+            { profilePhoto: url },
+            { headers: { authorization: `Bearer ${token}` } }
+          );
+          if (onProfileUpdated) onProfileUpdated(response.data.user || newUser);
+        }
+      } catch (err) {
+        console.error("Failed to update profile photo:", err);
+      }
     }
-  };
-
-  return (
+  };  return (
     <aside className="sidebar">
 
       {/* User card */}

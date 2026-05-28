@@ -1,11 +1,11 @@
 const mongoose=require('mongoose');
 const express=require('express');
 const cors=require('cors');
+require('dotenv').config();  // Load .env FIRST before using env variables
 
 const app=express();
 app.use(express.json());
 app.use(cors());
-require('dotenv').config();
 
 
 const path = require('path');
@@ -13,6 +13,7 @@ const fs = require('fs');
 const userRoute=require('./routes/user.route');
 const uploadRoute=require('./routes/upload.route');
 const agentRoute=require('./routes/agent.route');
+const loanRoute=require('./routes/loan.route');
 
 mongoose.connect(process.env.MONGO_URL)
 .then(()=>{
@@ -24,6 +25,8 @@ mongoose.connect(process.env.MONGO_URL)
 
 //agent routes
 app.use('/api/agent',agentRoute);
+//loan application routes
+app.use('/api/loan', loanRoute);
 // serve api routes under /api
 app.use('/', userRoute);
 app.use('/api', uploadRoute);
