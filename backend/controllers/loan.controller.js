@@ -224,7 +224,8 @@ const getMyApplications = async (req, res) => {
     if (loanType) query.loanType = loanType;
 
     const applications = await Application.find(query)
-      .select('applicationId loanType status currentStep financialDetails.loanAmount createdAt processing.submittedAt')
+      .select('applicationId loanType status currentStep financialDetails sanctionedDetails processing assignedAgent createdAt')
+      .populate('assignedAgent', 'firstname lastname')
       .sort({ createdAt: -1 });
 
     res.json({ applications });

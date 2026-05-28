@@ -1,26 +1,23 @@
 import { useState, useEffect } from "react";
 import userPhoto from "../../assets/user.png";
+import axios from "axios";
+import { getToken } from "../../utils/auth";
 
-export default function Profile({ user }) {
+export default function Profile({ user, onProfileUpdated }) {
   const [activeTab, setActiveTab] = useState("personal"); // Default tab
   const [isEditing, setIsEditing] = useState({});
   const [formData, setFormData] = useState({...user});
+  const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     setFormData({ ...user });
   }, [user]);
 
-   console.log("Profile Component - User Data:", user);
-     
-
   const personalDetailsFields = [
-    { label: "Full Name", key: "firstName", type: "text", editable: true },
-    { label: "Email Address", key: "email", type: "email", editable: true },
-    { label: "Mobile Number", key: "phone", type: "tel", editable: true },
-    { label: "Gender", key: "gender", type: "text", editable: true },
-    // { label: "Nationality", key: "nationality", type: "text", editable: true },
-    // { label: "PAN Card", key: "panCard", type: "text", editable: false, masked: true },
-    // { label: "Aadhar Card", key: "aadharCard", type: "text", editable: false, masked: true },
+    { label: "Full Name", key: "firstName", backendKey: "firstname", type: "text", editable: true },
+    { label: "Email Address", key: "email", backendKey: "email", type: "email", editable: true },
+    { label: "Mobile Number", key: "phone", backendKey: "phone", type: "tel", editable: true },
+    { label: "Gender", key: "gender", backendKey: "gender", type: "text", editable: true },
   ];
 
   const loanDetails = [
@@ -36,6 +33,32 @@ export default function Profile({ user }) {
 
   const handleChange = (key, value) => {
     setFormData(prev => ({ ...prev, [key]: value }));
+  };
+
+  const handleSave = async (field) => {
+    setSaving(true);
+    try {
+      const token = getToken();
+      if (token && user?._id) {
+        // Map frontend key to backend key
+        const updateData = { [field.backendKey]: formData[field.key] };
+        const response = await axios.put(
+          `http://localhost:5000/user/${user._id}`,
+          updateData,
+          { headers: { authorization: `Bearer ${token}` } }
+        );
+        console.log("Profile updated:", response.data);
+        // Notify parent to refresh user data
+        if (onProfileUpdated && response.data.user) {
+          onProfileUpdated(response.data.user);
+        }
+      }
+    } catch (err) {
+      console.error("Failed to save profile:", err);
+    } finally {
+      setSaving(false);
+      setIsEditing(prev => ({ ...prev, [field.key]: false }));
+    }
   };
 
   const maskValue = (value) => {
@@ -102,16 +125,23 @@ export default function Profile({ user }) {
                         <div className="edit-mode">
                           <input
                             type={field.type}
-                            value={formData[field.key]}
+                            value={formData[field.key] || ''}
                             onChange={(e) => handleChange(field.key, e.target.value)}
                             className="edit-input"
+                            disabled={saving}
                           />
-                          <button className="save-icon-btn" onClick={() => handleEdit(field.key)}>✓</button>
+                          <button 
+                            className="save-icon-btn" 
+                            onClick={() => handleSave(field)}
+                            disabled={saving}
+                          >
+                            {saving ? '...' : '✓'}
+                          </button>
                         </div>
                       ) : (
                         <div className="view-mode">
                           <span className="value-text">
-                            {field.masked ? maskValue(formData[field.key]) : formData[field.key]}
+                            {field.masked ? maskValue(formData[field.key]) : (formData[field.key] || '-')}
                           </span>
                           {field.editable && (
                             <button className="edit-icon-small" onClick={() => handleEdit(field.key)}>✏️</button>

@@ -8,59 +8,64 @@ import Profile from "./Profile";
 import LoanTracker from "./LoanTracker";
 import axios from "axios";
 import "../../styles/UserDashboard.css";
+import { getUser, getToken } from "../../utils/auth";
 
 import {userMenuSections} from "../../utils/UserDashboardUtils";
 
 export default function UserDashboard() {
-  const [storedUser, setStoredUser] = useState(null);
   const [customer, setCustomer] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const userData = localStorage.getItem("mlrr_user");
+        const token = getToken();
+        const storedAuth = getUser(); // Returns { id: ... } from auth.js
 
-        if (userData) {
-          const parsedUser = JSON.parse(userData);
-          setStoredUser(parsedUser);
-
+        if (token && storedAuth?.id) {
           const res = await axios.get(
-            `http://localhost:5000/api/user/${parsedUser._id}`,
+            `http://localhost:5000/user/${storedAuth.id}`,
             {
               headers: {
-                authorization: `Bearer ${localStorage.getItem("mlrr_token")}`,
+                authorization: `Bearer ${token}`,
               },
             }
           );
-
+          console.log("Fetched user from backend:", res.data);
           setCustomer(res.data);
         }
-
       } catch (error) {
         console.error("Failed to fetch user:", error);
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchUser();
-  }, []);
+  }, []); // Run only on mount
   
 
+  // Derive display data from customer (fetched from backend)
   const user = {
-    name: storedUser?.firstname || "Guest User",
-    email: storedUser?.email || "",
+    _id: customer?._id,
+    name: customer?.firstname ? `${customer.firstname} ${customer.lastname || ''}`.trim() : "Guest User",
+    email: customer?.email || "",
+    profilePhoto: customer?.profilePhoto || "",
   };
 
   const userProfile = {
-    firstName: storedUser?.firstname || "Guest",
-    lastName: storedUser?.lastname || "",
-    email: storedUser?.email || "",
-    phone: storedUser?.phone || "",
-    gender: storedUser?.gender || "",
-    userId:storedUser?.userId || "",
+    _id: customer?._id,
+    firstName: customer?.firstname || "Guest",
+    lastName: customer?.lastname || "",
+    email: customer?.email || "",
+    phone: customer?.phone || "",
+    gender: customer?.gender || "",
+    userId: customer?.userId || "",
+    profilePhoto: customer?.profilePhoto || "",
   };
 
   const dashboardData = {
-    user: { name: storedUser?.firstname || "there" },
+    user: { name: customer?.firstname || "there" },
     stats: [
       { title: "Total applications", value: "0", note: "All time" },
       { title: "Under review", value: "0", note: "Awaiting officer" },
@@ -70,16 +75,25 @@ export default function UserDashboard() {
     activities: ["✅ Account created — Welcome to MLRR Home Loans!"],
   };
 
-  const handleProfileUpdated = (updatedUser) => {
-    try { localStorage.setItem('mlrr_user', JSON.stringify(updatedUser)); } catch {}
-    setStoredUser(updatedUser);
+  const handleProfileUpdated = async (updatedUser) => {
+    // Update local state with the updated user data
     setCustomer(updatedUser);
   };
+
+  if (loading) {
+    return (
+      <div className="UserDashboard">
+        <div className="dashboard-layout" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+          <p>Loading...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="UserDashboard">
       <div className="dashboard-layout">
-         <Sidebar user={customer || storedUser || user} sections={userMenuSections} onProfileUpdated={handleProfileUpdated} />
+         <Sidebar user={user} sections={userMenuSections} onProfileUpdated={handleProfileUpdated} />
 
         <div className="dashboard-content">
           <Routes>
@@ -87,7 +101,7 @@ export default function UserDashboard() {
             <Route path="applications" element={<Applications user={user} />} />
             <Route path="mydocuments" element={<Documents user={user} />} />
             <Route path="loan-tracker" element={<LoanTracker />} />
-            <Route path="profile" element={<Profile user={customer || userProfile} />} />
+            <Route path="profile" element={<Profile user={userProfile} onProfileUpdated={handleProfileUpdated} />} />
             <Route path="*" element={<Navigate replace to="/dashboard" />} />
           </Routes>
         </div>

@@ -7,8 +7,7 @@ import axios from 'axios';
 // ═══════════════════════════════════════════════════════════════════════════════
 
 const MOCK_USERS = [
-  { id: 1, name: "User Name",    email: "user@gmail.com",   mobile: "9999999999", password: "user123",   role: "customer" },
-  { id: 2, name: "Manohar V",     email: "manohar@gmail.com", mobile: "8888888888", password: "manohar123", role: "customer" },
+ 
   { id: 3, name: "Agent Karthik", email: "agent@mlrr.com",    mobile: "7777777777", password: "agent123",   role: "agent" },
   { id: 4, name: "Admin User",    email: "admin@mlrr.com",    mobile: "6666666666", password: "admin123",   role: "admin" },
 ];
@@ -44,16 +43,16 @@ export const logoutUser = () => {
 export const saveAuth = (user, token) => {
   try {
     if (user) {
-      // Save user with necessary fields
+      // Save user with necessary fields including role
       const userData = {
         id: user._id || user.id,
         email: user.email,
         firstname: user.firstname,
         lastname: user.lastname,
         phone: user.phone,
-        role: user.role || 'customer'
+        role: user.role || 'user'
       };
-      localStorage.setItem(AUTH_KEY, JSON.stringify(userData));
+      localStorage.setItem(AUTH_KEY, JSON.stringify({ id: userData.id ,role: userData.role}));
     }
     if (token) localStorage.setItem(TOKEN_KEY, token);
   } catch (e) {

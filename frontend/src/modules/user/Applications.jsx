@@ -1,101 +1,335 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import axios from 'axios';
+import { getToken, getUser } from '../../utils/auth';
 import './../../../src/Styles/Applications.css';
 
 export default function Applications({ user }) {
-  // user.applications expected to be an array of { id, amount, dateTaken, dateEnd, status }
-  const initial = Array.isArray(user?.applications) ? user.applications : [];
-  const [applications, setApplications] = useState(initial);
+  const [applications, setApplications] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  const current = applications.filter(a => a.status && a.status.toLowerCase() !== 'completed');
-  const completed = applications.filter(a => a.status && a.status.toLowerCase() === 'completed');
+  useEffect(() => {
+    fetchApplications();
+  }, []);
 
-  // If there are no applications from backend, show example cards
-  const showExample = applications.length === 0;
-  const sampleCurrent = [
-    { id: 'ex-cur-1', loanType: 'Home Loan', amount: 1250000, dateTaken: 'Jan 15, 2024', dateEnd: 'Jan 15, 2034', status: 'Active', example: true },
-    { id: 'ex-cur-2', loanType: 'Home Loan', amount: 850000, dateTaken: 'Mar 01, 2022', dateEnd: 'Mar 01, 2032', status: 'Active', example: true },
-    { id: 'ex-cur-3', loanType: 'Top-up Loan', amount: 250000, dateTaken: 'Jun 20, 2023', dateEnd: 'Jun 20, 2033', status: 'Active', example: true }
-  ];
+  const fetchApplications = async () => {
+    try {
+      setLoading(true);
+      const token = getToken();
+      const storedUser = getUser();
+      
+      if (!token || !storedUser?.id) {
+        setError('Please login to view applications');
+        setLoading(false);
+        return;
+      }
 
-  const sampleCompleted = [
-    { id: 'ex-comp-1', loanType: 'Home Loan', amount: 650000, dateTaken: 'Feb 10, 2012', dateEnd: 'Feb 10, 2022', status: 'Completed', example: true },
-    { id: 'ex-comp-2', loanType: 'Personal Loan', amount: 150000, dateTaken: 'May 05, 2016', dateEnd: 'May 05, 2021', status: 'Completed', example: true },
-    { id: 'ex-comp-3', loanType: 'Car Loan', amount: 420000, dateTaken: 'Aug 18, 2018', dateEnd: 'Aug 18, 2023', status: 'Completed', example: true }
-  ];
-
-  const handleRemove = (id) => {
-    if (!confirm('Remove this completed loan from your list?')) return;
-    setApplications(prev => prev.filter(a => a.id !== id));
-    // TODO: optionally call backend to persist removal
+      const res = await axios.get('http://localhost:5000/api/loan/my-applications', {
+        headers: { authorization: `Bearer ${token}` }
+      });
+      
+      console.log('Fetched applications:', res.data);
+      setApplications(res.data.applications || []);
+    } catch (err) {
+      console.error('Failed to fetch applications:', err);
+      setError('Failed to load applications');
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const renderCard = (app, idx) => (
-    <div className={`loan-card ${app.status?.toLowerCase() === 'completed' ? 'loan-completed' : 'loan-active'}`} key={app.id || idx}>
-      <div className="loan-card-header">
-        <div className="loan-type">{app.loanType || 'Home Loan'}</div>
-        <div style={{display:'flex',alignItems:'center',gap:8}}>
-          {app.example && <span className="example-badge">Example</span>}
-          <div className={`loan-status ${app.status?.toLowerCase()}`}>{app.status || 'Unknown'}</div>
+  // Categorize applications
+  const currentLoans = applications.filter(app => 
+    ['approved', 'disbursed'].includes(app.status)
+  );
+  const pendingLoans = applications.filter(app => 
+    ['draft', 'submitted', 'under_review', 'documents_pending'].includes(app.status)
+  );
+  const completedLoans = applications.filter(app => 
+    ['closed', 'rejected'].includes(app.status)
+  );
+
+  const formatDate = (dateStr) => {
+    if (!dateStr) return '—';
+    return new Date(dateStr).toLocaleDateString('en-IN', {
+      day: '2-digit', month: 'short', year: 'numeric'
+    });
+  };
+
+  const formatCurrency = (amount) => {
+    if (!amount) return '—';
+    return `₹${Number(amount).toLocaleString('en-IN')}`;
+  };
+
+  const getStatusStyle = (status) => {
+    const styles = {
+      draft: { background: '#f3f4f6', color: '#6b7280' },
+      submitted: { background: '#fef3c7', color: '#d97706' },
+      under_review: { background: '#dbeafe', color: '#2563eb' },
+      documents_pending: { background: '#fff7ed', color: '#ea580c' },
+      approved: { background: '#dcfce7', color: '#16a34a' },
+      rejected: { background: '#fee2e2', color: '#dc2626' },
+      disbursed: { background: '#d1fae5', color: '#059669' },
+      closed: { background: '#e5e7eb', color: '#374151' }
+    };
+    return styles[status] || { background: '#f3f4f6', color: '#6b7280' };
+  };
+
+  const getStatusLabel = (status) => {
+    const labels = {
+      draft: 'Draft',
+      submitted: 'Submitted',
+      under_review: 'Under Review',
+      documents_pending: 'Docs Pending',
+      approved: 'Approved',
+      rejected: 'Rejected',
+      disbursed: 'Disbursed',
+      closed: 'Closed'
+    };
+    return labels[status] || status;
+  };
+
+  const getLoanTypeLabel = (type) => {
+    const labels = {
+      PURCHASE: 'Home Purchase',
+      PLOT: 'Plot Loan',
+      NRI: 'NRI Home Loan',
+      RENOVATION: 'Renovation Loan',
+      BALANCE_TRANSFER: 'Balance Transfer'
+    };
+    return labels[type] || type;
+  };
+
+  // Calculate end date based on sanctioned tenure
+  const calculateEndDate = (startDate, tenure) => {
+    if (!startDate || !tenure) return '—';
+    const start = new Date(startDate);
+    const years = parseInt(tenure) || 0;
+    const end = new Date(start.setFullYear(start.getFullYear() + years));
+    return formatDate(end);
+  };
+
+  const renderApplicationRow = (app) => (
+    <tr key={app._id || app.applicationId} className="app-row">
+      <td>
+        <div className="app-id-cell">
+          <span className="app-id">{app.applicationId || '—'}</span>
+          <span className="loan-type-label">{getLoanTypeLabel(app.loanType)}</span>
         </div>
+      </td>
+      <td className="amount-cell">
+        {formatCurrency(app.sanctionedDetails?.sanctionedAmount || app.financialDetails?.loanAmount)}
+      </td>
+      <td>{formatDate(app.sanctionedDetails?.sanctionDate || app.processing?.approvedAt || app.createdAt)}</td>
+      <td>{calculateEndDate(app.sanctionedDetails?.sanctionDate || app.processing?.approvedAt, app.sanctionedDetails?.sanctionedTenure || app.financialDetails?.loanTenure)}</td>
+      <td>{app.sanctionedDetails?.interestRate ? `${app.sanctionedDetails.interestRate}%` : '—'}</td>
+      <td>
+        <span className="action-badge admin-action">
+          {app.status === 'approved' || app.status === 'disbursed' ? '✅ Approved' : 
+           app.status === 'rejected' ? '❌ Rejected' : 
+           app.status === 'under_review' ? '🔍 Reviewing' : '⏳ Pending'}
+        </span>
+      </td>
+      <td>
+        <span className="action-badge agent-action">
+          {app.assignedAgent ? '👤 Assigned' : '⏳ Unassigned'}
+        </span>
+      </td>
+      <td>
+        <span className="table-status-pill" style={getStatusStyle(app.status)}>
+          {getStatusLabel(app.status)}
+        </span>
+      </td>
+    </tr>
+  );
+
+  const renderApplicationCard = (app) => (
+    <div className={`loan-card ${app.status === 'closed' || app.status === 'rejected' ? 'loan-completed' : 'loan-active'}`} key={app._id || app.applicationId}>
+      <div className="loan-card-header">
+        <div className="loan-type">{getLoanTypeLabel(app.loanType)}</div>
+        <span className="table-status-pill" style={getStatusStyle(app.status)}>
+          {getStatusLabel(app.status)}
+        </span>
       </div>
 
       <div className="loan-card-body">
-        <div className="loan-amount">₹{app.amount?.toLocaleString?.() ?? app.amount}</div>
+        <div className="loan-amount">
+          {formatCurrency(app.sanctionedDetails?.sanctionedAmount || app.financialDetails?.loanAmount)}
+        </div>
         <div className="loan-dates">
-          <div><small className="muted">Taken</small><div className="date">{app.dateTaken || app.takenDate || '—'}</div></div>
-          <div><small className="muted">Ends</small><div className="date">{app.dateEnd || app.endDate || '—'}</div></div>
+          <div>
+            <small className="muted">Start</small>
+            <div className="date">{formatDate(app.sanctionedDetails?.sanctionDate || app.processing?.approvedAt || app.createdAt)}</div>
+          </div>
+          <div>
+            <small className="muted">End</small>
+            <div className="date">{calculateEndDate(app.sanctionedDetails?.sanctionDate || app.processing?.approvedAt, app.sanctionedDetails?.sanctionedTenure || app.financialDetails?.loanTenure)}</div>
+          </div>
         </div>
       </div>
 
+      <div className="loan-info-row">
+        <div className="info-item">
+          <small className="muted">Interest</small>
+          <span>{app.sanctionedDetails?.interestRate ? `${app.sanctionedDetails.interestRate}%` : '—'}</span>
+        </div>
+        <div className="info-item">
+          <small className="muted">EMI</small>
+          <span>{formatCurrency(app.sanctionedDetails?.emiAmount)}</span>
+        </div>
+      </div>
+
+      <div className="loan-actions-row">
+        <span className="action-badge admin-action">
+          {app.status === 'approved' || app.status === 'disbursed' ? '✅ Admin Approved' : 
+           app.status === 'rejected' ? '❌ Rejected' : '⏳ Admin Pending'}
+        </span>
+        <span className="action-badge agent-action">
+          {app.assignedAgent ? '👤 Agent Assigned' : '⏳ No Agent'}
+        </span>
+      </div>
+
       <div className="loan-card-footer">
-        {app.status?.toLowerCase() === 'completed' ? (
-          <button className="btn-remove" onClick={() => handleRemove(app.id)}>Remove</button>
-        ) : (
-          <button className="btn-primary" disabled>View details</button>
-        )}
+        <span className="app-id-small">{app.applicationId}</span>
+        <button className="btn-primary" onClick={() => window.location.href = `/dashboard/loan-tracker?id=${app.applicationId}`}>
+          View Details
+        </button>
       </div>
     </div>
   );
 
+  if (loading) {
+    return (
+      <div className="Applications-main">
+        <div className="dashboard-main">
+          <h2>My Applications</h2>
+          <div className="loading-state">Loading applications...</div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="Applications-main">
+        <div className="dashboard-main">
+          <h2>My Applications</h2>
+          <div className="error-state">{error}</div>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="Applications-main ">
-    <div className="dashboard-main">
-      <h2>{user?.name ?? 'User'} – Applications</h2>
+    <div className="Applications-main">
+      <div className="dashboard-main">
+        <h2>{user?.name ?? 'User'} – My Applications</h2>
 
-      <section className="applications-section">
-        <h3>Current Loans</h3>
-        {current.length === 0 ? (
-          showExample ? (
-            <div className="loans-grid">
-              {sampleCurrent.map((app, i) => renderCard(app, i))}
+        {/* PENDING APPLICATIONS TABLE */}
+        {pendingLoans.length > 0 && (
+          <section className="applications-section">
+            <h3>📋 Pending Applications</h3>
+            <div className="admin-table-wrap">
+              <table className="admin-data-table applications-table">
+                <thead>
+                  <tr>
+                    <th>Application ID</th>
+                    <th>Loan Amount</th>
+                    <th>Applied On</th>
+                    <th>Expected End</th>
+                    <th>Interest</th>
+                    <th>Admin Action</th>
+                    <th>Agent Action</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {pendingLoans.map(app => renderApplicationRow(app))}
+                </tbody>
+              </table>
             </div>
+          </section>
+        )}
+
+        {/* CURRENT LOANS - APPROVED/DISBURSED */}
+        <section className="applications-section">
+          <h3>✅ Current Loans</h3>
+          {currentLoans.length === 0 ? (
+            <p className="text-muted">No active loans at the moment.</p>
           ) : (
-            <p className="text-muted">No current loans found.</p>
-          )
-        ) : (
-          <div className="loans-grid">
-            {current.map((app, i) => renderCard(app, i))}
+            <>
+              {/* Table view for desktop */}
+              <div className="admin-table-wrap desktop-only">
+                <table className="admin-data-table applications-table">
+                  <thead>
+                    <tr>
+                      <th>Application ID</th>
+                      <th>Loan Amount</th>
+                      <th>Start Date</th>
+                      <th>End Date</th>
+                      <th>Interest</th>
+                      <th>Admin Action</th>
+                      <th>Agent Action</th>
+                      <th>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {currentLoans.map(app => renderApplicationRow(app))}
+                  </tbody>
+                </table>
+              </div>
+              {/* Card view for mobile */}
+              <div className="loans-grid mobile-only">
+                {currentLoans.map(app => renderApplicationCard(app))}
+              </div>
+            </>
+          )}
+        </section>
+
+        {/* COMPLETED/CLOSED LOANS */}
+        <section className="applications-section mt-24">
+          <h3>📁 Completed / Closed Loans</h3>
+          {completedLoans.length === 0 ? (
+            <p className="text-muted">No completed or closed loans.</p>
+          ) : (
+            <>
+              {/* Table view for desktop */}
+              <div className="admin-table-wrap desktop-only">
+                <table className="admin-data-table applications-table">
+                  <thead>
+                    <tr>
+                      <th>Application ID</th>
+                      <th>Loan Amount</th>
+                      <th>Start Date</th>
+                      <th>End Date</th>
+                      <th>Interest</th>
+                      <th>Admin Action</th>
+                      <th>Agent Action</th>
+                      <th>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {completedLoans.map(app => renderApplicationRow(app))}
+                  </tbody>
+                </table>
+              </div>
+              {/* Card view for mobile */}
+              <div className="loans-grid mobile-only">
+                {completedLoans.map(app => renderApplicationCard(app))}
+              </div>
+            </>
+          )}
+        </section>
+
+        {applications.length === 0 && (
+          <div className="empty-state">
+            <p>You haven't applied for any loans yet.</p>
+            <button className="btn-primary" onClick={() => window.location.href = '/loan-types'}>
+              Apply for a Loan →
+            </button>
           </div>
         )}
-      </section>
-
-      <section className="applications-section mt-24">
-        <h3>Completed Loans</h3>
-        {completed.length === 0 ? (
-          showExample ? (
-            <div className="loans-grid">
-              {sampleCompleted.map((app, i) => renderCard(app, i))}
-            </div>
-          ) : (
-            <p className="text-muted">No completed loans.</p>
-          )
-        ) : (
-          <div className="loans-grid">
-            {completed.map((app, i) => renderCard(app, i))}
-          </div>
-        )}
-      </section>
-    </div>
+      </div>
     </div>
   );
 }
