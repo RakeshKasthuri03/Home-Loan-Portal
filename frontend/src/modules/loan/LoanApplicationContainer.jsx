@@ -1,9 +1,9 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { LOAN_TYPES } from "../../utils/loanTypeConfig";
 import { FIELD_VALIDATORS } from "../../Validations/LoanValidation";
 import StepProgressBar from "./StepProgressBar";
 import StepRenderer from "./StepRenderer";
-import { createApplication, saveProgress, submitApplication } from "../../utils/loanApi";
+import { createApplication, saveProgress, submitApplication, getMyApplications } from "../../utils/loanApi";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "./LoanForm.css";
@@ -12,68 +12,127 @@ const LoanApplicationContainer = ({ loanTypeKey }) => {
   const loanConfig = LOAN_TYPES[loanTypeKey];
   const steps = loanConfig.steps;
 
+  // Use ref to track if restriction check has started
+  const checkStarted = useRef(false);
+
   const [currentStep, setCurrentStep] = useState(0);
   const [formData, setFormData] = useState({});
   const [errors, setErrors] = useState({});
   const [submitted, setSubmitted] = useState(false);
   const [refNumber, setRefNumber] = useState("");
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [applicationId, setApplicationId] = useState(null);
+  const [applicationId, setApplicationId] = useState(null); // Don't load from localStorage initially
   const [isSaving, setIsSaving] = useState(false);
   const [saveStatus, setSaveStatus] = useState(""); // "saving", "saved", "error"
   const [isInitialized, setIsInitialized] = useState(false);
+  const [initError, setInitError] = useState(null);
+  const [isCreating, setIsCreating] = useState(false);
+  const [isCheckingRestriction, setIsCheckingRestriction] = useState(true);
 
-  // Create application on first load or resume existing draft
+  // ✅ Only save applicationId to localStorage AFTER it's created (not on load)
   useEffect(() => {
-    const initApplication = async () => {
-      // Prevent multiple initializations
-      if (isInitialized || applicationId) return;
+    if (applicationId) {
+      localStorage.setItem(`app_${loanTypeKey}`, JSON.stringify(applicationId));
+    }
+  }, [applicationId, loanTypeKey]);
+
+  // ✅ Check for restrictions on load (without creating application)
+  useEffect(() => {
+    const checkRestrictions = async () => {
+      if (checkStarted.current) return;
+      checkStarted.current = true;
       
-      if (loanTypeKey) {
-        const result = await createApplication(loanTypeKey);
-        if (result.success) {
-          const app = result.data.application;
-          setApplicationId(app._id);
+      setIsCheckingRestriction(true);
+      
+      try {
+        // First check if there's an existing draft in localStorage for THIS loan type
+        const storedAppId = localStorage.getItem(`app_${loanTypeKey}`);
+        
+        if (storedAppId) {
+          // User has a draft for this loan type - try to resume it via API
+          console.log('📂 Found stored applicationId, calling API to verify/resume...');
+          const result = await createApplication(loanTypeKey);
           
-          if (app.applicationId) {
-            setRefNumber(app.applicationId);
-          }
-          
-          // If existing draft, restore the form data
-          if (result.data.isExisting) {
-            console.log("Resuming existing draft:", app._id);
+          if (result.success) {
+            const app = result.data.application;
+            setApplicationId(app._id);
+            if (app.applicationId) setRefNumber(app.applicationId);
             
-            // Restore form data from all sections
-            const restoredData = {};
-            
-            // Flatten nested objects back to form fields
-            if (app.basicDetails) Object.assign(restoredData, app.basicDetails);
-            if (app.coApplicant) Object.assign(restoredData, app.coApplicant);
-            if (app.employmentDetails) Object.assign(restoredData, app.employmentDetails);
-            if (app.financialDetails) Object.assign(restoredData, app.financialDetails);
-            if (app.propertyDetails) Object.assign(restoredData, app.propertyDetails);
-            if (app.plotDetails) Object.assign(restoredData, app.plotDetails);
-            if (app.renovationDetails) Object.assign(restoredData, app.renovationDetails);
-            if (app.balanceTransferDetails) Object.assign(restoredData, app.balanceTransferDetails);
-            if (app.documents) Object.assign(restoredData, app.documents);
-            if (app.consent) Object.assign(restoredData, app.consent);
-            
-            setFormData(restoredData);
-            setCurrentStep(app.currentStep || 0);
+            // Restore form data if resuming
+            if (result.data.isExisting) {
+              console.log("✅ Resuming existing draft:", app._id);
+              const restoredData = {};
+              if (app.basicDetails) Object.assign(restoredData, app.basicDetails);
+              if (app.coApplicant) Object.assign(restoredData, app.coApplicant);
+              if (app.employmentDetails) Object.assign(restoredData, app.employmentDetails);
+              if (app.financialDetails) Object.assign(restoredData, app.financialDetails);
+              if (app.propertyDetails) Object.assign(restoredData, app.propertyDetails);
+              if (app.plotDetails) Object.assign(restoredData, app.plotDetails);
+              if (app.renovationDetails) Object.assign(restoredData, app.renovationDetails);
+              if (app.balanceTransferDetails) Object.assign(restoredData, app.balanceTransferDetails);
+              if (app.documents) Object.assign(restoredData, app.documents);
+              if (app.consent) Object.assign(restoredData, app.consent);
+              setFormData(restoredData);
+              setCurrentStep(app.currentStep || 0);
+            }
+            setIsInitialized(true);
+          } else if (result.statusCode === 403) {
+            // User has a DIFFERENT loan type active - show restriction
+            handleRestrictionError(result);
           } else {
-            console.log("New application created:", app._id);
+            // Some other error - clear stale localStorage and let user start fresh
+            localStorage.removeItem(`app_${loanTypeKey}`);
+            setIsInitialized(true);
           }
-          
-          setIsInitialized(true);
         } else {
-          console.error("Failed to create/load application:", result.error);
+          // No stored application - check if user has ANY active application
+          const appsResult = await getMyApplications();
+          
+          if (appsResult.success) {
+            const activeApp = appsResult.data.applications?.find(app => 
+              ['draft', 'submitted', 'under_review', 'documents_pending'].includes(app.status)
+            );
+            
+            if (activeApp && activeApp.loanType !== loanTypeKey) {
+              // User has a different loan type active - block them
+              const errorMsg = `You already have a ${activeApp.loanType} application in progress (Status: ${activeApp.status}). Please complete or close it before applying for another loan.`;
+              setInitError(errorMsg);
+              toast.error(errorMsg, {
+                position: "top-right",
+                autoClose: 7000,
+              });
+            } else {
+              // No blocking application - user can proceed
+              setIsInitialized(true);
+            }
+          } else {
+            // Couldn't check - let them proceed (backend will catch it)
+            setIsInitialized(true);
+          }
         }
+      } catch (error) {
+        console.error("Check restrictions error:", error);
+        setIsInitialized(true); // Let them try, backend will validate
+      } finally {
+        setIsCheckingRestriction(false);
       }
     };
-    initApplication();
-  }, [loanTypeKey, isInitialized, applicationId]);
+    
+    checkRestrictions();
+  }, [loanTypeKey]);
 
-  // Auto-save function
+  const handleRestrictionError = (result) => {
+    const existing = result.existingApplication;
+    const errorMsg = `You already have a ${existing?.loanType} application in progress (Status: ${existing?.status}). Please complete or close it before applying for another loan.`;
+    setInitError(errorMsg);
+    localStorage.removeItem(`app_${loanTypeKey}`);
+    toast.error(errorMsg, {
+      position: "top-right",
+      autoClose: 7000,
+    });
+  };
+
+  // Auto-save function (only runs if we have an applicationId)
   const autoSave = useCallback(async () => {
     if (!applicationId || Object.keys(formData).length === 0) return;
     
@@ -93,16 +152,16 @@ const LoanApplicationContainer = ({ loanTypeKey }) => {
     setIsSaving(false);
   }, [applicationId, formData, currentStep]);
 
-  // Auto-save when step changes or after typing stops
+  // Auto-save when step changes or after typing stops (only if applicationId exists)
   useEffect(() => {
     const timer = setTimeout(() => {
       if (applicationId && Object.keys(formData).length > 0) {
         autoSave();
       }
-    }, 2000); // Auto-save 2 seconds after last change
+    }, 2000);
 
     return () => clearTimeout(timer);
-  }, [formData, autoSave]);
+  }, [formData, autoSave, applicationId]);
 
   const handleChange = (name, value) => {
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -132,16 +191,51 @@ const LoanApplicationContainer = ({ loanTypeKey }) => {
     return Object.keys(newErrors).length === 0;
   };
 
+  // ✅ Create application when user completes FIRST STEP (not on page load)
   const handleNext = async () => {
     if (validate()) {
-      // Save progress before moving to next step
-      if (applicationId) {
+      setIsSaving(true);
+      
+      // If on first step and no applicationId yet, create the application now
+      if (currentStep === 0 && !applicationId) {
+        const result = await createApplication(loanTypeKey);
+        
+        if (result.success) {
+          const app = result.data.application;
+          setApplicationId(app._id);
+          if (app.applicationId) setRefNumber(app.applicationId);
+          
+          // Save the first step data
+          await saveProgress(app._id, formData, 1);
+          
+          toast.success("Application created! Your progress will be auto-saved.", {
+            position: "top-right",
+            autoClose: 3000,
+          });
+        } else if (result.statusCode === 403) {
+          // Restriction - user has another loan type active
+          handleRestrictionError(result);
+          setIsSaving(false);
+          return; // Don't proceed to next step
+        } else {
+          toast.error(result.error || "Failed to create application", {
+            position: "top-right",
+            autoClose: 5000,
+          });
+          setIsSaving(false);
+          return;
+        }
+      } else if (applicationId) {
+        // Save progress for subsequent steps
         await saveProgress(applicationId, formData, currentStep + 1);
       }
+      
+      setIsSaving(false);
       setCurrentStep((s) => s + 1);
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
   };
+
   const handleBack = () => { setCurrentStep((s) => s - 1); window.scrollTo({ top: 0, behavior: "smooth" }); };
   
   const handleSubmit = async () => {
@@ -157,6 +251,10 @@ const LoanApplicationContainer = ({ loanTypeKey }) => {
       if (result.success) {
         setRefNumber(result.data.application.applicationId || applicationId);
         setSubmitted(true);
+        
+        // ✅ NEW: Clear localStorage after successful submission
+        localStorage.removeItem(`app_${loanTypeKey}`);
+        
         toast.success("🎉 Application submitted successfully!", {
           position: "top-right",
           autoClose: 5000,
@@ -188,6 +286,52 @@ const LoanApplicationContainer = ({ loanTypeKey }) => {
   const totalRequired = steps.flatMap(s => s.fields.filter(f => f.required)).length;
   const totalFilled   = steps.flatMap(s => s.fields.filter(f => f.required && formData[f.name] && formData[f.name] !== "")).length;
   const progressPct   = Math.round((totalFilled / totalRequired) * 100);
+
+  // Show loading while checking restrictions
+  if (isCheckingRestriction) {
+    return (
+      <div className="lf-card">
+        <ToastContainer />
+        <div style={{
+          padding: '60px',
+          textAlign: 'center',
+          color: '#666'
+        }}>
+          <div style={{ fontSize: '32px', marginBottom: '20px' }}>⏳</div>
+          <p>Checking eligibility...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show error if application couldn't be loaded (restriction)
+  if (initError) {
+    return (
+      <div className="lf-card">
+        <ToastContainer />
+        <div style={{
+          padding: '40px',
+          textAlign: 'center',
+          backgroundColor: '#fff3cd',
+          border: '2px solid #ff6b6b',
+          borderRadius: '8px',
+          color: '#d32f2f'
+        }}>
+          <div style={{ fontSize: '48px', marginBottom: '20px' }}>⛔</div>
+          <h2 style={{ color: '#d32f2f', marginBottom: '15px' }}>Application Not Available</h2>
+          <p style={{ fontSize: '16px', marginBottom: '20px', lineHeight: '1.6' }}>
+            {initError}
+          </p>
+          <button
+            className="lf-btn lf-btn--primary"
+            onClick={() => window.location.href = '/dashboard'}
+          >
+            Go to Dashboard
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   if (submitted) {
     return (

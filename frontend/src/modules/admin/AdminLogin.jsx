@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { loginUser } from "../../utils/auth";
+import axios from "axios";
+import { saveAuth } from "../../utils/auth";
 import logo from "../../assets/logo.png";
 import "../../styles/Login.css";
 
@@ -11,23 +12,32 @@ export default function AdminLogin() {
   const [error, setError]           = useState("");
   const [loading, setLoading]       = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
     setLoading(true);
 
-    setTimeout(() => {
-      const result = loginUser(identifier, password);
-      setLoading(false);
+    try {
+      const res = await axios.post("http://localhost:5000/signin", {
+        email: identifier,
+        password: password,
+      });
 
-      if (result.success && result.user.role === "admin") {
-        navigate("/admin/dashboard");
-      } else if (result.success) {
+      const { result, token } = res.data;
+
+      if (result.role !== "admin") {
         setError("Access denied. This portal is for admins only.");
-      } else {
-        setError(result.error);
+        setLoading(false);
+        return;
       }
-    }, 500);
+
+      saveAuth(result, token);
+      setLoading(false);
+      navigate("/admin/dashboard");
+    } catch (err) {
+      setLoading(false);
+      setError(err.response?.data?.message || "Invalid credentials");
+    }
   };
 
   return (

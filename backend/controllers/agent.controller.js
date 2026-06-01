@@ -61,8 +61,7 @@ const agentsignup=async (req,res)=>{
     try{
         console.log("Agent signup data received:", {firstname,lastname,email,phone,gender,password,confirmpassword});
         const existingAgent=await agent.findOne({email:email});
-        
-
+    
         if(existingAgent){
             return res.status(400).json({message:"Agent already exists"});
         }
@@ -73,6 +72,7 @@ const agentsignup=async (req,res)=>{
         const hashedPassword=await bcrypt.hash(password,12);
         const agentid=`AGENT-${Math.floor(Math.random() * 9000)}`;
         console.log("Generated Agent ID:", agentid, "Hashed Password:", hashedPassword);
+        console.log("Creating new agent with data:", {agentid});   
         const newAgent=new agent({firstname,lastname,email,phone,gender,password:hashedPassword,confirmpassword:hashedPassword,agentid});
          await newAgent.save();
          console.log("New agent created:", newAgent);

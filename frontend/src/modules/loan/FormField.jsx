@@ -1,13 +1,40 @@
+import { useState } from "react";
+import axios from "axios";
+import { getToken } from "../../utils/auth";
 import "./LoanForm.css";
 
 const FormField = ({ field, value, onChange, error, fullWidth }) => {
   const { name, label, type, required, placeholder, options, accept, maxLength } = field;
+  const [uploading, setUploading] = useState(false);
+  const [fileName, setFileName] = useState("");
 
   const baseClass = `lf-input ${error ? "lf-input--error" : ""}`;
 
-  const handleChange = (e) => {
+  const handleChange = async (e) => {
     if (type === "file") {
-      onChange(name, e.target.files[0]);
+      const file = e.target.files[0];
+      if (!file) return;
+      setUploading(true);
+      setFileName(file.name);
+      try {
+        const formData = new FormData();
+        formData.append("file", file);
+        const token = getToken();
+        const res = await axios.post("http://localhost:5000/api/upload", formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: token ? `Bearer ${token}` : "",
+          },
+        });
+        // Store the URL string (not the File object)
+        const url = res.data.file?.url || res.data.url || "";
+        onChange(name, url);
+      } catch (err) {
+        console.error("File upload failed:", err);
+        onChange(name, "");
+        setFileName("");
+      }
+      setUploading(false);
     } else if (type === "checkbox") {
       onChange(name, e.target.checked);
     } else {
@@ -63,16 +90,19 @@ const FormField = ({ field, value, onChange, error, fullWidth }) => {
             <label className="lf-file-label">
               <span className="lf-file-icon">📎</span>
               <span className="lf-file-text">
-                {value ? value.name : `Choose file (${accept})`}
+                {uploading ? "Uploading..." : fileName ? fileName : `Choose file (${accept})`}
               </span>
               <input
                 type="file"
                 accept={accept}
                 onChange={handleChange}
                 className="lf-file-input"
+                disabled={uploading}
               />
             </label>
-            {value && <span className="lf-file-chosen">✓ {value.name}</span>}
+            {value && typeof value === "string" && (
+              <span className="lf-file-chosen">✓ Uploaded</span>
+            )}
           </div>
         );
 

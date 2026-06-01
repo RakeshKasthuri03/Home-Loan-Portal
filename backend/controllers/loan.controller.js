@@ -8,6 +8,7 @@ const User = require('../models/user.model');
 
 /**
  * Create new loan application (Draft) or return existing draft
+ * RESTRICTION: Only 1 active application per user at a time
  * POST /api/loan/apply
  */
 const createApplication = async (req, res) => {
@@ -20,7 +21,35 @@ const createApplication = async (req, res) => {
       return res.status(400).json({ message: 'Loan type is required' });
     }
 
-    // Check if user already has a draft application for this loan type
+    // ✅ Check if user already has ANY active application (draft or submitted)
+    const activeApplication = await Application.findOne({
+      user: userId,
+      status: { $in: ['draft', 'submitted', 'under_review', 'documents_pending'] }
+    });
+
+    console.log('Active application check:', { 
+      found: !!activeApplication, 
+      existingLoanType: activeApplication?.loanType,
+      requestedLoanType: loanType,
+      status: activeApplication?.status,
+      shouldBlock: activeApplication && activeApplication.loanType !== loanType
+    });
+
+    if (activeApplication && activeApplication.loanType !== loanType) {
+      // User has a different loan type that's still active
+      console.log('BLOCKING: User has different loan type active');
+      return res.status(403).json({
+        message: `You already have a ${activeApplication.loanType} application in progress (Status: ${activeApplication.status}). Please complete or close it before applying for another loan.`,
+        existingApplication: {
+          id: activeApplication._id,
+          loanType: activeApplication.loanType,
+          status: activeApplication.status,
+          applicationId: activeApplication.applicationId
+        }
+      });
+    }
+
+    // Check if user already has a draft application for THIS loan type
     const existingDraft = await Application.findOne({
       user: userId,
       loanType: loanType,
@@ -68,19 +97,38 @@ const saveProgress = async (req, res) => {
     const userId = req.user.id || req.user._id;
     const { currentStep, ...formData } = req.body;
 
+    console.log('Saving progress for:', { applicationId, userId, currentStep });
+
     // Support both MongoDB _id and custom applicationId (MLRR-XXX-XXXXX)
-    let query = { user: userId, status: 'draft' };
+    let query = { user: userId };
     if (applicationId.startsWith('MLRR-')) {
       query.applicationId = applicationId;
     } else {
       query._id = applicationId;
     }
 
-    const application = await Application.findOne(query);
+    console.log('Query for saveProgress:', query);
+
+    // Find draft OR already submitted - we want to update whichever exists
+    let application = await Application.findOne(query);
 
     if (!application) {
-      return res.status(404).json({ message: 'Application not found or already submitted' });
+      console.error('Application not found with query:', query);
+      console.error('Trying to find by user + loanType only...');
+      
+      // Fallback: Try to find ANY draft for this user with same loanType
+      const fallbackQuery = { user: userId, status: 'draft' };
+      application = await Application.findOne(fallbackQuery);
+      
+      if (!application) {
+        console.error('Still not found. Fallback also failed.');
+        return res.status(404).json({ message: 'Application not found' });
+      }
+      
+      console.log('Found via fallback:', application._id);
     }
+
+    console.log('Found application:', application._id, 'Status:', application.status);
 
     // Helper function to clean object data - removes empty objects and invalid values
     const cleanObjectData = (data) => {
@@ -141,7 +189,16 @@ const saveProgress = async (req, res) => {
 
     const cleanedDocuments = cleanObjectData(formData.documents);
     if (cleanedDocuments) {
-      application.documents = { ...application.documents?.toObject?.() || {}, ...cleanedDocuments };
+      const existingDocs = application.documents?.toObject?.() || {};
+      // Convert URL strings to {url, status, uploadedAt} format
+      Object.entries(cleanedDocuments).forEach(([key, value]) => {
+        if (typeof value === 'string' && value.startsWith('http')) {
+          existingDocs[key] = { url: value, status: 'pending', uploadedAt: new Date() };
+        } else if (typeof value === 'object' && value.url) {
+          existingDocs[key] = { ...existingDocs[key], ...value };
+        }
+      });
+      application.documents = existingDocs;
     }
 
     const cleanedConsent = cleanObjectData(formData.consent);
@@ -183,10 +240,23 @@ const submitApplication = async (req, res) => {
       return res.status(404).json({ message: 'Application not found or already submitted' });
     }
 
-    // Validate required fields before submission
-    if (!application.financialDetails?.loanAmount) {
-      return res.status(400).json({ message: 'Loan amount is required' });
+    // Validate required fields before submission based on loan type
+    const loanType = application.loanType;
+    
+    // Different loan types have different required fields
+    if (loanType === 'BALANCE_TRANSFER') {
+      // Balance transfer needs existing loan amount
+      if (!application.balanceTransferDetails?.currentLoanAmount) {
+        return res.status(400).json({ message: 'Current loan amount is required' });
+      }
+    } else {
+      // Other loan types (PURCHASE, PLOT, NRI, RENOVATION) need loan amount
+      if (!application.financialDetails?.loanAmount) {
+        return res.status(400).json({ message: 'Loan amount is required' });
+      }
     }
+    
+    // All loan types need consent
     if (!application.consent?.consentDeclaration || !application.consent?.consentCreditCheck) {
       return res.status(400).json({ message: 'Please provide consent to proceed' });
     }
@@ -482,6 +552,47 @@ const recommendApplication = async (req, res) => {
   }
 };
 
+/**
+ * Agent: Update document status (verify/reject)
+ * PUT /api/loan/agent/verify-doc/:applicationId
+ */
+const verifyDocument = async (req, res) => {
+  try {
+    const { applicationId } = req.params;
+    const agentId = req.user.id || req.user._id;
+    const { docField, status } = req.body; // docField: 'panDoc', status: 'verified'|'rejected'
+
+    if (!docField || !status) {
+      return res.status(400).json({ message: 'docField and status are required' });
+    }
+
+    if (!['verified', 'rejected', 'pending'].includes(status)) {
+      return res.status(400).json({ message: 'Invalid status. Use: verified, rejected, pending' });
+    }
+
+    const application = await Application.findOne({
+      _id: applicationId,
+      assignedAgent: agentId
+    });
+
+    if (!application) {
+      return res.status(404).json({ message: 'Application not found or not assigned to you' });
+    }
+
+    if (!application.documents || !application.documents[docField]) {
+      return res.status(404).json({ message: 'Document not found' });
+    }
+
+    application.documents[docField].status = status;
+    await application.save();
+
+    res.json({ message: `Document ${status}`, documents: application.documents });
+  } catch (error) {
+    console.error('Verify document error:', error);
+    res.status(500).json({ message: 'Failed to update document status', error: error.message });
+  }
+};
+
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // ADMIN OPERATIONS - Assign Agent, Approve/Reject, Disburse
@@ -554,13 +665,26 @@ const assignAgent = async (req, res) => {
       return res.status(400).json({ message: 'Agent ID is required' });
     }
 
+    // Look up agent by _id or agentid field
+    const Agent = require('../models/agent.model');
+    let agent;
+    if (agentId.match(/^[0-9a-fA-F]{24}$/)) {
+      agent = await Agent.findById(agentId);
+    }
+    if (!agent) {
+      agent = await Agent.findOne({ agentid: agentId });
+    }
+    if (!agent) {
+      return res.status(404).json({ message: 'Agent not found' });
+    }
+
     const application = await Application.findById(applicationId);
 
     if (!application) {
       return res.status(404).json({ message: 'Application not found' });
     }
 
-    application.assignedAgent = agentId;
+    application.assignedAgent = agent._id;
     
     // Add assignment note
     application.processing.remarks.push({
@@ -813,7 +937,9 @@ const getDashboardStats = async (req, res) => {
  */
 const getAgentStats = async (req, res) => {
   try {
+    const mongoose = require('mongoose');
     const agentId = req.user.id || req.user._id;
+    const agentObjectId = new mongoose.Types.ObjectId(agentId);
 
     const [
       totalAssigned,
@@ -821,16 +947,16 @@ const getAgentStats = async (req, res) => {
       pendingReview,
       recentApplications
     ] = await Promise.all([
-      Application.countDocuments({ assignedAgent: agentId }),
+      Application.countDocuments({ assignedAgent: agentObjectId }),
       Application.aggregate([
-        { $match: { assignedAgent: agentId } },
+        { $match: { assignedAgent: agentObjectId } },
         { $group: { _id: '$status', count: { $sum: 1 } } }
       ]),
       Application.countDocuments({ 
-        assignedAgent: agentId, 
+        assignedAgent: agentObjectId, 
         status: { $in: ['submitted', 'documents_pending'] } 
       }),
-      Application.find({ assignedAgent: agentId })
+      Application.find({ assignedAgent: agentObjectId })
         .select('applicationId loanType status basicDetails.fullName financialDetails.loanAmount createdAt')
         .sort({ createdAt: -1 })
         .limit(5)
@@ -919,6 +1045,7 @@ module.exports = {
   addRemarks,
   recommendApplication,
   getAgentStats,
+  verifyDocument,
   
   // Admin operations
   getAllApplications,

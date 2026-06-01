@@ -49,7 +49,13 @@ export const createApplication = async (loanType, formData = {}) => {
     return { success: true, data: response.data };
   } catch (error) {
     console.error('Create application error:', error);
-    return { success: false, error: error.response?.data?.message || 'Failed to create application' };
+    // Return error details including existing application info
+    return { 
+      success: false, 
+      error: error.response?.data?.message || 'Failed to create application',
+      existingApplication: error.response?.data?.existingApplication || null,
+      statusCode: error.response?.status
+    };
   }
 };
 
@@ -211,6 +217,144 @@ const organizeFormData = (formData) => {
   return organized;
 };
 
+// ═══════════════════════════════════════════════════════════════════════════════
+// ADMIN OPERATIONS
+// ═══════════════════════════════════════════════════════════════════════════════
+
+export const adminGetAllApplications = async () => {
+  try {
+    const response = await api.get('/admin/applications');
+    return { success: true, data: response.data };
+  } catch (error) {
+    console.error('Admin get applications error:', error);
+    return { success: false, error: error.response?.data?.message || 'Failed to fetch applications' };
+  }
+};
+
+export const adminGetStats = async () => {
+  try {
+    const response = await api.get('/admin/stats');
+    return { success: true, data: response.data };
+  } catch (error) {
+    console.error('Admin get stats error:', error);
+    return { success: false, error: error.response?.data?.message || 'Failed to fetch stats' };
+  }
+};
+
+export const adminAssignAgent = async (applicationId, agentId) => {
+  try {
+    const response = await api.put(`/admin/assign/${applicationId}`, { agentId });
+    return { success: true, data: response.data };
+  } catch (error) {
+    console.error('Admin assign agent error:', error);
+    return { success: false, error: error.response?.data?.message || 'Failed to assign agent' };
+  }
+};
+
+export const adminApproveApplication = async (applicationId, remarks) => {
+  try {
+    const response = await api.put(`/admin/approve/${applicationId}`, { remarks });
+    return { success: true, data: response.data };
+  } catch (error) {
+    console.error('Admin approve error:', error);
+    return { success: false, error: error.response?.data?.message || 'Failed to approve' };
+  }
+};
+
+export const adminRejectApplication = async (applicationId, remarks) => {
+  try {
+    const response = await api.put(`/admin/reject/${applicationId}`, { remarks });
+    return { success: true, data: response.data };
+  } catch (error) {
+    console.error('Admin reject error:', error);
+    return { success: false, error: error.response?.data?.message || 'Failed to reject' };
+  }
+};
+
+export const adminDisburseApplication = async (applicationId) => {
+  try {
+    const response = await api.put(`/admin/disburse/${applicationId}`);
+    return { success: true, data: response.data };
+  } catch (error) {
+    console.error('Admin disburse error:', error);
+    return { success: false, error: error.response?.data?.message || 'Failed to disburse' };
+  }
+};
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// AGENT OPERATIONS
+// ═══════════════════════════════════════════════════════════════════════════════
+
+export const agentGetApplications = async () => {
+  try {
+    const response = await api.get('/agent/applications');
+    return { success: true, data: response.data };
+  } catch (error) {
+    console.error('Agent get applications error:', error);
+    return { success: false, error: error.response?.data?.message || 'Failed to fetch applications' };
+  }
+};
+
+export const agentGetStats = async () => {
+  try {
+    const response = await api.get('/agent/stats');
+    return { success: true, data: response.data };
+  } catch (error) {
+    console.error('Agent get stats error:', error);
+    return { success: false, error: error.response?.data?.message || 'Failed to fetch stats' };
+  }
+};
+
+export const agentStartReview = async (applicationId) => {
+  try {
+    const response = await api.put(`/agent/review/${applicationId}`);
+    return { success: true, data: response.data };
+  } catch (error) {
+    console.error('Agent start review error:', error);
+    return { success: false, error: error.response?.data?.message || 'Failed to start review' };
+  }
+};
+
+export const agentRequestDocs = async (applicationId, remarks) => {
+  try {
+    const response = await api.put(`/agent/request-docs/${applicationId}`, { remarks });
+    return { success: true, data: response.data };
+  } catch (error) {
+    console.error('Agent request docs error:', error);
+    return { success: false, error: error.response?.data?.message || 'Failed to request docs' };
+  }
+};
+
+export const agentAddRemarks = async (applicationId, remarks) => {
+  try {
+    const response = await api.post(`/agent/remarks/${applicationId}`, { remarks });
+    return { success: true, data: response.data };
+  } catch (error) {
+    console.error('Agent add remarks error:', error);
+    return { success: false, error: error.response?.data?.message || 'Failed to add remarks' };
+  }
+};
+
+export const agentRecommend = async (applicationId, recommendation) => {
+  try {
+    const response = await api.put(`/agent/recommend/${applicationId}`, { recommendation });
+    return { success: true, data: response.data };
+  } catch (error) {
+    console.error('Agent recommend error:', error);
+    return { success: false, error: error.response?.data?.message || 'Failed to recommend' };
+  }
+};
+
+export const agentVerifyDoc = async (applicationId, docField, status) => {
+  try {
+    const response = await api.put(`/agent/verify-doc/${applicationId}`, { docField, status });
+    return { success: true, data: response.data };
+  } catch (error) {
+    console.error('Agent verify doc error:', error);
+    return { success: false, error: error.response?.data?.message || 'Failed to update document' };
+  }
+};
+
 export default {
   getLoanTypes,
   createApplication,
@@ -219,4 +363,17 @@ export default {
   getMyApplications,
   getApplicationById,
   deleteApplication,
+  adminGetAllApplications,
+  adminGetStats,
+  adminAssignAgent,
+  adminApproveApplication,
+  adminRejectApplication,
+  adminDisburseApplication,
+  agentGetApplications,
+  agentGetStats,
+  agentStartReview,
+  agentRequestDocs,
+  agentAddRemarks,
+  agentRecommend,
+  agentVerifyDoc,
 };

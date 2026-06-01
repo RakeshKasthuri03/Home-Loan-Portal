@@ -259,6 +259,7 @@ export const LOAN_TYPES = {
           { name: "renovationQuote", label: "Renovation Estimate / Quote",   type: "file", required: false, accept: ".pdf,.jpg,.jpeg,.png" },
         ],
       },
+      consentStep,
     ],
   },
 
@@ -308,6 +309,7 @@ export const LOAN_TYPES = {
           { name: "propertyDoc",     label: "Property Documents",              type: "file", required: true,  accept: ".pdf,.jpg,.jpeg,.png" },
         ],
       },
+      consentStep,
     ],
   },
 };

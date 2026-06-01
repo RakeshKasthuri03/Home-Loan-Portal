@@ -1,8 +1,10 @@
 import { useNavigate } from 'react-router-dom';
+import { useState } from 'react';
 import { types } from '../../utils/loanTypes';
 import Card from 'react-bootstrap/Card';
 import Button from 'react-bootstrap/Button';
 import { isLoggedIn } from '../../utils/auth';
+import LoanRequirementsPanel from './LoanRequirementsPanel';
 import '../../styles/LoanTypes.css';
 
 const TITLE_TO_KEY = {
@@ -16,6 +18,8 @@ const TITLE_TO_KEY = {
 function LoanTypes() {
   const navigate = useNavigate();
   const loggedIn = isLoggedIn();
+  const [showRequirements, setShowRequirements] = useState(false);
+  const [selectedLoanType, setSelectedLoanType] = useState(null);
 
   const handleApply = (title) => {
     if (!loggedIn) {
@@ -23,12 +27,31 @@ function LoanTypes() {
       navigate("/login");
       return;
     }
+    
+    // ✅ NEW: Show requirements instead of directly navigating
     const key = TITLE_TO_KEY[title] || "PURCHASE";
-    navigate(`/apply?type=${key}`);
+    setSelectedLoanType(key);
+    setShowRequirements(true);
+  };
+
+  const handleStartApplication = () => {
+    if (selectedLoanType) {
+      setShowRequirements(false);
+      navigate(`/apply?type=${selectedLoanType}`);
+    }
   };
 
   return (
     <>
+      {/* ✅ NEW: Show requirements panel */}
+      {showRequirements && selectedLoanType && (
+        <LoanRequirementsPanel 
+          loanTypeKey={selectedLoanType}
+          onStart={handleStartApplication}
+          onClose={() => setShowRequirements(false)}
+        />
+      )}
+
       <div className="loan-types-page">
 
         {/* Auth prompt banner */}

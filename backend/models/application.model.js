@@ -140,25 +140,21 @@ const applicationSchema = new mongoose.Schema({
 
   // ─── DOCUMENTS ──────────────────────────────────────────────────────────────
   documents: {
-    panDoc: { type: String },           // File URL/path
-    aadharDoc: { type: String },
-    photoDoc: { type: String },
-    salarySlip: { type: String },
-    bankStatement: { type: String },
-    itr: { type: String },
-    // Property related
-    propertyDoc: { type: String },
-    plotDoc: { type: String },
-    encumbrance: { type: String },
-    // NRI specific
-    passportDoc: { type: String },
-    visaDoc: { type: String },
-    poaDoc: { type: String },
-    // Renovation specific
-    renovationQuote: { type: String },
-    // Balance Transfer specific
-    loanStatement: { type: String },
-    foreclosureLetter: { type: String }
+    panDoc: { url: { type: String }, status: { type: String, enum: ['pending', 'verified', 'rejected'], default: 'pending' }, uploadedAt: { type: Date } },
+    aadharDoc: { url: { type: String }, status: { type: String, enum: ['pending', 'verified', 'rejected'], default: 'pending' }, uploadedAt: { type: Date } },
+    photoDoc: { url: { type: String }, status: { type: String, enum: ['pending', 'verified', 'rejected'], default: 'pending' }, uploadedAt: { type: Date } },
+    salarySlip: { url: { type: String }, status: { type: String, enum: ['pending', 'verified', 'rejected'], default: 'pending' }, uploadedAt: { type: Date } },
+    bankStatement: { url: { type: String }, status: { type: String, enum: ['pending', 'verified', 'rejected'], default: 'pending' }, uploadedAt: { type: Date } },
+    itr: { url: { type: String }, status: { type: String, enum: ['pending', 'verified', 'rejected'], default: 'pending' }, uploadedAt: { type: Date } },
+    propertyDoc: { url: { type: String }, status: { type: String, enum: ['pending', 'verified', 'rejected'], default: 'pending' }, uploadedAt: { type: Date } },
+    plotDoc: { url: { type: String }, status: { type: String, enum: ['pending', 'verified', 'rejected'], default: 'pending' }, uploadedAt: { type: Date } },
+    encumbrance: { url: { type: String }, status: { type: String, enum: ['pending', 'verified', 'rejected'], default: 'pending' }, uploadedAt: { type: Date } },
+    passportDoc: { url: { type: String }, status: { type: String, enum: ['pending', 'verified', 'rejected'], default: 'pending' }, uploadedAt: { type: Date } },
+    visaDoc: { url: { type: String }, status: { type: String, enum: ['pending', 'verified', 'rejected'], default: 'pending' }, uploadedAt: { type: Date } },
+    poaDoc: { url: { type: String }, status: { type: String, enum: ['pending', 'verified', 'rejected'], default: 'pending' }, uploadedAt: { type: Date } },
+    renovationQuote: { url: { type: String }, status: { type: String, enum: ['pending', 'verified', 'rejected'], default: 'pending' }, uploadedAt: { type: Date } },
+    loanStatement: { url: { type: String }, status: { type: String, enum: ['pending', 'verified', 'rejected'], default: 'pending' }, uploadedAt: { type: Date } },
+    foreclosureLetter: { url: { type: String }, status: { type: String, enum: ['pending', 'verified', 'rejected'], default: 'pending' }, uploadedAt: { type: Date } }
   },
 
   // ─── CONSENT ────────────────────────────────────────────────────────────────
@@ -173,7 +169,7 @@ const applicationSchema = new mongoose.Schema({
   // ─── AGENT ASSIGNMENT ───────────────────────────────────────────────────────
   assignedAgent: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Agent'
+    ref: 'agent'
   },
 
   // ─── PROCESSING DETAILS ─────────────────────────────────────────────────────

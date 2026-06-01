@@ -1,5 +1,7 @@
 const router = require('express').Router();
 const auth = require('../middelwares/athentications');
+const User = require('../models/user.model');
+const Agent = require('../models/agent.model');
 const {
   // User operations
   createApplication,
@@ -16,6 +18,7 @@ const {
   addRemarks,
   recommendApplication,
   getAgentStats,
+  verifyDocument,
   
   // Admin operations
   getAllApplications,
@@ -36,19 +39,37 @@ const {
 // MIDDLEWARE: Role-based access control
 // ═══════════════════════════════════════════════════════════════════════════════
 
-const isAgent = (req, res, next) => {
-  if (req.user && (req.user.role === 'agent' || req.user.role === 'admin')) {
-    next();
-  } else {
+const isAgent = async (req, res, next) => {
+  try {
+    // Check User collection first (admin can also access agent routes)
+    let user = await User.findById(req.user.id);
+    if (user && (user.role === 'agent' || user.role === 'admin')) {
+      req.user.role = user.role;
+      return next();
+    }
+    // Check Agent collection
+    const agent = await Agent.findById(req.user.id);
+    if (agent && agent.role === 'agent') {
+      req.user.role = 'agent';
+      return next();
+    }
     res.status(403).json({ message: 'Access denied. Agent role required.' });
+  } catch (err) {
+    res.status(500).json({ message: 'Server error checking role' });
   }
 };
 
-const isAdmin = (req, res, next) => {
-  if (req.user && req.user.role === 'admin') {
-    next();
-  } else {
-    res.status(403).json({ message: 'Access denied. Admin role required.' });
+const isAdmin = async (req, res, next) => {
+  try {
+    const user = await User.findById(req.user.id);
+    if (user && user.role === 'admin') {
+      req.user.role = user.role;
+      next();
+    } else {
+      res.status(403).json({ message: 'Access denied. Admin role required.' });
+    }
+  } catch (err) {
+    res.status(500).json({ message: 'Server error checking role' });
   }
 };
 
@@ -102,6 +123,9 @@ router.post('/agent/remarks/:applicationId', auth, isAgent, addRemarks);
 
 // Recommend for approval
 router.put('/agent/recommend/:applicationId', auth, isAgent, recommendApplication);
+
+// Verify/Reject document
+router.put('/agent/verify-doc/:applicationId', auth, isAgent, verifyDocument);
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // ADMIN ROUTES

@@ -34,7 +34,7 @@ export default function AgentForm({ show, initial = {}, tiers = ['Silver','Gold'
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-      console.log(form);
+     
       try{
        const res=await axios.post('http://localhost:5000/api/agent/signup',form);
         if(res.status===200){
