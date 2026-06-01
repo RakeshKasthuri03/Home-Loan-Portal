@@ -90,7 +90,7 @@ const FormField = ({ field, value, onChange, error, fullWidth }) => {
             <label className="lf-file-label">
               <span className="lf-file-icon">📎</span>
               <span className="lf-file-text">
-                {uploading ? "Uploading..." : fileName ? fileName : `Choose file (${accept})`}
+                {uploading ? "Uploading..." : fileName ? (typeof value === 'string' ? value.split('/').pop() : fileName) : `Choose file (${accept})`}
               </span>
               <input
                 type="file"
@@ -103,6 +103,11 @@ const FormField = ({ field, value, onChange, error, fullWidth }) => {
             {value && typeof value === "string" && (
               <span className="lf-file-chosen">✓ Uploaded</span>
             )}
+            {uploading ? (
+              <span className="lf-file-chosen">Uploading…</span>
+            ) : value ? (
+              <span className="lf-file-chosen">✓ {typeof value === 'string' ? value.split('/').pop() : value.name}</span>
+            ) : null}
           </div>
         );
 

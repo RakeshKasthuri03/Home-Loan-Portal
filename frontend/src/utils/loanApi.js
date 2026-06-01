@@ -93,6 +93,38 @@ export const submitApplication = async (applicationId) => {
 };
 
 /**
+ * Upload a loan document file to the backend.
+ * @param {File} file
+ * @param {string} fieldName
+ */
+export const uploadLoanDocument = async (file, fieldName) => {
+  try {
+    const base = import.meta.env.VITE_API_BASE || 'http://localhost:5000';
+    const uploadUrl = `${base}/api/upload`;
+    const formData = new FormData();
+    formData.append('file', file);
+    if (fieldName) formData.append('docName', fieldName);
+    formData.append('purpose', 'loan_document');
+
+    const token = getToken();
+    const response = await axios.post(uploadUrl, formData, {
+      headers: {
+        Authorization: token ? `Bearer ${token}` : undefined,
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+
+    return { success: true, data: response.data };
+  } catch (error) {
+    console.error('Upload loan document error:', error);
+    return {
+      success: false,
+      error: error.response?.data?.message || 'Failed to upload loan document',
+    };
+  }
+};
+
+/**
  * Get user's applications
  */
 export const getMyApplications = async () => {
@@ -363,6 +395,7 @@ export default {
   getMyApplications,
   getApplicationById,
   deleteApplication,
+  uploadLoanDocument,
   adminGetAllApplications,
   adminGetStats,
   adminAssignAgent,

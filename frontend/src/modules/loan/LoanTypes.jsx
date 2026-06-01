@@ -1,9 +1,12 @@
-import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+
 import { types } from '../../utils/loanTypes';
 import Card from 'react-bootstrap/Card';
 import Button from 'react-bootstrap/Button';
 import { isLoggedIn } from '../../utils/auth';
+import Login from '../user/Login';
+import SignUp from '../user/SignUp';
 import LoanRequirementsPanel from './LoanRequirementsPanel';
 import '../../styles/LoanTypes.css';
 
@@ -17,19 +20,22 @@ const TITLE_TO_KEY = {
 
 function LoanTypes() {
   const navigate = useNavigate();
-  const loggedIn = isLoggedIn();
+  const [loggedIn, setLoggedIn] = useState(isLoggedIn());
+  const [showAuthModal, setShowAuthModal] = useState(false);
+  const [authMode, setAuthMode] = useState('login');
+  const [redirectType, setRedirectType] = useState(null);
   const [showRequirements, setShowRequirements] = useState(false);
   const [selectedLoanType, setSelectedLoanType] = useState(null);
 
   const handleApply = (title) => {
+    const key = TITLE_TO_KEY[title] || "PURCHASE";
     if (!loggedIn) {
-      sessionStorage.setItem("redirectAfterLogin", `/apply?type=${TITLE_TO_KEY[title] || "PURCHASE"}`);
-      navigate("/login");
+      setRedirectType(key);
+      setShowAuthModal(true);
       return;
     }
     
     // ✅ NEW: Show requirements instead of directly navigating
-    const key = TITLE_TO_KEY[title] || "PURCHASE";
     setSelectedLoanType(key);
     setShowRequirements(true);
   };
@@ -38,6 +44,20 @@ function LoanTypes() {
     if (selectedLoanType) {
       setShowRequirements(false);
       navigate(`/apply?type=${selectedLoanType}`);
+    }
+  };
+
+  const handleCloseModal = () => {
+    setShowAuthModal(false);
+    setAuthMode('login');
+  };
+
+  const handleLoginSuccess = () => {
+    setLoggedIn(true);
+    setShowAuthModal(false);
+    if (redirectType) {
+      navigate(`/apply?type=${redirectType}`);
+      setRedirectType(null);
     }
   };
 
@@ -58,7 +78,7 @@ function LoanTypes() {
         {!loggedIn && (
           <div className="lt-auth-banner">
             <span>🔒 Please sign in to apply for a loan</span>
-            <button className="lt-auth-btn" onClick={() => navigate("/login")}>Sign In</button>
+            <button className="lt-auth-btn" onClick={() => setShowAuthModal(true)}>Sign In</button>
           </div>
         )}
 
@@ -100,6 +120,22 @@ function LoanTypes() {
             </Card>
           ))}
         </div>
+        {showAuthModal && (
+          <div className="overlay">
+            {authMode === 'login' ? (
+              <Login
+                closeModal={handleCloseModal}
+                openRegister={() => setAuthMode('signup')}
+                onLoginSuccess={handleLoginSuccess}
+              />
+            ) : (
+              <SignUp
+                closeModal={handleCloseModal}
+                openLogin={() => setAuthMode('login')}
+              />
+            )}
+          </div>
+        )}
 
         {/* Addendum section */}
         <div className="loan-container">

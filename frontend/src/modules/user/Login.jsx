@@ -6,7 +6,7 @@ import { faXmark } from "@fortawesome/free-solid-svg-icons";
 import google from "../../assets/google.png";
 import logo from "../../assets/logo.png";
 import login from "../../assets/login.png";
-import { loginUser, saveAuth } from "../../utils/auth";
+import { saveAuth } from "../../utils/auth";
 import "../../styles/Login.css";
 
 import axios from "axios";
@@ -14,7 +14,7 @@ import { ToastContainer, toast } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 import ForgotPasswordModal from '../../Components/ForgotPasswordModal';
 
-const Login = ({ closeModal, openRegister }) => {
+const Login = ({ closeModal, openRegister, onLoginSuccess }) => {
   const navigate = useNavigate();
   
   const [error, setError]           = useState("");
@@ -50,11 +50,13 @@ const handleSubmit = async (e) => {
     if (res.status === 200) {
       toast.success("Login successful..!");
       if (closeModal) closeModal();
-      
-      console.log("Navigating to dashboard...");
-      setTimeout(() => {
-        navigate("/dashboard");
-      }, 1000);
+      if (onLoginSuccess) onLoginSuccess();
+      if (!onLoginSuccess) {
+        console.log("Navigating to dashboard...");
+        setTimeout(() => {
+          navigate("/dashboard");
+        }, 1000);
+      }
     }
 
   } catch (error) {

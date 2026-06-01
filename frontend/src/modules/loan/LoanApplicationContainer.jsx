@@ -3,7 +3,7 @@ import { LOAN_TYPES } from "../../utils/loanTypeConfig";
 import { FIELD_VALIDATORS } from "../../Validations/LoanValidation";
 import StepProgressBar from "./StepProgressBar";
 import StepRenderer from "./StepRenderer";
-import { createApplication, saveProgress, submitApplication, getMyApplications } from "../../utils/loanApi";
+import { createApplication, saveProgress, submitApplication, uploadLoanDocument, getMyApplications } from "../../utils/loanApi";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "./LoanForm.css";
@@ -22,6 +22,7 @@ const LoanApplicationContainer = ({ loanTypeKey }) => {
   const [refNumber, setRefNumber] = useState("");
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [applicationId, setApplicationId] = useState(null); // Don't load from localStorage initially
+  const [uploadingFiles, setUploadingFiles] = useState({});
   const [isSaving, setIsSaving] = useState(false);
   const [saveStatus, setSaveStatus] = useState(""); // "saving", "saved", "error"
   const [isInitialized, setIsInitialized] = useState(false);
@@ -163,7 +164,28 @@ const LoanApplicationContainer = ({ loanTypeKey }) => {
     return () => clearTimeout(timer);
   }, [formData, autoSave, applicationId]);
 
-  const handleChange = (name, value) => {
+  const handleChange = async (name, value) => {
+    if (value instanceof File) {
+      setUploadingFiles((prev) => ({ ...prev, [name]: true }));
+      const uploadResult = await uploadLoanDocument(value, name);
+      setUploadingFiles((prev) => ({ ...prev, [name]: false }));
+
+      if (uploadResult.success) {
+        const url = uploadResult.data?.url || uploadResult.data?.file?.url || uploadResult.data?.doc?.url;
+        if (url) {
+          setFormData((prev) => ({ ...prev, [name]: url }));
+          if (errors[name]) setErrors((prev) => ({ ...prev, [name]: "" }));
+          return;
+        }
+      }
+
+      setErrors((prev) => ({
+        ...prev,
+        [name]: uploadResult.error || 'Unable to upload file. Please try again.',
+      }));
+      return;
+    }
+
     setFormData((prev) => ({ ...prev, [name]: value }));
     if (errors[name]) setErrors((prev) => ({ ...prev, [name]: "" }));
   };
@@ -501,6 +523,7 @@ const LoanApplicationContainer = ({ loanTypeKey }) => {
             formData={formData}
             onChange={handleChange}
             errors={errors}
+            uploadingFiles={uploadingFiles}
           />
 
           <div className="lf-nav">

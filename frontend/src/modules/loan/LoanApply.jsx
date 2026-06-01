@@ -3,18 +3,23 @@ import { useSearchParams, useNavigate } from "react-router-dom";
 import { LOAN_TYPES } from "../../utils/loanTypeConfig";
 import LoanApplicationContainer from "./LoanApplicationContainer";
 import { isLoggedIn } from "../../utils/auth";
+import Login from "../user/Login";
+import SignUp from "../user/SignUp";
 import "./LoanForm.css";
 
 const LoanApply = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const [selectedType, setSelectedType] = useState(null);
+  const [loggedIn, setLoggedIn] = useState(isLoggedIn());
+  const [showAuthModal, setShowAuthModal] = useState(!isLoggedIn());
+  const [authMode, setAuthMode] = useState('login');
 
   useEffect(() => {
-    if (!isLoggedIn()) {
-      navigate("/login", { replace: true });
+    if (!loggedIn) {
+      setShowAuthModal(true);
     }
-  }, [navigate]);
+  }, [loggedIn]);
 
   useEffect(() => {
     const typeParam = searchParams.get("type");
@@ -23,7 +28,45 @@ const LoanApply = () => {
     }
   }, [searchParams]);
 
-  if (!isLoggedIn()) return null;
+  const handleCloseModal = () => {
+    setShowAuthModal(false);
+    setAuthMode('login');
+    setLoggedIn(isLoggedIn());
+  };
+
+  const handleLoginSuccess = () => {
+    setLoggedIn(true);
+    setShowAuthModal(false);
+  };
+
+  if (!loggedIn) {
+    return (
+      <div className="lf-page">
+        <div className="lf-auth-warning">
+          <p>Please login to continue your loan application.</p>
+          <button className="btn-primary" onClick={() => setShowAuthModal(true)}>
+            Sign In
+          </button>
+        </div>
+        {showAuthModal && (
+          <div className="overlay">
+            {authMode === 'login' ? (
+              <Login
+                closeModal={handleCloseModal}
+                openRegister={() => setAuthMode('signup')}
+                onLoginSuccess={handleLoginSuccess}
+              />
+            ) : (
+              <SignUp
+                closeModal={handleCloseModal}
+                openLogin={() => setAuthMode('login')}
+              />
+            )}
+          </div>
+        )}
+      </div>
+    );
+  }
 
   return (
     <div className="lf-page">

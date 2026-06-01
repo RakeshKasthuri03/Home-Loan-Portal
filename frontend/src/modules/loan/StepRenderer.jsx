@@ -2,7 +2,7 @@ import { useState } from "react";
 import FormField from "./FormField";
 import "./LoanForm.css";
 
-const StepRenderer = ({ step, formData, onChange, errors }) => {
+const StepRenderer = ({ step, formData, onChange, errors, uploadingFiles }) => {
   return (
     <div className="lf-step-body">
       <div className="lf-step-header">

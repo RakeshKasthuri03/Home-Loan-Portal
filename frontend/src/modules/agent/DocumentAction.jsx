@@ -1,4 +1,6 @@
 import { useState, useEffect } from "react";
+import axios from "axios";
+import { getToken } from "../../utils/auth";
 import "../../styles/LeadDetails.css";
 import { agentGetApplications, getApplicationById, agentVerifyDoc } from "../../utils/loanApi";
 
@@ -33,81 +35,124 @@ export default function DocumentAction() {
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState(null);
 
-  const fetchDocs = async () => {
-    const res = await agentGetApplications();
-    if (res.success) {
-      const allDocs = [];
-      for (const app of res.data.applications || []) {
-        const fullRes = await getApplicationById(app._id);
-        const fullApp = fullRes.success ? fullRes.data.application : app;
+  // Fetch documents on mount
+  useEffect(() => {
+    const fetchDocuments = async () => {
+      try {
+        const response = await agentGetApplications();
+        const applications = Array.isArray(response) ? response : response?.data || [];
+        
+        // Transform applications into document format
+        const documents = applications.flatMap((app) => {
+          const docList = [];
+          const docFields = [
+            { key: 'panDoc', name: 'PAN Card' },
+            { key: 'aadharDoc', name: 'Aadhaar Card' },
+            { key: 'photoDoc', name: 'Passport Photo' },
+            { key: 'salarySlip', name: 'Salary Slip' },
+            { key: 'bankStatement', name: 'Bank Statement' },
+            { key: 'itr', name: 'ITR / Form 16' },
+            { key: 'propertyDoc', name: 'Property Documents' },
+            { key: 'plotDoc', name: 'Plot Documents' },
+            { key: 'encumbrance', name: 'Encumbrance Certificate' },
+            { key: 'passportDoc', name: 'Passport Copy' },
+            { key: 'visaDoc', name: 'Visa Copy' },
+            { key: 'poaDoc', name: 'Power of Attorney' },
+            { key: 'renovationQuote', name: 'Renovation Quote' },
+            { key: 'loanStatement', name: 'Loan Statement' },
+            { key: 'foreclosureLetter', name: 'Foreclosure Letter' },
+          ];
 
-        if (fullApp.documents) {
-          Object.entries(fullApp.documents).forEach(([key, value]) => {
-            if (key === "_id" || key === "$init") return;
-            // New format: {url, status, uploadedAt}
-            if (value && typeof value === "object" && value.url) {
-              allDocs.push({
-                id: `${fullApp._id}-${key}`,
-                appId: fullApp._id,
-                customer: fullApp.basicDetails?.fullName || `${fullApp.user?.firstname || ""} ${fullApp.user?.lastname || ""}`.trim() || "—",
-                loanId: fullApp.applicationId,
-                doc: DOC_NAMES[key] || key,
-                docField: key,
-                status: value.status || "pending",
-                fileUrl: value.url,
-                uploadedAt: value.uploadedAt,
-              });
-            }
-            // Legacy format: plain string URL
-            else if (value && typeof value === "string" && value.startsWith("http")) {
-              allDocs.push({
-                id: `${fullApp._id}-${key}`,
-                appId: fullApp._id,
-                customer: fullApp.basicDetails?.fullName || "—",
-                loanId: fullApp.applicationId,
-                doc: DOC_NAMES[key] || key,
-                docField: key,
-                status: "pending",
-                fileUrl: value,
+          docFields.forEach(({ key, name }) => {
+            if (app[key]) {
+              docList.push({
+                id: `${app.id}-${key}`,
+                customer: app.applicantName || 'N/A',
+                loanId: app.loanId || 'N/A',
+                doc: name,
+                status: app[`${key}Status`] || 'pending',
+                file: typeof app[key] === 'string' ? { name: name, url: app[key] } : app[key],
+                fileUrl: typeof app[key] === 'string' ? app[key] : app[key]?.url,
+                applicationId: app.id,
+                docKey: key,
               });
             }
           });
-        }
+          return docList;
+        });
+
+        setDocs(documents);
+      } catch (err) {
+        console.error('Failed to fetch documents:', err);
+        setDocs([]);
+      } finally {
+        setLoading(false);
       }
-      setDocs(allDocs);
-    }
-    setLoading(false);
+    };
+
+    fetchDocuments();
+  }, []);
+
+  const handleUpload = (id, file) => {
+    if (!file) return;
+
+    const base = import.meta.env.VITE_API_BASE || 'http://localhost:5000';
+    const uploadUrl = `${base}/api/upload`;
+    const formData = new FormData();
+    const doc = docs.find((d) => d.id === id);
+    formData.append('file', file);
+    formData.append('docName', doc?.doc || file.name);
+    formData.append('purpose', 'agent_document');
+
+    const token = getToken();
+    axios.post(uploadUrl, formData, {
+      headers: {
+        Authorization: token ? `Bearer ${token}` : undefined,
+        'Content-Type': 'multipart/form-data',
+      },
+    }).then((response) => {
+      const fileUrl = response.data?.url || response.data?.file?.url || response.data?.doc?.url;
+      setDocs(prev => prev.map(d => d.id === id ? {
+        ...d,
+        file: fileUrl ? { name: file.name, url: fileUrl } : { name: file.name },
+        fileUrl: fileUrl,
+        status: 'pending'
+      } : d));
+    }).catch((error) => {
+      console.error('Document upload failed:', error);
+      setDocs(prev => prev.map(d => d.id === id ? { ...d, status: 'pending' } : d));
+    });
   };
 
-  useEffect(() => { fetchDocs(); }, []);
-
   const handleVerify = async (doc) => {
-    setActionLoading(doc.id);
-    const res = await agentVerifyDoc(doc.appId, doc.docField, "verified");
-    if (res.success) {
-      setDocs((prev) => prev.map((d) => d.id === doc.id ? { ...d, status: "verified" } : d));
-    } else {
-      alert(res.error);
+    try {
+      setActionLoading(doc.id);
+      await agentVerifyDoc(doc.applicationId, doc.docKey);
+      setDocs(prev => prev.map(d => d.id === doc.id ? { ...d, status: 'verified' } : d));
+    } catch (err) {
+      console.error('Failed to verify document:', err);
+    } finally {
+      setActionLoading(null);
     }
-    setActionLoading(null);
   };
 
   const handleReject = async (doc) => {
-    setActionLoading(doc.id);
-    const res = await agentVerifyDoc(doc.appId, doc.docField, "rejected");
-    if (res.success) {
-      setDocs((prev) => prev.map((d) => d.id === doc.id ? { ...d, status: "rejected" } : d));
-    } else {
-      alert(res.error);
+    try {
+      setActionLoading(doc.id);
+      // Assuming there's a reject endpoint or we can pass a status
+      await agentVerifyDoc(doc.applicationId, doc.docKey, 'rejected');
+      setDocs(prev => prev.map(d => d.id === doc.id ? { ...d, status: 'rejected' } : d));
+    } catch (err) {
+      console.error('Failed to reject document:', err);
+    } finally {
+      setActionLoading(null);
     }
-    setActionLoading(null);
   };
 
-  const filtered = docs.filter((d) => {
-    const matchFilter = filter === "All" || d.status === filter.toLowerCase();
-    const matchSearch =
-      d.customer.toLowerCase().includes(search.toLowerCase()) ||
-      d.loanId.toLowerCase().includes(search.toLowerCase());
+  const filtered = docs.filter(d => {
+    const matchFilter = filter === "All" || d.status === filter;
+    const matchSearch = d.customer.toLowerCase().includes(search.toLowerCase()) ||
+                        d.loanId.toLowerCase().includes(search.toLowerCase());
     return matchFilter && matchSearch;
   });
 
@@ -204,7 +249,15 @@ export default function DocumentAction() {
                       📎 View File
                     </a>
                   ) : (
-                    <span style={{ fontSize: "0.78rem", color: "#9ca3af" }}>No file</span>
+                    <label style={{ fontSize: "0.78rem", color: "#2771e2", fontWeight: 600, cursor: "pointer" }}>
+                      📤 Upload
+                      <input
+                        type="file"
+                        accept="application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,image/*"
+                        onChange={(e) => handleUpload(doc.id, e.target.files[0])}
+                        style={{ display: "none" }}
+                      />
+                    </label>
                   )}
                 </td>
                 <td style={{ padding: "12px 16px" }}>
