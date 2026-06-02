@@ -76,7 +76,7 @@ const agentsignup=async (req,res)=>{
         const newAgent=new agent({firstname,lastname,email,phone,gender,password:hashedPassword,confirmpassword:hashedPassword,agentid});
          await newAgent.save();
          console.log("New agent created:", newAgent);
-        res.status(201).json({message:"Agent created successfully"});
+        res.status(201).json({message:"Agent added successfully"});
     }catch(error){
         res.status(500).json({message:"Something went wrong"});
     }

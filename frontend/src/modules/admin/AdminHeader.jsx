@@ -29,7 +29,7 @@ function AdminHeader() {
 
         {/* ACTIONS */}
         <div className="hdr-actions">
-          <button className="logout-btn" onClick={handleLogout}>
+          <button className="logout-btn btn-primary" onClick={handleLogout}>
             <FiLogOut size={16} style={{ marginRight: 6 }} />
             Logout
           </button>

@@ -14,6 +14,7 @@ const userRoute=require('./routes/user.route');
 const uploadRoute=require('./routes/upload.route');
 const agentRoute=require('./routes/agent.route');
 const loanRoute=require('./routes/loan.route');
+const adminRoute=require('./routes/admin.route');
 
 mongoose.connect(process.env.MONGO_URL)
 .then(()=>{
@@ -25,6 +26,7 @@ mongoose.connect(process.env.MONGO_URL)
 
 //agent routes
 app.use('/api/agent',agentRoute);
+app.use('/api/admin',adminRoute);
 //loan application routes
 app.use('/api/loan', loanRoute);
 // serve api routes under /api

@@ -630,7 +630,7 @@ const getAllApplications = async (req, res) => {
     const [applications, total] = await Promise.all([
       Application.find(query)
         .populate('user', 'firstname lastname email phone')
-        .populate('assignedAgent', 'name email')
+        .populate('assignedAgent', 'firstname lastname email')
         .select('applicationId loanType status basicDetails.fullName basicDetails.mobile financialDetails.loanAmount assignedAgent createdAt processing')
         .sort({ createdAt: -1 })
         .skip(skip)
@@ -696,7 +696,7 @@ const assignAgent = async (req, res) => {
     await application.save();
 
     const updatedApplication = await Application.findById(applicationId)
-      .populate('assignedAgent', 'name email');
+      .populate('assignedAgent', 'firstname lastname email');
 
     res.json({ message: 'Agent assigned successfully', application: updatedApplication });
   } catch (error) {

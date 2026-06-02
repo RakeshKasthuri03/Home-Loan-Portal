@@ -17,6 +17,7 @@ function AdminApplications() {
   const [searchTerm, setSearchTerm] = useState("");
   const [agents, setAgents] = useState([]);
   const [assignModal, setAssignModal] = useState(null); // applicationId to assign
+  const [selectedApplication, setSelectedApplication] = useState(null);
 
   const fetchApplications = async () => {
     setLoading(true);
@@ -170,7 +171,13 @@ function AdminApplications() {
                       <td>{app.basicDetails?.fullName || "—"}</td>
                       <td>{loanTypeLabels[app.loanType] || app.loanType}</td>
                       <td>{formatAmount(app.financialDetails?.loanAmount)}</td>
-                      <td>{app.assignedAgent?.name || <span style={{ color: "#9ca3af" }}>Unassigned</span>}</td>
+                      <td>
+                        {app.assignedAgent ? (
+                          `${app.assignedAgent.firstname || ""} ${app.assignedAgent.lastname || ""}`.trim() || app.assignedAgent.agentid || app.assignedAgent._id
+                        ) : (
+                          <span style={{ color: "#9ca3af" }}>Unassigned</span>
+                        )}
+                      </td>
                       <td>{new Date(app.createdAt).toLocaleDateString()}</td>
                       <td>
                         <span className={`status ${app.status}`}>
@@ -191,7 +198,7 @@ function AdminApplications() {
                         ) : app.status === "draft" ? (
                           <span style={{ color: "#9ca3af" }}>Draft</span>
                         ) : (
-                          <span className="link-only">View</span>
+                            <span className="link-only" onClick={() => setSelectedApplication(app)}>View</span>
                         )}
                       </td>
                     </tr>
@@ -202,6 +209,73 @@ function AdminApplications() {
           )}
         </main>
       </div>
+
+          {/* View Application Modal */}
+          {selectedApplication && (
+            <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}>
+              <div style={{ background: '#fff', borderRadius: '12px', padding: '28px 32px', width: '100%', maxWidth: '700px', boxShadow: '0 8px 32px rgba(0,0,0,0.15)', maxHeight: '90vh', overflowY: 'auto' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '18px' }}>
+                  <div>
+                    <h3 style={{ margin: 0, fontSize: '1.2rem', color: '#0f2557' }}>Application Details</h3>
+                    <p style={{ margin: '6px 0 0', color: '#6b7280' }}>{selectedApplication.applicationId}</p>
+                  </div>
+                  <button onClick={() => setSelectedApplication(null)} style={{ border: 'none', background: 'transparent', fontSize: '1.5rem', cursor: 'pointer', color: '#6b7280' }}>×</button>
+                </div>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '20px' }}>
+                  <div>
+                    <strong>Applicant</strong>
+                    <p style={{ margin: '6px 0 0' }}>{selectedApplication.basicDetails?.fullName || '—'}</p>
+                  </div>
+                  <div>
+                    <strong>Loan Type</strong>
+                    <p style={{ margin: '6px 0 0' }}>{loanTypeLabels[selectedApplication.loanType] || selectedApplication.loanType || '—'}</p>
+                  </div>
+                  <div>
+                    <strong>Amount</strong>
+                    <p style={{ margin: '6px 0 0' }}>{formatAmount(selectedApplication.financialDetails?.loanAmount)}</p>
+                  </div>
+                  <div>
+                    <strong>Agent</strong>
+                    <p style={{ margin: '6px 0 0' }}>
+                      {selectedApplication.assignedAgent ? `${selectedApplication.assignedAgent.firstname || ''} ${selectedApplication.assignedAgent.lastname || ''}`.trim() || selectedApplication.assignedAgent.agentid || selectedApplication.assignedAgent._id : 'Unassigned'}
+                    </p>
+                  </div>
+                </div>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '20px' }}>
+                  <div>
+                    <strong>Status</strong>
+                    <p style={{ margin: '6px 0 0' }}>{selectedApplication.status.replace(/_/g, ' ')}</p>
+                  </div>
+                  <div>
+                    <strong>Applied</strong>
+                    <p style={{ margin: '6px 0 0' }}>{new Date(selectedApplication.createdAt).toLocaleDateString()}</p>
+                  </div>
+                  <div>
+                    <strong>Phone</strong>
+                    <p style={{ margin: '6px 0 0' }}>{selectedApplication.basicDetails?.mobile || '—'}</p>
+                  </div>
+                  <div>
+                    <strong>Email</strong>
+                    <p style={{ margin: '6px 0 0' }}>{selectedApplication.basicDetails?.email || '—'}</p>
+                  </div>
+                </div>
+                <div style={{ borderTop: '1px solid #e5e7eb', paddingTop: '18px' }}>
+                  <strong>Processing Remarks</strong>
+                  {selectedApplication.processing?.remarks?.length > 0 ? (
+                    <ul style={{ marginTop: '10px', paddingLeft: '18px', color: '#374151' }}>
+                      {selectedApplication.processing.remarks.map((remark, index) => (
+                        <li key={index} style={{ marginBottom: '8px' }}>
+                          {remark.text} {remark.date ? `(${new Date(remark.date).toLocaleString()})` : ''}
+                        </li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p style={{ margin: '10px 0 0', color: '#6b7280' }}>No remarks yet.</p>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
 
       {/* Assign Agent Modal */}
       {assignModal && (

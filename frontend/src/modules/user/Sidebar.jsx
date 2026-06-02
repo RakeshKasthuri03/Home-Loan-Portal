@@ -8,9 +8,13 @@ export default function Sidebar({ user, sections = [], role = "user", onProfileU
   const navigate = useNavigate();
 
   // Use the user prop passed from UserDashboard (which fetches from backend)
-  const displayUser = user || { name: 'User' };
-  const initials = displayUser?.name
-    ? displayUser.name.split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2)
+  const displayUser = user || { role };
+  const displayName =
+    displayUser?.name ||
+    `${displayUser?.firstname || ""} ${displayUser?.lastname || ""}`.trim() ||
+    (role === "admin" ? "Admin" : "User");
+  const initials = displayName
+    ? displayName.split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2)
     : "U";
 
   const profilePhoto = displayUser?.profilePhoto || null;
@@ -87,7 +91,7 @@ export default function Sidebar({ user, sections = [], role = "user", onProfileU
             </span>
           )}
         </div>
-        <h4>{displayUser?.name || "User"}</h4>
+        <h4>{displayName}</h4>
         <p>{displayUser?.email}</p>
         <span className="badge">
           {role === "admin" ? "Administrator" : "✔ Verified"}
