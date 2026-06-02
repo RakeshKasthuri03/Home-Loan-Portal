@@ -5,36 +5,56 @@ import "./LoanForm.css";
 
 const FormField = ({ field, value, onChange, error, fullWidth }) => {
   const { name, label, type, required, placeholder, options, accept, maxLength } = field;
+
   const [uploading, setUploading] = useState(false);
   const [fileName, setFileName] = useState("");
 
   const baseClass = `lf-input ${error ? "lf-input--error" : ""}`;
 
+  // ✅ HANDLE INPUT CHANGE
   const handleChange = async (e) => {
     if (type === "file") {
       const file = e.target.files[0];
       if (!file) return;
+
       setUploading(true);
       setFileName(file.name);
+
       try {
         const formData = new FormData();
         formData.append("file", file);
+
         const token = getToken();
-        const res = await axios.post("http://localhost:5000/api/upload", formData, {
-          headers: {
-            "Content-Type": "multipart/form-data",
-            Authorization: token ? `Bearer ${token}` : "",
-          },
-        });
-        // Store the URL string (not the File object)
-        const url = res.data.file?.url || res.data.url || "";
+
+        const res = await axios.post(
+          "http://localhost:5000/api/upload",
+          formData,
+          {
+            headers: {
+              Authorization: token ? `Bearer ${token}` : ""
+            }
+          }
+        );
+
+        // ✅ store uploaded file URL
+        const url = res.data?.file?.url || "";
+
         onChange(name, url);
+
       } catch (err) {
         console.error("File upload failed:", err);
+
+        alert(
+          err.response?.data?.message ||
+          "Upload failed. Only PDF/DOC/DOCX allowed"
+        );
+
         onChange(name, "");
         setFileName("");
       }
+
       setUploading(false);
+
     } else if (type === "checkbox") {
       onChange(name, e.target.checked);
     } else {
@@ -42,8 +62,10 @@ const FormField = ({ field, value, onChange, error, fullWidth }) => {
     }
   };
 
+  // ✅ RENDER INPUT BASED ON TYPE
   const renderInput = () => {
     switch (type) {
+
       case "select":
         return (
           <select className={baseClass} value={value || ""} onChange={handleChange}>
@@ -84,32 +106,56 @@ const FormField = ({ field, value, onChange, error, fullWidth }) => {
           </label>
         );
 
-      case "file":
+      // ✅ ✅ FILE INPUT (FINAL)
+      case "file": {
+        const displayName =
+          typeof value === "string" && value
+            ? value.split("/").pop()
+            : fileName;
+
         return (
           <div className="lf-file-wrapper">
             <label className="lf-file-label">
               <span className="lf-file-icon">📎</span>
+
               <span className="lf-file-text">
-                {uploading ? "Uploading..." : fileName ? (typeof value === 'string' ? value.split('/').pop() : fileName) : `Choose file (${accept})`}
+                {uploading
+                  ? "Uploading..."
+                  : displayName
+                  ? displayName
+                  : `Choose file (${accept || ".pdf,.doc,.docx"})`}
               </span>
+
               <input
                 type="file"
-                accept={accept}
+                accept={accept || ".pdf,.doc,.docx"}
                 onChange={handleChange}
                 className="lf-file-input"
                 disabled={uploading}
               />
             </label>
-            {value && typeof value === "string" && (
-              <span className="lf-file-chosen">✓ Uploaded</span>
-            )}
-            {uploading ? (
+
+            {/* ✅ Uploading */}
+            {uploading && (
               <span className="lf-file-chosen">Uploading…</span>
-            ) : value ? (
-              <span className="lf-file-chosen">✓ {typeof value === 'string' ? value.split('/').pop() : value.name}</span>
-            ) : null}
+            )}
+
+            {/* ✅ Uploaded */}
+            {!uploading && value && (
+              <div className="lf-file-chosen">
+                ✓ {displayName}
+
+                <br />
+
+                {/* ✅ VIEW FILE */}
+                <a href={value} target="_blank" rel="noreferrer">
+                  View
+                </a>
+              </div>
+            )}
           </div>
         );
+      }
 
       default:
         return (
@@ -125,6 +171,7 @@ const FormField = ({ field, value, onChange, error, fullWidth }) => {
     }
   };
 
+  // ✅ CHECKBOX UI
   if (type === "checkbox") {
     return (
       <div className={`lf-field lf-field--checkbox ${fullWidth ? "lf-field--full" : ""}`}>
@@ -134,17 +181,26 @@ const FormField = ({ field, value, onChange, error, fullWidth }) => {
     );
   }
 
+  // ✅ DEFAULT UI
   return (
     <div className={`lf-field ${fullWidth ? "lf-field--full" : ""}`}>
       <label className="lf-label">
         {label}
         {required && <span className="lf-required"> *</span>}
       </label>
+
       {renderInput()}
+
       {error && <span className="lf-error-msg">{error}</span>}
     </div>
   );
 };
 
-export default FormField;
 
+
+
+
+
+
+
+export default FormField;

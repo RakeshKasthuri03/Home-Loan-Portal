@@ -2,12 +2,12 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { getToken } from "../../utils/auth";
 import "../../styles/LeadDetails.css";
-import { agentGetApplications, getApplicationById, agentVerifyDoc } from "../../utils/loanApi";
+import { agentGetApplications, agentVerifyDoc, agentRequestDocs, agentRecommend, agentGetStats } from "../../utils/loanApi";
 
 const STATUS_COLOR = {
-  pending:   { bg: "#fef9c3", color: "#92400e" },
-  verified:  { bg: "#dcfce7", color: "#16a34a" },
-  rejected:  { bg: "#fee2e2", color: "#dc2626" },
+  pending: { bg: "#fef9c3", color: "#92400e" },
+  verified: { bg: "#dcfce7", color: "#16a34a" },
+  rejected: { bg: "#fee2e2", color: "#dc2626" },
 };
 
 const DOC_NAMES = {
@@ -35,55 +35,73 @@ export default function DocumentAction() {
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState(null);
 
-  // Fetch documents on mount
   useEffect(() => {
     const fetchDocuments = async () => {
       try {
         const response = await agentGetApplications();
-        const applications = Array.isArray(response) ? response : response?.data || [];
-        
-        // Transform applications into document format
-        const documents = applications.flatMap((app) => {
-          const docList = [];
-          const docFields = [
-            { key: 'panDoc', name: 'PAN Card' },
-            { key: 'aadharDoc', name: 'Aadhaar Card' },
-            { key: 'photoDoc', name: 'Passport Photo' },
-            { key: 'salarySlip', name: 'Salary Slip' },
-            { key: 'bankStatement', name: 'Bank Statement' },
-            { key: 'itr', name: 'ITR / Form 16' },
-            { key: 'propertyDoc', name: 'Property Documents' },
-            { key: 'plotDoc', name: 'Plot Documents' },
-            { key: 'encumbrance', name: 'Encumbrance Certificate' },
-            { key: 'passportDoc', name: 'Passport Copy' },
-            { key: 'visaDoc', name: 'Visa Copy' },
-            { key: 'poaDoc', name: 'Power of Attorney' },
-            { key: 'renovationQuote', name: 'Renovation Quote' },
-            { key: 'loanStatement', name: 'Loan Statement' },
-            { key: 'foreclosureLetter', name: 'Foreclosure Letter' },
-          ];
 
-          docFields.forEach(({ key, name }) => {
-            if (app[key]) {
-              docList.push({
-                id: `${app.id}-${key}`,
-                customer: app.applicantName || 'N/A',
-                loanId: app.loanId || 'N/A',
-                doc: name,
-                status: app[`${key}Status`] || 'pending',
-                file: typeof app[key] === 'string' ? { name: name, url: app[key] } : app[key],
-                fileUrl: typeof app[key] === 'string' ? app[key] : app[key]?.url,
-                applicationId: app.id,
+        console.log("RAW RESPONSE:", response);
+
+        // ✅ HANDLE ALL POSSIBLE API STRUCTURES
+        let applications = [];
+
+        if (Array.isArray(response?.data)) {
+          applications = response.data;
+        } else if (Array.isArray(response?.data?.data)) {
+          applications = response.data.data;
+        } else if (Array.isArray(response?.data?.applications)) {
+          applications = response.data.applications;
+        } else if (response?.data) {
+          applications = [response.data];
+        }
+
+        console.log("APPLICATIONS:", applications);
+
+        const base =
+          import.meta.env.VITE_API_BASE || "http://localhost:5000";
+
+        const documents = [];
+
+        applications.forEach((app) => {
+          if (!app) return;
+
+          const docObj = app.documents || {};
+
+          Object.keys(DOC_NAMES).forEach((key) => {
+            const docData = docObj[key];
+
+            // ✅ Allow showing even if no file (optional)
+            if (docData && docData.url) {
+              let fileUrl = docData.url;
+
+              // ✅ FIX localhost issue
+              if (fileUrl.includes("localhost")) {
+                fileUrl = fileUrl.replace(
+                  "http://localhost:5000",
+                  base
+                );
+              }
+
+              documents.push({
+                id: `${app._id}-${key}`,
+                customer:
+                  app.basicDetails?.fullName || "N/A",
+                loanId: app.applicationId || "N/A",
+                doc: DOC_NAMES[key],
+                status: (docData.status || "pending").toLowerCase(),
+                fileUrl: fileUrl,
+                applicationId: app._id,
                 docKey: key,
               });
             }
           });
-          return docList;
         });
+
+        console.log("FINAL DOCS:", documents);
 
         setDocs(documents);
       } catch (err) {
-        console.error('Failed to fetch documents:', err);
+        console.error("Fetch error:", err);
         setDocs([]);
       } finally {
         setLoading(false);
@@ -96,216 +114,197 @@ export default function DocumentAction() {
   const handleUpload = (id, file) => {
     if (!file) return;
 
-    const base = import.meta.env.VITE_API_BASE || 'http://localhost:5000';
-    const uploadUrl = `${base}/api/upload`;
+    const base =
+      import.meta.env.VITE_API_BASE || "http://localhost:5000";
+
     const formData = new FormData();
     const doc = docs.find((d) => d.id === id);
-    formData.append('file', file);
-    formData.append('docName', doc?.doc || file.name);
-    formData.append('purpose', 'agent_document');
 
-    const token = getToken();
-    axios.post(uploadUrl, formData, {
-      headers: {
-        Authorization: token ? `Bearer ${token}` : undefined,
-        'Content-Type': 'multipart/form-data',
-      },
-    }).then((response) => {
-      const fileUrl = response.data?.url || response.data?.file?.url || response.data?.doc?.url;
-      setDocs(prev => prev.map(d => d.id === id ? {
-        ...d,
-        file: fileUrl ? { name: file.name, url: fileUrl } : { name: file.name },
-        fileUrl: fileUrl,
-        status: 'pending'
-      } : d));
-    }).catch((error) => {
-      console.error('Document upload failed:', error);
-      setDocs(prev => prev.map(d => d.id === id ? { ...d, status: 'pending' } : d));
-    });
+    formData.append("file", file);
+    formData.append("docName", doc?.doc || file.name);
+
+    axios
+      .post(`${base}/api/upload`, formData, {
+        headers: {
+          Authorization: `Bearer ${getToken()}`,
+        },
+      })
+      .then((res) => {
+        const fileUrl =
+          res.data?.file?.url ||
+          res.data?.url ||
+          res.data?.doc?.url;
+
+        setDocs((prev) =>
+          prev.map((d) =>
+            d.id === id
+              ? { ...d, fileUrl: fileUrl, status: "pending" }
+              : d
+          )
+        );
+      })
+      .catch(console.error);
   };
 
   const handleVerify = async (doc) => {
-    try {
-      setActionLoading(doc.id);
-      await agentVerifyDoc(doc.applicationId, doc.docKey);
-      setDocs(prev => prev.map(d => d.id === doc.id ? { ...d, status: 'verified' } : d));
-    } catch (err) {
-      console.error('Failed to verify document:', err);
-    } finally {
-      setActionLoading(null);
+    setActionLoading(doc.id);
+    const res = await agentVerifyDoc(doc.applicationId, doc.docKey, 'verified');
+    if (res && res.success === false) {
+      console.error('Verify failed', res.error);
+    } else {
+      setDocs((prev) =>
+        prev.map((d) => (d.id === doc.id ? { ...d, status: "verified" } : d))
+      );
+      // refresh agent stats on server/UI
+      agentGetStats().catch(() => {});
     }
+    setActionLoading(null);
   };
 
   const handleReject = async (doc) => {
-    try {
-      setActionLoading(doc.id);
-      // Assuming there's a reject endpoint or we can pass a status
-      await agentVerifyDoc(doc.applicationId, doc.docKey, 'rejected');
-      setDocs(prev => prev.map(d => d.id === doc.id ? { ...d, status: 'rejected' } : d));
-    } catch (err) {
-      console.error('Failed to reject document:', err);
-    } finally {
-      setActionLoading(null);
+    setActionLoading(doc.id);
+    const res = await agentVerifyDoc(doc.applicationId, doc.docKey, 'rejected');
+    if (res && res.success === false) {
+      console.error('Reject failed', res.error);
+    } else {
+      setDocs((prev) => prev.map((d) => (d.id === doc.id ? { ...d, status: "rejected" } : d)));
+      // refresh agent stats
+      agentGetStats().catch(() => {});
     }
+    setActionLoading(null);
   };
 
-  const filtered = docs.filter(d => {
-    const matchFilter = filter === "All" || d.status === filter;
-    const matchSearch = d.customer.toLowerCase().includes(search.toLowerCase()) ||
-                        d.loanId.toLowerCase().includes(search.toLowerCase());
+  // Request approval to admin (recommend)
+  const handleRecommend = async (applicationId) => {
+    if (!window.confirm('Recommend this application for admin approval?')) return;
+    setActionLoading(applicationId);
+    const res = await agentRecommend(applicationId, 'Recommended by agent');
+    if (res && res.success) {
+      // Optionally refresh stats or applications
+      await agentGetStats();
+      // mark UI - we won't change document statuses here
+      alert('Recommendation sent to admin');
+    } else {
+      console.error('Recommend failed', res.error);
+      alert('Failed to recommend application');
+    }
+    setActionLoading(null);
+  };
+
+  // Request additional documents from applicant
+  const handleRequestMoreDocs = async (applicationId) => {
+    const remarks = window.prompt('Enter remark for applicant (optional):', 'Please provide additional documents');
+    if (remarks === null) return; // cancelled
+    setActionLoading(applicationId);
+    const res = await agentRequestDocs(applicationId, remarks || 'Additional documents requested by agent');
+    if (res && res.success) {
+      alert('Document request sent to applicant');
+    } else {
+      console.error('Request docs failed', res.error);
+      alert('Failed to send document request');
+    }
+    setActionLoading(null);
+  };
+
+  const filtered = docs.filter((d) => {
+    const matchFilter =
+      filter === "All" ||
+      d.status === filter.toLowerCase();
+
+    const matchSearch =
+      d.customer.toLowerCase().includes(search.toLowerCase()) ||
+      d.loanId.toLowerCase().includes(search.toLowerCase());
+
     return matchFilter && matchSearch;
   });
 
-  const counts = {
-    All: docs.length,
-    Pending: docs.filter((d) => d.status === "pending").length,
-    Verified: docs.filter((d) => d.status === "verified").length,
-    Rejected: docs.filter((d) => d.status === "rejected").length,
-  };
+  if (loading) return <div>Loading documents...</div>;
 
-  if (loading) {
-    return (
-      <div style={{ padding: "28px", fontFamily: "Inter, Poppins, sans-serif" }}>
-        <p>Loading documents...</p>
-      </div>
-    );
-  }
+  // Group filtered docs by applicationId
+  const apps = {};
+  filtered.forEach((d) => {
+    if (!apps[d.applicationId]) apps[d.applicationId] = { applicationId: d.applicationId, customer: d.customer, loanId: d.loanId, docs: [] };
+    apps[d.applicationId].docs.push(d);
+  });
+
+  const appList = Object.values(apps);
 
   return (
-    <div style={{ padding: "28px", fontFamily: "Inter, Poppins, sans-serif" }}>
-      {/* Page header */}
-      <div style={{ marginBottom: "24px" }}>
-        <h4 style={{ margin: "0 0 4px", fontWeight: 700, color: "#0f2557" }}>Document Action</h4>
-        <p style={{ margin: 0, fontSize: "0.88rem", color: "#6b7280" }}>
-          Review, verify and manage customer documents
-        </p>
-      </div>
+    <div style={{ padding: "28px" }}>
+      <h4>Document Action</h4>
 
-      {/* Stats */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: "14px", marginBottom: "24px" }}>
-        {Object.entries(counts).map(([label, count]) => (
-          <div
-            key={label}
-            onClick={() => setFilter(label)}
-            style={{
-              background: filter === label ? "#0f4c8a" : "#fff",
-              color: filter === label ? "#fff" : "#0f2557",
-              border: "1px solid #e5e7eb",
-              borderRadius: "10px",
-              padding: "16px 20px",
-              cursor: "pointer",
-              transition: "all 0.2s",
-            }}
-          >
-            <div style={{ fontSize: "1.5rem", fontWeight: 800 }}>{count}</div>
-            <div style={{ fontSize: "0.78rem", fontWeight: 600, opacity: 0.8 }}>{label}</div>
+      {appList.length === 0 && <div>No document records to display.</div>}
+
+      {appList.map((app) => {
+        const total = app.docs.length;
+        const verified = app.docs.filter((x) => x.status === 'verified').length;
+        const rejected = app.docs.filter((x) => x.status === 'rejected').length;
+        const pending = app.docs.filter((x) => x.status === 'pending').length;
+        const allVerified = total > 0 && verified === total;
+
+        return (
+          <div key={app.applicationId} style={{ marginBottom: 18, background: '#fff', padding: 12, borderRadius: 8, border: '1px solid #eef2f7' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+              <div>
+                <strong>{app.customer}</strong> — <span style={{ color: '#6b7280' }}>{app.loanId}</span>
+                <div style={{ marginTop: 6, fontSize: 13, color: '#374151' }}>
+                  Documents: {total} · Verified: {verified} · Pending: {pending} · Rejected: {rejected}
+                </div>
+              </div>
+
+              <div>
+                {actionLoading === app.applicationId ? (
+                  <span>Processing...</span>
+                ) : allVerified ? (
+                  <button style={{ background: '#dcfce7', color: '#15803d', padding: '8px 12px', borderRadius: 8, border: 'none', fontWeight: 700 }} onClick={() => handleRecommend(app.applicationId)}>Request Approval</button>
+                ) : (
+                  <button style={{ background: '#fff7ed', color: '#92400e', padding: '8px 12px', borderRadius: 8, border: '1px solid #fde68a', fontWeight: 700 }} onClick={() => handleRequestMoreDocs(app.applicationId)}>Request More Docs</button>
+                )}
+              </div>
+            </div>
+
+            <table style={{ width: '100%' }}>
+              <thead>
+                <tr>
+                  <th>Document</th>
+                  <th>Status</th>
+                  <th>File</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {app.docs.map((doc) => (
+                  <tr key={doc.id}>
+                    <td>{doc.doc}</td>
+                    <td>
+                      <span style={{ background: STATUS_COLOR[doc.status]?.bg, color: STATUS_COLOR[doc.status]?.color, padding: '4px 8px' }}>{doc.status}</span>
+                    </td>
+                    <td>
+                      {doc.fileUrl ? (
+                        doc.fileUrl.match(/\.(jpg|jpeg|png|gif|webp)$/i) ? (
+                          <img src={doc.fileUrl} style={{ width: 80, height: 60 }} onClick={() => window.open(doc.fileUrl)} />
+                        ) : (
+                          <a href={doc.fileUrl} target="_blank" rel="noreferrer">📎 View File</a>
+                        )
+                      ) : (
+                        <input type="file" onChange={(e) => handleUpload(doc.id, e.target.files[0])} />
+                      )}
+                    </td>
+                    <td>
+                      {actionLoading === doc.id ? '...' : (
+                        <>
+                          <button className="approve" onClick={() => handleVerify(doc)}>Verify</button>
+                          <button className="reject" onClick={() => handleReject(doc)}>Reject</button>
+                        </>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
-        ))}
-      </div>
-
-      {/* Search */}
-      <input
-        type="text"
-        placeholder="Search by customer or loan ID..."
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-        style={{
-          width: "100%", maxWidth: "360px", padding: "9px 14px",
-          border: "1.5px solid #d1d5db", borderRadius: "8px",
-          fontSize: "0.88rem", marginBottom: "16px", fontFamily: "inherit", outline: "none",
-        }}
-      />
-
-      {/* Table */}
-      <div style={{ background: "#fff", border: "1px solid #e5e7eb", borderRadius: "10px", overflow: "hidden" }}>
-        <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.87rem" }}>
-          <thead>
-            <tr style={{ background: "#f8f9fa" }}>
-              {["Customer", "Loan ID", "Document", "Status", "File", "Actions"].map((h) => (
-                <th key={h} style={{ padding: "12px 16px", textAlign: "left", fontWeight: 600, color: "#374151", borderBottom: "1px solid #e5e7eb" }}>
-                  {h}
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {filtered.map((doc) => (
-              <tr key={doc.id} style={{ borderBottom: "1px solid #f3f4f6" }}>
-                <td style={{ padding: "12px 16px", fontWeight: 600, color: "#0f2557" }}>{doc.customer}</td>
-                <td style={{ padding: "12px 16px", fontFamily: "monospace", fontSize: "0.8rem", color: "#6b7280" }}>{doc.loanId}</td>
-                <td style={{ padding: "12px 16px" }}>{doc.doc}</td>
-                <td style={{ padding: "12px 16px" }}>
-                  <span style={{
-                    background: STATUS_COLOR[doc.status]?.bg || "#f3f4f6",
-                    color: STATUS_COLOR[doc.status]?.color || "#6b7280",
-                    padding: "3px 10px", borderRadius: "100px", fontSize: "0.75rem", fontWeight: 600,
-                  }}>
-                    {doc.status}
-                  </span>
-                </td>
-                <td style={{ padding: "12px 16px" }}>
-                  {doc.fileUrl ? (
-                    <a href={doc.fileUrl} target="_blank" rel="noreferrer" style={{ fontSize: "0.78rem", color: "#2771e2", fontWeight: 600 }}>
-                      📎 View File
-                    </a>
-                  ) : (
-                    <label style={{ fontSize: "0.78rem", color: "#2771e2", fontWeight: 600, cursor: "pointer" }}>
-                      📤 Upload
-                      <input
-                        type="file"
-                        accept="application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,image/*"
-                        onChange={(e) => handleUpload(doc.id, e.target.files[0])}
-                        style={{ display: "none" }}
-                      />
-                    </label>
-                  )}
-                </td>
-                <td style={{ padding: "12px 16px" }}>
-                  {actionLoading === doc.id ? (
-                    <span style={{ fontSize: "0.78rem", color: "#6b7280" }}>...</span>
-                  ) : (
-                    <div style={{ display: "flex", gap: "6px" }}>
-                      <button
-                        onClick={() => handleVerify(doc)}
-                        disabled={doc.status === "verified"}
-                        style={{
-                          padding: "5px 12px",
-                          background: doc.status === "verified" ? "#f3f4f6" : "#dcfce7",
-                          color: doc.status === "verified" ? "#9ca3af" : "#16a34a",
-                          border: "none", borderRadius: "6px", fontSize: "0.78rem", fontWeight: 600,
-                          cursor: doc.status === "verified" ? "default" : "pointer",
-                        }}
-                      >
-                        Verify
-                      </button>
-                      <button
-                        onClick={() => handleReject(doc)}
-                        disabled={doc.status === "rejected"}
-                        style={{
-                          padding: "5px 12px",
-                          background: doc.status === "rejected" ? "#f3f4f6" : "#fee2e2",
-                          color: doc.status === "rejected" ? "#9ca3af" : "#dc2626",
-                          border: "none", borderRadius: "6px", fontSize: "0.78rem", fontWeight: 600,
-                          cursor: doc.status === "rejected" ? "default" : "pointer",
-                        }}
-                      >
-                        Reject
-                      </button>
-                    </div>
-                  )}
-                </td>
-              </tr>
-            ))}
-            {filtered.length === 0 && (
-              <tr>
-                <td colSpan={6} style={{ padding: "32px", textAlign: "center", color: "#9ca3af" }}>
-                  No documents found
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
+        );
+      })}
     </div>
   );
 }

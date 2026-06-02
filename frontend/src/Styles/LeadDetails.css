@@ -193,6 +193,9 @@
   z-index: 1050;
 }
 
+
+.status.approved{ background: #e7f6ed; color: #1e8e3e; }
+.status.rejected{ background: #fdeaea; color: #d93025; }
 /* ─────────────────────────────────────────────
    RESPONSIVE ADJUSTMENTS
 ───────────────────────────────────────────── */
@@ -206,3 +209,4 @@
     padding: 16px;
   }
 }
+

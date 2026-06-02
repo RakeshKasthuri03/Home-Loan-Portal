@@ -156,6 +156,7 @@ function AdminApplications() {
                   <th>Loan Type</th>
                   <th>Amount</th>
                   <th>Agent</th>
+                  <th>Agent Note</th>
                   <th>Applied</th>
                   <th>Status</th>
                   <th>Actions</th>
@@ -176,6 +177,17 @@ function AdminApplications() {
                           `${app.assignedAgent.firstname || ""} ${app.assignedAgent.lastname || ""}`.trim() || app.assignedAgent.agentid || app.assignedAgent._id
                         ) : (
                           <span style={{ color: "#9ca3af" }}>Unassigned</span>
+                        )}
+                      </td>
+                      <td>
+                        {app.processing?.remarks && app.processing.remarks.length > 0 ? (
+                          (() => {
+                            const rec = [...app.processing.remarks].reverse().find(r => typeof r.text === 'string' && r.text.toLowerCase().includes('agent recommendation'));
+                            if (rec) return <div style={{ fontSize: '0.85rem', color: '#0f2557', fontWeight: 600 }}>{rec.text}</div>;
+                            return <span style={{ color: '#6b7280' }}>—</span>;
+                          })()
+                        ) : (
+                          <span style={{ color: '#6b7280' }}>—</span>
                         )}
                       </td>
                       <td>{new Date(app.createdAt).toLocaleDateString()}</td>

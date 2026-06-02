@@ -392,10 +392,12 @@ const getAgentApplications = async (req, res) => {
     const [applications, total] = await Promise.all([
       Application.find(query)
         .populate('user', 'firstname lastname email phone')
-        .select('applicationId loanType status basicDetails.fullName basicDetails.mobile financialDetails.loanAmount createdAt processing')
+        // ✅ ✅ FIX ADDED HERE
+        .select('applicationId loanType status basicDetails.fullName basicDetails.mobile financialDetails.loanAmount createdAt processing documents')
         .sort({ 'processing.submittedAt': -1 })
         .skip(skip)
         .limit(parseInt(limit)),
+
       Application.countDocuments(query)
     ]);
 
@@ -407,9 +409,13 @@ const getAgentApplications = async (req, res) => {
         pages: Math.ceil(total / limit)
       }
     });
+
   } catch (error) {
     console.error('Get agent applications error:', error);
-    res.status(500).json({ message: 'Failed to fetch applications', error: error.message });
+    res.status(500).json({ 
+      message: 'Failed to fetch applications', 
+      error: error.message 
+    });
   }
 };
 

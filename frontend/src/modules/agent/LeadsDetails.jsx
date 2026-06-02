@@ -3,7 +3,7 @@ import { Container, Row, Col, Card, Table } from "react-bootstrap";
 import AgentUserDetails from "./AgentUserdetails";
 import "../../styles/Agentheader.css";
 import "../../styles/LeadDetails.css";
-import { agentGetStats, agentGetApplications, getApplicationById } from "../../utils/loanApi";
+import { agentGetStats, agentGetApplications, getApplicationById, agentRecommend, agentRequestDocs } from "../../utils/loanApi";
 
 const LOAN_LABELS = {
   PURCHASE: "Home Loan",
@@ -64,6 +64,31 @@ function LeadsDetails() {
     const fullRes = await getApplicationById(app._id);
     setSelectedApp(fullRes.success ? fullRes.data.application : app);
     setShowUserModal(true);
+  };
+
+  const handleRecommendFromList = async (e, application) => {
+    e.stopPropagation();
+    if (!window.confirm('Recommend this application for admin approval?')) return;
+    const res = await agentRecommend(application._id, 'Recommended from list');
+    if (res?.success) {
+      await fetchData();
+      alert('Recommendation sent to admin');
+    } else {
+      alert(res?.error || 'Failed to recommend');
+    }
+  };
+
+  const handleRequestDocsFromList = async (e, application) => {
+    e.stopPropagation();
+    const remarks = window.prompt('Enter remark for applicant (optional):', 'Please provide additional documents');
+    if (remarks === null) return;
+    const res = await agentRequestDocs(application._id, remarks || 'Additional documents required');
+    if (res?.success) {
+      await fetchData();
+      alert('Document request sent');
+    } else {
+      alert(res?.error || 'Failed to request documents');
+    }
   };
 
   // Filtering & Sorting
@@ -207,6 +232,12 @@ function LeadsDetails() {
               <tbody>
                 {filtered.map((app) => {
                   const appName = app.basicDetails?.fullName || `${app.user?.firstname || ""} ${app.user?.lastname || ""}`.trim() || "—";
+                  // compute doc stats from application.documents
+                  const docsObj = app.documents || {};
+                  const docEntries = Object.entries(docsObj).filter(([k,v])=> v && (v.url || typeof v === 'string'));
+                  const totalDocs = docEntries.length;
+                  const verifiedDocs = docEntries.filter(([k,v]) => (v.status === 'verified')).length;
+                  const allVerified = totalDocs > 0 && verifiedDocs === totalDocs;
                   return (
                     <tr key={app._id} style={{ cursor: "pointer" }} onClick={() => handleViewDetails(app)}>
                       <td style={{ padding: "12px 16px" }}>
@@ -224,10 +255,17 @@ function LeadsDetails() {
                       <td style={{ padding: "12px 16px", fontSize: "0.8rem", color: "#6b7280" }}>{formatDate(app.createdAt)}</td>
                       <td style={{ padding: "12px 16px", fontWeight: 600 }}>{app.financialDetails?.cibilScore || "—"}</td>
                       <td style={{ padding: "12px 16px" }}>
-                        <button onClick={(e) => { e.stopPropagation(); handleViewDetails(app); }}
-                          style={{ padding: "5px 12px", background: "#0f2557", color: "#fff", border: "none", borderRadius: "5px", fontSize: "0.75rem", fontWeight: 600, cursor: "pointer" }}>
-                          View Details
-                        </button>
+                        <div style={{ display: 'flex', gap: 8 }}>
+                          <button onClick={(e) => { e.stopPropagation(); handleViewDetails(app); }}
+                            style={{ padding: "5px 12px", background: "#0f2557", color: "#fff", border: "none", borderRadius: "5px", fontSize: "0.75rem", fontWeight: 600, cursor: "pointer" }}>
+                            View Details
+                          </button>
+                          {allVerified ? (
+                            <button onClick={(e) => handleRecommendFromList(e, app)} style={{ padding: '5px 12px', background: '#16a34a', color: '#fff', border: 'none', borderRadius: 5, fontSize: '0.75rem', fontWeight: 600 }}>Recommend</button>
+                          ) : (
+                            <button onClick={(e) => handleRequestDocsFromList(e, app)} style={{ padding: '5px 12px', background: '#f59e0b', color: '#fff', border: 'none', borderRadius: 5, fontSize: '0.75rem', fontWeight: 600 }}>Request Docs</button>
+                          )}
+                        </div>
                       </td>
                     </tr>
                   );
