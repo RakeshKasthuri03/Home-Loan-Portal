@@ -14,7 +14,7 @@ function AdminAgents() {
   const fetchAgents = async () => {
     try {
       const token = getToken();
-      const res = await axios.get("http://localhost:5000/api/agent", {
+      const res = await axios.get("/api/agent", {
         headers: { Authorization: `Bearer ${token}` },
       });
       const data = Array.isArray(res.data) ? res.data : res.data.agents || [];
@@ -31,7 +31,7 @@ function AdminAgents() {
     if (!window.confirm("Are you sure you want to remove this agent?")) return;
     try {
       const token = getToken();
-      await axios.delete(`http://localhost:5000/api/agent/${id}`, {
+      await axios.delete(`/api/agent/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       fetchAgents();

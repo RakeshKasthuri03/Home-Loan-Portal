@@ -18,7 +18,7 @@ export default function AdminLogin() {
     setLoading(true);
 
     try {
-      const res = await axios.post("http://localhost:5000/signin", {
+      const res = await axios.post("/signin", {
         email: identifier,
         password: password,
       });
@@ -82,7 +82,7 @@ export default function AdminLogin() {
           </div>
 
           <div style={{ background: "#f0fdf4", border: "1px solid #bbf7d0", borderRadius: "8px", padding: "8px 12px", fontSize: "0.78rem", color: "#15803d", textAlign: "center", marginBottom: "16px" }}>
-            <strong>Demo:</strong> admin@mlrr.com / admin123
+            <strong>Demo:</strong> admin@mlrr.com / admin@123
           </div>
 
           <button

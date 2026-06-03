@@ -233,7 +233,6 @@ applicationSchema.virtual('daysSinceSubmission').get(function() {
 
 // ─── INDEXES ──────────────────────────────────────────────────────────────────
 applicationSchema.index({ user: 1, status: 1 });
-applicationSchema.index({ applicationId: 1 });
 applicationSchema.index({ loanType: 1, status: 1 });
 applicationSchema.index({ assignedAgent: 1, status: 1 });
 applicationSchema.index({ 'basicDetails.mobile': 1 });

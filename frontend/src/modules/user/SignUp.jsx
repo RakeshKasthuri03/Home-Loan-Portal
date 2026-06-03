@@ -42,7 +42,7 @@ function SignUp({ closeModal, openLogin }) {
        console.log("User Object:", user);
        
       
-     const res= await axios.post('http://localhost:5000/signup', user);
+     const res= await axios.post('/signup', user);
      
       console.log("Signup Response:", res.data);
       if (res.status === 201) {
@@ -56,6 +56,7 @@ function SignUp({ closeModal, openLogin }) {
        
     } catch (error) {
       console.error("Signup Error:", error);
+      toast.error(error?.response?.data?.message || "Signup failed. Please try again.");
     }
     
 
@@ -96,6 +97,7 @@ function SignUp({ closeModal, openLogin }) {
                   <Form.Group className="form-group">
                     <Form.Label className="heading">First Name</Form.Label>
                     <Form.Control {...register("firstName")} />
+                    <small className="text-danger">{errors.firstName?.message}</small>
                   </Form.Group>
                   <Form.Group className="form-group">
                     <Form.Label className="heading">Middle Name</Form.Label>
@@ -104,6 +106,7 @@ function SignUp({ closeModal, openLogin }) {
                   <Form.Group className="form-group">
                     <Form.Label className="heading">Last Name</Form.Label>
                     <Form.Control {...register("lastName")} />
+                    <small className="text-danger">{errors.lastName?.message}</small>
                   </Form.Group>
                 </div>
                     <small className="text-danger">{errors.lastName?.message}</small>

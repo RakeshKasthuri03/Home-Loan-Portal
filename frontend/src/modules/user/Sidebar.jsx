@@ -27,7 +27,7 @@ export default function Sidebar({ user, sections = [], role = "user", onProfileU
 
     // Normalize relative upload paths to absolute URL for dev server
     if (url && typeof url === 'string' && url.startsWith('/')) {
-      const base = import.meta?.env?.VITE_API_BASE || 'http://localhost:5000';
+      const base = import.meta?.env?.VITE_API_BASE || '';
       url = `${base}${url}`;
     }
 
@@ -37,7 +37,7 @@ export default function Sidebar({ user, sections = [], role = "user", onProfileU
         const token = getToken();
         if (token && displayUser?._id) {
           const response = await axios.put(
-            `http://localhost:5000/user/${displayUser._id}`,
+            `/user/${displayUser._id}`,
             updated,
             { headers: { authorization: `Bearer ${token}` } }
           );
@@ -56,7 +56,7 @@ export default function Sidebar({ user, sections = [], role = "user", onProfileU
         const token = getToken();
         if (token && displayUser?._id) {
           const response = await axios.put(
-            `http://localhost:5000/user/${displayUser._id}`,
+            `/user/${displayUser._id}`,
             { profilePhoto: url },
             { headers: { authorization: `Bearer ${token}` } }
           );

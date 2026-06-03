@@ -16,7 +16,7 @@ function AdminUsers() {
   const fetchUsers = async () => {
     try {
       const token = getToken();
-      const res = await axios.get("http://localhost:5000/user", {
+      const res = await axios.get("/user", {
         headers: { Authorization: `Bearer ${token}` },
       });
       const allUsers = Array.isArray(res.data) ? res.data : res.data.users || [];

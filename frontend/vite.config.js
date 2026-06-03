@@ -5,6 +5,30 @@ import path from 'path'
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
+  server: {
+    proxy: {
+      '/api': {
+        target: 'http://localhost:8000',
+        changeOrigin: true,
+      },
+      '/signin': {
+        target: 'http://localhost:8000',
+        changeOrigin: true,
+      },
+      '/signup': {
+        target: 'http://localhost:8000',
+        changeOrigin: true,
+      },
+      '/forgot-password': {
+        target: 'http://localhost:8000',
+        changeOrigin: true,
+      },
+      '/user': {
+        target: 'http://localhost:8000',
+        changeOrigin: true,
+      },
+    }
+  },
   resolve: {
     alias: {
       '@'            : path.resolve(__dirname, './src'),

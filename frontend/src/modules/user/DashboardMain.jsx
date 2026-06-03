@@ -36,13 +36,24 @@ export default function DashboardMain({ dashboardData }) {
         <h3>Active application</h3>
         {activeApplication ? (
           <>
-            <p><strong>Application #{activeApplication.id}</strong></p>
-            <p>{activeApplication.loanType} — {activeApplication.amount}</p>
-            <p>Officer: {activeApplication.officer} · Agent: {activeApplication.agent}</p>
+            <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:12 }}>
+              <div>
+                <p style={{ margin:0 }}><strong>Application #{activeApplication.id}</strong></p>
+                <p style={{ margin:"4px 0 0", color:"#6b7280", fontSize:"0.88rem" }}>{activeApplication.loanType} — {activeApplication.amount}</p>
+                <p style={{ margin:"4px 0 0", color:"#6b7280", fontSize:"0.85rem" }}>Agent: {activeApplication.officer}</p>
+              </div>
+              <span style={{
+                padding:"3px 12px", borderRadius:12, fontSize:"0.8rem", fontWeight:700,
+                background: activeApplication.status==="approved"?"#dbeafe": activeApplication.status==="disbursed"?"#dcfce7": activeApplication.status==="documents_pending"?"#fee2e2":"#fef9c3",
+                color:      activeApplication.status==="approved"?"#1d4ed8": activeApplication.status==="disbursed"?"#15803d": activeApplication.status==="documents_pending"?"#dc2626":"#92400e",
+              }}>
+                {activeApplication.status.replace(/_/g," ")}
+              </span>
+            </div>
             <div className="steps">
               {activeApplication.steps.map((step, index) => (
                 <span key={index} className={step.status === "done" ? "done" : step.status === "current" ? "current" : ""}>
-                  {step.step ? `${step.step} ` : ""}{step.label}
+                  {step.label}
                 </span>
               ))}
             </div>
