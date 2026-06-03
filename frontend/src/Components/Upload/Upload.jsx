@@ -21,7 +21,7 @@ export default function Upload({ uploadUrl = '/api/upload', fieldName = 'file', 
       // optional metadata
       if (files[0] && files[0].name) fd.append('docName', files[0].name);
 
-      const base = import.meta?.env?.VITE_API_BASE || 'http://localhost:5000';
+      const base = import.meta?.env?.VITE_API_BASE || '';
       const url = uploadUrl.startsWith('http') ? uploadUrl : `${base}${uploadUrl}`;
 
       const res = await axios.post(url, fd, { headers: { 'Content-Type': 'multipart/form-data' } });

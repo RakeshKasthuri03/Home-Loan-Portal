@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { getToken } from './auth';
 
-const API_BASE = 'http://localhost:5000/api/loan';
+const API_BASE = '/api/loan';
 
 // Create axios instance with auth header
 const api = axios.create({
@@ -99,7 +99,7 @@ export const submitApplication = async (applicationId) => {
  */
 export const uploadLoanDocument = async (file, fieldName) => {
   try {
-    const base = import.meta.env.VITE_API_BASE || 'http://localhost:5000';
+    const base = import.meta.env.VITE_API_BASE || '';
     const uploadUrl = `${base}/api/upload`;
     const formData = new FormData();
     formData.append('file', file);
@@ -283,9 +283,9 @@ export const adminAssignAgent = async (applicationId, agentId) => {
   }
 };
 
-export const adminApproveApplication = async (applicationId, remarks) => {
+export const adminApproveApplication = async (applicationId, sanctionData) => {
   try {
-    const response = await api.put(`/admin/approve/${applicationId}`, { remarks });
+    const response = await api.put(`/admin/approve/${applicationId}`, sanctionData);
     return { success: true, data: response.data };
   } catch (error) {
     console.error('Admin approve error:', error);
@@ -293,9 +293,9 @@ export const adminApproveApplication = async (applicationId, remarks) => {
   }
 };
 
-export const adminRejectApplication = async (applicationId, remarks) => {
+export const adminRejectApplication = async (applicationId, reason) => {
   try {
-    const response = await api.put(`/admin/reject/${applicationId}`, { remarks });
+    const response = await api.put(`/admin/reject/${applicationId}`, { reason });
     return { success: true, data: response.data };
   } catch (error) {
     console.error('Admin reject error:', error);
@@ -303,13 +303,23 @@ export const adminRejectApplication = async (applicationId, remarks) => {
   }
 };
 
-export const adminDisburseApplication = async (applicationId) => {
+export const adminDisburseApplication = async (applicationId, disburseData) => {
   try {
-    const response = await api.put(`/admin/disburse/${applicationId}`);
+    const response = await api.put(`/admin/disburse/${applicationId}`, disburseData);
     return { success: true, data: response.data };
   } catch (error) {
     console.error('Admin disburse error:', error);
     return { success: false, error: error.response?.data?.message || 'Failed to disburse' };
+  }
+};
+
+export const adminCloseApplication = async (applicationId, reason) => {
+  try {
+    const response = await api.put(`/admin/close/${applicationId}`, { reason });
+    return { success: true, data: response.data };
+  } catch (error) {
+    console.error('Admin close error:', error);
+    return { success: false, error: error.response?.data?.message || 'Failed to close' };
   }
 };
 
