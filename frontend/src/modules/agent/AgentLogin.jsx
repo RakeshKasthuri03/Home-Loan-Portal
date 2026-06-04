@@ -19,7 +19,7 @@ export default function AgentLogin() {
     setLoading(true);
 
     try{
-      const result = await axios.post("/api/agent/signin", { agentid, password });
+      const result = await axios.post("http://localhost:5000/api/agent/signin", { agentid, password });
      
          const token = result.data.token;
          const agent = result.data.result;

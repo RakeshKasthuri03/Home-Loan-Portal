@@ -43,7 +43,7 @@ export default function Profile({ user, onProfileUpdated }) {
         // Map frontend key to backend key
         const updateData = { [field.backendKey]: formData[field.key] };
         const response = await axios.put(
-          `/user/${user._id}`,
+          `http://localhost:5000/user/${user._id}`,
           updateData,
           { headers: { authorization: `Bearer ${token}` } }
         );

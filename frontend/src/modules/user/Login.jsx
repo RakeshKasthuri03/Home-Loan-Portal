@@ -37,7 +37,7 @@ const handleSubmit = async (e) => {
     setError("");
     setLoading(true);
 
-    const res = await axios.post('/signin',credentials);
+    const res = await axios.post('http://localhost:5000/signin',credentials);
 
     const token = res.data.token;
     const user = res.data.result;

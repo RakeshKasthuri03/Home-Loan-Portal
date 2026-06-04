@@ -42,7 +42,7 @@ function SignUp({ closeModal, openLogin }) {
        console.log("User Object:", user);
        
       
-     const res= await axios.post('/signup', user);
+     const res= await axios.post('http://localhost:5000/signup', user);
      
       console.log("Signup Response:", res.data);
       if (res.status === 201) {

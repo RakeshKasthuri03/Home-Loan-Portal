@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { getToken } from './auth';
 
-const API_BASE = '/api/loan';
+const API_BASE = 'http://localhost:5000/api/loan';
 
 // Create axios instance with auth header
 const api = axios.create({
@@ -26,7 +26,7 @@ api.interceptors.request.use((config) => {
  */
 export const getLoanTypes = async () => {
   try {
-    const response = await api.get('/types');
+    const response = await api.get('http://localhost:5000/api/loan/types');
     return { success: true, data: response.data };
   } catch (error) {
     console.error('Get loan types error:', error);
@@ -45,7 +45,7 @@ export const getLoanTypes = async () => {
  */
 export const createApplication = async (loanType, formData = {}) => {
   try {
-    const response = await api.post('/apply', { loanType, ...formData });
+    const response = await api.post('http://localhost:5000/api/loan/apply', { loanType, ...formData });
     return { success: true, data: response.data };
   } catch (error) {
     console.error('Create application error:', error);
@@ -67,7 +67,7 @@ export const createApplication = async (loanType, formData = {}) => {
  */
 export const saveProgress = async (applicationId, formData, currentStep) => {
   try {
-    const response = await api.put(`/save/${applicationId}`, { 
+    const response = await api.put(`http://localhost:5000/api/loan/save/${applicationId}`, { 
       currentStep, 
       ...organizeFormData(formData) 
     });
@@ -84,7 +84,7 @@ export const saveProgress = async (applicationId, formData, currentStep) => {
  */
 export const submitApplication = async (applicationId) => {
   try {
-    const response = await api.put(`/submit/${applicationId}`);
+    const response = await api.put(`http://localhost:5000/api/loan/submit/${applicationId}`);
     return { success: true, data: response.data };
   } catch (error) {
     console.error('Submit application error:', error);
@@ -99,7 +99,7 @@ export const submitApplication = async (applicationId) => {
  */
 export const uploadLoanDocument = async (file, fieldName) => {
   try {
-    const base = import.meta.env.VITE_API_BASE || '';
+    const base = import.meta.env.VITE_API_BASE || 'http://localhost:5000';
     const uploadUrl = `${base}/api/upload`;
     const formData = new FormData();
     formData.append('file', file);

@@ -28,7 +28,7 @@ export default function UserDashboard() {
         // Fetch user profile and applications in parallel
         const [userRes, appsRes] = await Promise.all([
           token && storedAuth?.id
-            ? axios.get(`/user/${storedAuth.id}`, { headers: { authorization: `Bearer ${token}` } })
+            ? axios.get(`http://localhost:5000/user/${storedAuth.id}`, { headers: { authorization: `Bearer ${token}` } })
             : Promise.resolve(null),
           getMyApplications(),
         ]);

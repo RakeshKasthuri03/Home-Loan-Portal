@@ -68,7 +68,7 @@ function AdminApplications() {
   const fetchAgents = async () => {
     try {
       const token = getToken();
-      const res = await axios.get("/api/agent", { headers: { Authorization: `Bearer ${token}` } });
+      const res = await axios.get("http://localhost:5000/api/agent", { headers: { Authorization: `Bearer ${token}` } });
       setAgents(Array.isArray(res.data) ? res.data : res.data.agents || []);
     } catch (err) { console.error("Failed to fetch agents:", err); }
   };

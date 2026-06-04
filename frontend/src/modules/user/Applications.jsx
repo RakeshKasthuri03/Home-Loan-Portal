@@ -24,7 +24,7 @@ export default function Applications({ user }) {
         return;
       }
 
-      const res = await axios.get('/api/loan/my-applications', {
+      const res = await axios.get('http://localhost:5000/api/loan/my-applications', {
         headers: { authorization: `Bearer ${token}` }
       });
       

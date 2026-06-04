@@ -35,7 +35,7 @@ export default function AgentForm({ show, initial = {}, tiers = ['Silver','Gold'
     e.preventDefault();
      
       try{
-       const res=await axios.post('/api/agent/signup',form);
+       const res=await axios.post('http://localhost:5000/api/agent/signup',form);
         if (res.status >= 200 && res.status < 300) {
           if (pageMode) {
             // show toast for 3s then navigate back to agents list

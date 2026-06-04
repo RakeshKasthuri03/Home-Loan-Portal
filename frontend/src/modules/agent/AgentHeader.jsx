@@ -33,7 +33,7 @@ const getAgent = async () => {
     const token = localStorage.getItem("mlrr_token");
 
     const res = await axios.get(
-      `/api/agent/${id}`,
+      `http://localhost:5000/api/agent/${id}`,
       {
         headers: { Authorization: `Bearer ${token}` }
       }

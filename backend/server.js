@@ -5,10 +5,7 @@ require('dotenv').config();  // Load .env FIRST before using env variables
 
 const app=express();
 app.use(express.json());
-app.use(cors({
-  origin: ['http://localhost:5173', 'http://localhost:3000'],
-  credentials: true
-}));
+app.use(cors());
 
 
 const path = require('path');
@@ -42,7 +39,7 @@ if (!fs.existsSync(UPLOAD_DIR)) fs.mkdirSync(UPLOAD_DIR, { recursive: true });
 app.use('/uploads', express.static(UPLOAD_DIR));
 
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT ;
 app.listen(PORT,()=>{
     console.log(`Server is running on port ${PORT}`);
 });

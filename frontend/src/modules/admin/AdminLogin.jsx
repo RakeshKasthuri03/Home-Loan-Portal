@@ -18,7 +18,7 @@ export default function AdminLogin() {
     setLoading(true);
 
     try {
-      const res = await axios.post("/signin", {
+      const res = await axios.post("http://localhost:5000/signin", {
         email: identifier,
         password: password,
       });

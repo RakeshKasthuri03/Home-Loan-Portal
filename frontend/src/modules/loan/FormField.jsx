@@ -27,7 +27,7 @@ const FormField = ({ field, value, onChange, error, fullWidth }) => {
         const token = getToken();
 
         const res = await axios.post(
-          "/api/upload",
+          "http://localhost:5000/api/upload",
           formData,
           {
             headers: {
