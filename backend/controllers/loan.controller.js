@@ -436,8 +436,8 @@ const getAgentApplications = async (req, res) => {
     const [applications, total] = await Promise.all([
       Application.find(query)
         .populate('user', 'firstname lastname email phone')
-        // ✅ ✅ FIX ADDED HERE
-        .select('applicationId loanType status basicDetails.fullName basicDetails.mobile financialDetails.loanAmount createdAt processing documents')
+        .populate('assignedAgent', 'firstname lastname email phone')
+        // Return full application record for agents so all form fields are visible in the portal
         .sort({ 'processing.submittedAt': -1 })
         .skip(skip)
         .limit(parseInt(limit)),

@@ -229,7 +229,6 @@ function AgentUserDetails({ show, onClose, application, onRefresh }) {
                 { key: "documents", label: `Documents (${docs.length})` },
                 { key: "timeline", label: "Timeline & Remarks" },
                 { key: "actions", label: "Actions" },
-                { key: "raw", label: "Raw Data" },
               ].map(tab => (
                 <Nav.Item key={tab.key}>
                   <Nav.Link
@@ -365,16 +364,7 @@ function AgentUserDetails({ show, onClose, application, onRefresh }) {
                 )}
               </Tab.Pane>
 
-              {/* ═══════════ RAW DATA TAB ═══════════ */}
-              <Tab.Pane eventKey="raw">
-                <SectionCard title="Raw Application JSON">
-                  <div style={{ maxHeight: '60vh', overflowY: 'auto', background: '#0f1724', color: '#e6f1ff', padding: 12, borderRadius: 6 }}>
-                    <pre style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word', fontSize: '0.78rem' }}>
-{JSON.stringify(app, null, 2)}
-                    </pre>
-                  </div>
-                </SectionCard>
-              </Tab.Pane>
+              
 
               {/* ═══════════ PERSONAL & EMPLOYMENT TAB ═══════════ */}
               <Tab.Pane eventKey="personal">
