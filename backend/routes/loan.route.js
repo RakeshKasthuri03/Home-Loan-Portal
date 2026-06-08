@@ -11,6 +11,7 @@ const {
   getApplicationById,
   deleteApplication,
   requestClosure,
+  resubmitDocument,
   
   // Agent operations
   getAgentApplications,
@@ -105,6 +106,8 @@ router.get('/application/:applicationId', auth, getApplicationById);
 router.delete('/application/:applicationId', auth, deleteApplication);
 // Request loan closure (user)
 router.put('/closure/:applicationId', auth, requestClosure);
+// Resubmit a rejected document (user)
+router.put('/resubmit-doc/:applicationId', auth, resubmitDocument);
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // AGENT ROUTES
