@@ -154,7 +154,7 @@ const applicationSchema = new mongoose.Schema({
     poaDoc: { url: { type: String }, status: { type: String, enum: ['pending', 'verified', 'rejected'], default: 'pending' }, uploadedAt: { type: Date } },
     renovationQuote: { url: { type: String }, status: { type: String, enum: ['pending', 'verified', 'rejected'], default: 'pending' }, uploadedAt: { type: Date } },
     loanStatement: { url: { type: String }, status: { type: String, enum: ['pending', 'verified', 'rejected'], default: 'pending' }, uploadedAt: { type: Date } },
-    foreclosureLetter: { url: { type: String }, status: { type: String, enum: ['pending', 'verified', 'rejected', 'processed'], default: 'pending' }, uploadedAt: { type: Date } }
+    foreclosureLetter: { url: { type: String }, status: { type: String, enum: ['pending', 'verified', 'rejected', 'processed'] }, uploadedAt: { type: Date } }
   },
 
   // ─── CONSENT ────────────────────────────────────────────────────────────────

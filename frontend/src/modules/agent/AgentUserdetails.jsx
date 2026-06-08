@@ -221,7 +221,7 @@ function AgentUserDetails({ show, onClose, application, onRefresh }) {
           {/* Tab Navigation */}
           <div style={{ background: "#fff", borderBottom: "1px solid #e5e7eb", padding: "0 28px" }}>
             <Nav variant="tabs" style={{ borderBottom: "none" }}>
-              {[
+                {[
                 { key: "overview", label: "Overview" },
                 { key: "personal", label: "Personal & Employment" },
                 { key: "financial", label: "Financial & Loan" },
@@ -363,6 +363,8 @@ function AgentUserDetails({ show, onClose, application, onRefresh }) {
                   </SectionCard>
                 )}
               </Tab.Pane>
+
+              
 
               {/* ═══════════ PERSONAL & EMPLOYMENT TAB ═══════════ */}
               <Tab.Pane eventKey="personal">
