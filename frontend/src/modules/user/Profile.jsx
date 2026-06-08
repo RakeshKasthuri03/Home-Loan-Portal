@@ -2,12 +2,17 @@ import { useState, useEffect } from "react";
 import userPhoto from "../../assets/user.png";
 import axios from "axios";
 import { getToken } from "../../utils/auth";
+import { clearAuth } from "../../utils/auth";
+import { useNavigate } from "react-router-dom";
 
-export default function Profile({ user, onProfileUpdated }) {
+export default function Profile({ user, applications = [], onProfileUpdated }) {
   const [activeTab, setActiveTab] = useState("personal"); // Default tab
   const [isEditing, setIsEditing] = useState({});
   const [formData, setFormData] = useState({...user});
   const [saving, setSaving] = useState(false);
+  const [showChangePassword, setShowChangePassword] = useState(false);
+  const [pwdForm, setPwdForm] = useState({ newPassword: "", confirmPassword: "" });
+  const navigate = useNavigate();
 
   useEffect(() => {
     setFormData({ ...user });
@@ -20,11 +25,18 @@ export default function Profile({ user, onProfileUpdated }) {
     { label: "Gender", key: "gender", backendKey: "gender", type: "text", editable: true },
   ];
 
+  // Compute real loan summary from applications prop
+  const totalApps = applications?.length || 0;
+  const underReviewCount = applications.filter(a => ["submitted","under_review"].includes(a.status)).length;
+  const approvedApp = applications.find(a => a.status === 'approved' || a.status === 'disbursed');
+  const approvedAmount = approvedApp?.sanctionedDetails?.sanctionedAmount || approvedApp?.financialDetails?.loanAmount || 0;
+  const activeApp = applications.find(a => ["submitted","under_review","documents_pending","approved","disbursed"].includes(a.status));
+
   const loanDetails = [
-    { label: "Total Applications", value: "4", icon: "📋" },
-    { label: "Under Review", value: "2", icon: "⏳" },
-    { label: "Approved Amount", value: "₹42L", icon: "✅" },
-    { label: "Active Application", value: "HLP-2025-00142", icon: "🏷️" },
+    { label: "Total Applications", value: String(totalApps), icon: "📋" },
+    { label: "Under Review", value: String(underReviewCount), icon: "⏳" },
+    { label: "Approved Amount", value: approvedAmount ? `₹${Number(approvedAmount).toLocaleString('en-IN')}` : "—", icon: "✅" },
+    { label: "Active Application", value: activeApp?.applicationId || "—", icon: "🏷️" },
   ];
 
   const handleEdit = (key) => {
@@ -58,6 +70,31 @@ export default function Profile({ user, onProfileUpdated }) {
     } finally {
       setSaving(false);
       setIsEditing(prev => ({ ...prev, [field.key]: false }));
+    }
+  };
+
+  const handleLogout = () => {
+    clearAuth();
+    navigate('/login');
+  };
+
+  const handlePasswordChange = async () => {
+    if (!pwdForm.newPassword || pwdForm.newPassword !== pwdForm.confirmPassword) {
+      alert('Passwords do not match');
+      return;
+    }
+    try {
+      const response = await axios.post('http://localhost:5000/forgot-password', {
+        email: formData.email,
+        newPassword: pwdForm.newPassword,
+        confirmPassword: pwdForm.confirmPassword
+      });
+      alert(response.data?.message || 'Password updated');
+      setShowChangePassword(false);
+      setPwdForm({ newPassword: '', confirmPassword: '' });
+    } catch (err) {
+      console.error('Password change error', err);
+      alert(err.response?.data?.message || 'Failed to change password');
     }
   };
 
@@ -178,22 +215,35 @@ export default function Profile({ user, onProfileUpdated }) {
           <div className="tab-panel profile-card fade-in">
             <div className="card-body">
               <div className="settings-list">
-                <button className="setting-btn">
+                <button className="setting-btn" onClick={() => setShowChangePassword(true)}>
                   <span className="setting-icon">🔐</span>
                   <span className="setting-text">Change Password</span>
                   <span className="arrow">›</span>
                 </button>
-                <button className="setting-btn">
+                <button className="setting-btn" onClick={() => alert('A verification link has been sent to your email (stub).')}>
                   <span className="setting-icon">📧</span>
                   <span className="setting-text">Verify Email</span>
                   <span className="arrow">›</span>
                 </button>
-                <button className="setting-btn danger">
+                <button className="setting-btn danger" onClick={handleLogout}>
                   <span className="setting-icon">🚪</span>
                   <span className="setting-text">Logout</span>
                   <span className="arrow">›</span>
                 </button>
               </div>
+                {showChangePassword && (
+                  <div style={{ marginTop: 12, padding: 12, border: '1px solid #e5e7eb', borderRadius: 8, background: '#fff' }}>
+                    <h4 style={{ marginTop: 0 }}>Change Password</h4>
+                    <div style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
+                      <input type="password" placeholder="New password" value={pwdForm.newPassword} onChange={e => setPwdForm(p => ({ ...p, newPassword: e.target.value }))} className="lt-input" />
+                      <input type="password" placeholder="Confirm password" value={pwdForm.confirmPassword} onChange={e => setPwdForm(p => ({ ...p, confirmPassword: e.target.value }))} className="lt-input" />
+                    </div>
+                    <div style={{ display: 'flex', gap: 8 }}>
+                      <button className="lt-btn lt-btn--primary" onClick={handlePasswordChange}>Save</button>
+                      <button className="lt-btn" onClick={() => setShowChangePassword(false)}>Cancel</button>
+                    </div>
+                  </div>
+                )}
             </div>
           </div>
         )}

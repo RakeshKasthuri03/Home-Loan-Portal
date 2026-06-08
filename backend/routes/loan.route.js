@@ -10,6 +10,7 @@ const {
   getMyApplications,
   getApplicationById,
   deleteApplication,
+  requestClosure,
   
   // Agent operations
   getAgentApplications,
@@ -22,6 +23,7 @@ const {
   
   // Admin operations
   getAllApplications,
+  getClosureRequests,
   assignAgent,
   approveApplication,
   rejectApplication,
@@ -101,6 +103,8 @@ router.get('/application/:applicationId', auth, getApplicationById);
 
 // Delete draft application
 router.delete('/application/:applicationId', auth, deleteApplication);
+// Request loan closure (user)
+router.put('/closure/:applicationId', auth, requestClosure);
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // AGENT ROUTES
@@ -136,6 +140,8 @@ router.get('/admin/applications', auth, isAdmin, getAllApplications);
 
 // Get admin dashboard stats
 router.get('/admin/stats', auth, isAdmin, getDashboardStats);
+// Get pending closure requests for admin
+router.get('/admin/closure-requests', auth, isAdmin, getClosureRequests);
 
 // Assign agent to application
 router.put('/admin/assign/:applicationId', auth, isAdmin, assignAgent);

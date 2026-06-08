@@ -323,6 +323,32 @@ export const adminCloseApplication = async (applicationId, reason) => {
   }
 };
 
+/**
+ * Request loan closure (user)
+ */
+export const requestClosure = async (applicationId, data = {}) => {
+  try {
+    const response = await api.put(`/closure/${applicationId}`, data);
+    return { success: true, data: response.data };
+  } catch (error) {
+    console.error('Request closure error:', error);
+    return { success: false, error: error.response?.data?.message || 'Failed to request closure' };
+  }
+};
+
+/**
+ * Admin: get pending closure requests
+ */
+export const adminGetClosureRequests = async () => {
+  try {
+    const response = await api.get('/admin/closure-requests');
+    return { success: true, data: response.data };
+  } catch (error) {
+    console.error('Admin get closure requests error:', error);
+    return { success: false, error: error.response?.data?.message || 'Failed to fetch closure requests' };
+  }
+};
+
 // ═══════════════════════════════════════════════════════════════════════════════
 // AGENT OPERATIONS
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -419,4 +445,6 @@ export default {
   agentAddRemarks,
   agentRecommend,
   agentVerifyDoc,
+  requestClosure,
+  adminGetClosureRequests,
 };

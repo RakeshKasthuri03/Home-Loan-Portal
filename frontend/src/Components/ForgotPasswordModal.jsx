@@ -21,7 +21,7 @@ export default function ForgotPasswordModal({ open, onClose }) {
 
     setLoading(true);
     try {
-      const base = import.meta?.env?.VITE_API_BASE || '';
+      const base = import.meta?.env?.VITE_API_BASE || 'http://localhost:5000';
       const res = await axios.post(`${base}/forgot-password`, { email, newPassword, confirmPassword });
       setSuccess(res.data?.message || 'Password updated');
       setEmail(''); setNewPassword(''); setConfirmPassword('');

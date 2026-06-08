@@ -49,6 +49,13 @@ export default function DashboardMain({ dashboardData }) {
               }}>
                 {activeApplication.status.replace(/_/g," ")}
               </span>
+              {activeApplication.foreclosureStatus && (
+                <div style={{ marginTop: 8 }}>
+                  <span style={{ padding:"4px 10px", borderRadius:10, fontSize:"0.72rem", fontWeight:700, background: activeApplication.foreclosureStatus === 'pending' ? '#fef9c3' : '#e6f0ff', color: activeApplication.foreclosureStatus === 'pending' ? '#92400e' : '#075985' }}>
+                    {activeApplication.foreclosureStatus.replace(/_/g, ' ').toUpperCase()}
+                  </span>
+                </div>
+              )}
             </div>
             <div className="steps">
               {activeApplication.steps.map((step, index) => (

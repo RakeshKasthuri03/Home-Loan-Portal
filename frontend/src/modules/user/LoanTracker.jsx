@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { getUser } from "../../utils/auth";
-import { getMyApplications, getApplicationById } from "../../utils/loanApi";
+import { getMyApplications, getApplicationById, requestClosure } from "../../utils/loanApi";
 import "../../styles/LoanTracker.css";
 
 const fmt = (n) => n ? "₹" + Number(n).toLocaleString("en-IN") : "—";
@@ -73,7 +73,19 @@ export default function LoanTracker() {
 
   const handleClosure = (e) => {
     e.preventDefault();
-    setClosureMsg("✅ Closure request submitted. Our team will contact you within 3 business days with the foreclosure statement.");
+    (async () => {
+      try {
+        const res = await requestClosure(loan._id, { reason: e.target[0]?.value || '', preferredDate: e.target[1]?.value || null });
+        if (res.success) {
+          setClosureMsg("✅ Closure request submitted. Our team will contact you within 3 business days with the foreclosure statement.");
+        } else {
+          setClosureMsg(`❌ ${res.error || 'Failed to submit closure request'}`);
+        }
+      } catch (err) {
+        console.error('Closure submission failed', err);
+        setClosureMsg('❌ Failed to submit closure request');
+      }
+    })();
   };
 
   // ── Loading ──────────────────────────────────────────────────────────────
@@ -374,23 +386,44 @@ export default function LoanTracker() {
           <div className="lt-closure-note">⚠️ Once submitted, our team will send you a foreclosure statement with the exact payoff amount including accrued interest.</div>
           {closureMsg ? (
             <div className="lt-success-msg">{closureMsg}</div>
-          ) : (
-            <form className="lt-form" onSubmit={handleClosure}>
-              <div className="lt-form-group"><label>Reason for Closure</label>
-                <select className="lt-input" required>
-                  <option value="">Select reason</option>
-                  <option>Selling the property</option>
-                  <option>Refinancing with another bank</option>
-                  <option>Have surplus funds</option>
-                  <option>Other</option>
-                </select>
-              </div>
-              <div className="lt-form-group"><label>Preferred Closure Date</label>
-                <input type="date" className="lt-input" required />
-              </div>
-              <button type="submit" className="lt-btn lt-btn--danger">Request Loan Closure</button>
-            </form>
-          )}
+          ) : (() => {
+            const foreclosure = loan.documents?.foreclosureLetter;
+            if (foreclosure && foreclosure.status === 'pending') {
+              return (
+                <div style={{ background: '#fff7ed', border: '1px solid #fde68a', padding: 16, borderRadius: 8 }}>
+                  <strong style={{ color: '#92400e' }}>Closure Requested</strong>
+                  <p style={{ margin: '8px 0 0', color: '#6b7280' }}>Your closure request is pending. Requested on: {foreclosure.requestedAt ? new Date(foreclosure.requestedAt).toLocaleString() : '—'}</p>
+                  {foreclosure.preferredDate && <p style={{ margin: '6px 0 0', color: '#6b7280' }}>Preferred date: {foreclosure.preferredDate}</p>}
+                  {foreclosure.reason && <p style={{ margin: '6px 0 0', color: '#6b7280' }}>Reason: {foreclosure.reason}</p>}
+                </div>
+              );
+            }
+            if (foreclosure && foreclosure.status === 'processed') {
+              return (
+                <div style={{ background: '#e6f0ff', border: '1px solid #c7e0ff', padding: 16, borderRadius: 8 }}>
+                  <strong style={{ color: '#075985' }}>Closure Processed</strong>
+                  <p style={{ margin: '8px 0 0', color: '#6b7280' }}>Your closure was processed on {foreclosure.processedAt ? new Date(foreclosure.processedAt).toLocaleDateString() : '—'}.</p>
+                </div>
+              );
+            }
+            return (
+              <form className="lt-form" onSubmit={handleClosure}>
+                <div className="lt-form-group"><label>Reason for Closure</label>
+                  <select className="lt-input" required>
+                    <option value="">Select reason</option>
+                    <option>Selling the property</option>
+                    <option>Refinancing with another bank</option>
+                    <option>Have surplus funds</option>
+                    <option>Other</option>
+                  </select>
+                </div>
+                <div className="lt-form-group"><label>Preferred Closure Date</label>
+                  <input type="date" className="lt-input" required />
+                </div>
+                <button type="submit" className="lt-btn lt-btn--danger">Request Loan Closure</button>
+              </form>
+            );
+          })()}
         </div>
       )}
 

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useLocation } from 'react-router-dom';
 import axios from "axios";
 import "../../styles/AdminDashboard.css";
 import { getToken } from "../../utils/auth";
@@ -74,6 +75,18 @@ function AdminApplications() {
   };
 
   useEffect(() => { fetchApplications(); fetchAgents(); }, []);
+
+  // Open close modal if query param provided (reused from AdminDashboard link)
+  const location = useLocation();
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const openClose = params.get('openClose');
+    if (openClose) {
+      // Ensure applications are loaded first, then open modal
+      const timer = setTimeout(() => setCloseModal(openClose), 400);
+      return () => clearTimeout(timer);
+    }
+  }, [location.search]);
 
   const statusMap = {
     All:null, Draft:"draft", Submitted:"submitted", "Under Review":"under_review",

@@ -369,6 +369,50 @@ const deleteApplication = async (req, res) => {
   }
 };
 
+  /**
+   * User: Request loan closure (creates a remark + marks foreclosure letter as pending)
+   * PUT /api/loan/closure/:applicationId
+   */
+  const requestClosure = async (req, res) => {
+    try {
+      const { applicationId } = req.params;
+      const userId = req.user.id || req.user._id;
+      const { reason, preferredDate } = req.body;
+
+      const application = await Application.findOne({ _id: applicationId, user: userId });
+      if (!application) return res.status(404).json({ message: 'Application not found' });
+
+      // Only allow closure request for disbursed or approved loans
+      if (!['disbursed','approved'].includes(application.status)) {
+        return res.status(400).json({ message: 'Closure can only be requested for approved/disbursed loans' });
+      }
+
+      // Push a processing remark
+      application.processing = application.processing || {};
+      application.processing.remarks = application.processing.remarks || [];
+      application.processing.remarks.push({
+        text: `Closure requested by user${reason ? ': ' + reason : ''}`,
+        by: userId,
+        date: new Date()
+      });
+
+      // Mark foreclosureLetter request in documents
+      application.documents = application.documents || {};
+      application.documents.foreclosureLetter = application.documents.foreclosureLetter || {};
+      application.documents.foreclosureLetter.status = 'pending';
+      application.documents.foreclosureLetter.uploadedAt = new Date();
+      application.documents.foreclosureLetter.requestedAt = new Date();
+      application.documents.foreclosureLetter.preferredDate = preferredDate || null;
+
+      await application.save();
+
+      res.json({ message: 'Closure request submitted', application });
+    } catch (error) {
+      console.error('Request closure error:', error);
+      res.status(500).json({ message: 'Failed to submit closure request', error: error.message });
+    }
+  };
+
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // AGENT OPERATIONS - View Assigned, Update Status, Add Remarks
@@ -658,6 +702,22 @@ const getAllApplications = async (req, res) => {
   }
 };
 
+  /**
+   * Admin: Get pending closure requests
+   * GET /api/loan/admin/closure-requests
+   */
+  const getClosureRequests = async (req, res) => {
+    try {
+      const apps = await Application.find({ 'documents.foreclosureLetter.status': 'pending' })
+        .select('applicationId loanType status basicDetails.fullName financialDetails.loanAmount documents processing user')
+        .populate('user', 'firstname lastname email');
+      res.json({ applications: apps });
+    } catch (error) {
+      console.error('Get closure requests error:', error);
+      res.status(500).json({ message: 'Failed to fetch closure requests', error: error.message });
+    }
+  };
+
 /**
  * Admin: Assign agent to application
  * PUT /api/loan/admin/assign/:applicationId
@@ -859,6 +919,24 @@ const closeApplication = async (req, res) => {
       date: new Date()
     });
 
+    // If there was a user-requested foreclosureLetter, mark it processed
+    try {
+      application.documents = application.documents || {};
+      if (application.documents.foreclosureLetter && application.documents.foreclosureLetter.status === 'pending') {
+        application.documents.foreclosureLetter.status = 'processed';
+        application.documents.foreclosureLetter.processedAt = new Date();
+        application.documents.foreclosureLetter.processedBy = req.user.id || req.user._id;
+        application.processing.remarks.push({
+          text: `Closure request processed by admin`,
+          by: req.user.id || req.user._id,
+          date: new Date()
+        });
+      }
+    } catch (e) {
+      // non-fatal
+      console.warn('Failed to update foreclosureLetter during closeApplication', e);
+    }
+
     await application.save();
 
     res.json({ message: 'Application closed', application });
@@ -1043,6 +1121,7 @@ module.exports = {
   getMyApplications,
   getApplicationById,
   deleteApplication,
+  requestClosure,
   
   // Agent operations
   getAgentApplications,
@@ -1055,6 +1134,7 @@ module.exports = {
   
   // Admin operations
   getAllApplications,
+  getClosureRequests,
   assignAgent,
   approveApplication,
   rejectApplication,

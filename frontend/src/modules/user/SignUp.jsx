@@ -9,8 +9,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { signupSchema } from "../../Validations/SignupValidation";
 import "../../styles/signup.css";
 import axios from "axios";
-import { ToastContainer, toast } from "react-toastify";
-import 'react-toastify/dist/ReactToastify.css';
+import notify from "../../utils/notify";
 
 function SignUp({ closeModal, openLogin }) {
 
@@ -46,17 +45,17 @@ function SignUp({ closeModal, openLogin }) {
      
       console.log("Signup Response:", res.data);
       if (res.status === 201) {
-        toast.success("Signup successful! Please login.");
+        notify.success("Signup successful! Please login.");
         setTimeout(() => {
           openLogin();
         }, 2000);
       } else {
-        toast.error(res.data.message || "Signup failed. Please try again.");
+        notify.error(res.data.message || "Signup failed. Please try again.");
       }
        
     } catch (error) {
       console.error("Signup Error:", error);
-      toast.error(error?.response?.data?.message || "Signup failed. Please try again.");
+      notify.error(error?.response?.data?.message || "Signup failed. Please try again.");
     }
     
 
@@ -172,7 +171,7 @@ function SignUp({ closeModal, openLogin }) {
           </Col>
         </Row>
       </Container>
-      <ToastContainer position="top-right" autoClose={5000} hideProgressBar={false} newestOnTop={false} closeOnClick rtl={false} pauseOnFocusLoss draggable pauseOnHover /> 
+      {/* Global Toaster in App.jsx handles notifications */}
     </div>
   );
 }
