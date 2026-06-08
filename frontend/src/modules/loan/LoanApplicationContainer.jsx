@@ -4,8 +4,7 @@ import { FIELD_VALIDATORS } from "../../Validations/LoanValidation";
 import StepProgressBar from "./StepProgressBar";
 import StepRenderer from "./StepRenderer";
 import { createApplication, saveProgress, submitApplication, uploadLoanDocument, getMyApplications } from "../../utils/loanApi";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import notify from "../../utils/notify";
 import "./LoanForm.css";
 
 const LoanApplicationContainer = ({ loanTypeKey }) => {
@@ -98,10 +97,7 @@ const LoanApplicationContainer = ({ loanTypeKey }) => {
               // User has a different loan type active - block them
               const errorMsg = `You already have a ${activeApp.loanType} application in progress (Status: ${activeApp.status}). Please complete or close it before applying for another loan.`;
               setInitError(errorMsg);
-              toast.error(errorMsg, {
-                position: "top-right",
-                autoClose: 7000,
-              });
+              notify.error(errorMsg, { position: "top-right", duration: 7000 });
             } else {
               // No blocking application - user can proceed
               setIsInitialized(true);
@@ -127,10 +123,7 @@ const LoanApplicationContainer = ({ loanTypeKey }) => {
     const errorMsg = `You already have a ${existing?.loanType} application in progress (Status: ${existing?.status}). Please complete or close it before applying for another loan.`;
     setInitError(errorMsg);
     localStorage.removeItem(`app_${loanTypeKey}`);
-    toast.error(errorMsg, {
-      position: "top-right",
-      autoClose: 7000,
-    });
+    notify.error(errorMsg, { position: "top-right", duration: 7000 });
   };
 
   // Auto-save function (only runs if we have an applicationId)
@@ -230,20 +223,14 @@ const LoanApplicationContainer = ({ loanTypeKey }) => {
           // Save the first step data
           await saveProgress(app._id, formData, 1);
           
-          toast.success("Application created! Your progress will be auto-saved.", {
-            position: "top-right",
-            autoClose: 3000,
-          });
+          notify.success("Application created! Your progress will be auto-saved.", { position: "top-right", duration: 3000 });
         } else if (result.statusCode === 403) {
           // Restriction - user has another loan type active
           handleRestrictionError(result);
           setIsSaving(false);
           return; // Don't proceed to next step
         } else {
-          toast.error(result.error || "Failed to create application", {
-            position: "top-right",
-            autoClose: 5000,
-          });
+          notify.error(result.error || "Failed to create application", { position: "top-right", duration: 5000 });
           setIsSaving(false);
           return;
         }
@@ -277,25 +264,11 @@ const LoanApplicationContainer = ({ loanTypeKey }) => {
         // ✅ NEW: Clear localStorage after successful submission
         localStorage.removeItem(`app_${loanTypeKey}`);
         
-        toast.success("🎉 Application submitted successfully!", {
-          position: "top-right",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-        });
+        notify.success("🎉 Application submitted successfully!", { position: "top-right", duration: 5000 });
         console.log("Application submitted:", result.data);
       } else {
         setErrors({ submit: result.error || "Failed to submit application" });
-        toast.error(result.error || "❌ Failed to submit application. Please try again.", {
-          position: "top-right",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-        });
+        notify.error(result.error || "❌ Failed to submit application. Please try again.", { position: "top-right", duration: 5000 });
         console.error("Submit error:", result.error);
       }
       
@@ -313,7 +286,7 @@ const LoanApplicationContainer = ({ loanTypeKey }) => {
   if (isCheckingRestriction) {
     return (
       <div className="lf-card">
-        <ToastContainer />
+        {/* Toaster handled globally in App.jsx */}
         <div style={{
           padding: '60px',
           textAlign: 'center',
@@ -330,7 +303,7 @@ const LoanApplicationContainer = ({ loanTypeKey }) => {
   if (initError) {
     return (
       <div className="lf-card">
-        <ToastContainer />
+        {/* Toaster handled globally in App.jsx */}
         <div style={{
           padding: '40px',
           textAlign: 'center',
@@ -358,7 +331,7 @@ const LoanApplicationContainer = ({ loanTypeKey }) => {
   if (submitted) {
     return (
       <div className="lf-card">
-        <ToastContainer />
+        {/* Toaster handled globally in App.jsx */}
         <div className="lf-success">
           <div className="lf-success-icon">🎉</div>
           <h2>Application Submitted!</h2>
@@ -388,8 +361,7 @@ const LoanApplicationContainer = ({ loanTypeKey }) => {
 
   return (
     <div className="lf-layout">
-      {/* Toast Container for notifications */}
-      <ToastContainer />
+      {/* Toaster handled globally in App.jsx */}
 
       {/* ── SIDEBAR CHECKLIST ──────────────────────────────────────────── */}
       <aside className={`lf-sidebar ${sidebarOpen ? "lf-sidebar--open" : ""}`}>

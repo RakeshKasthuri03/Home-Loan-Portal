@@ -3,13 +3,13 @@ import axios from "axios";
 import { getToken } from "../../utils/auth";
 import "../../styles/LeadDetails.css";
 import { agentGetApplications, agentVerifyDoc, agentRequestDocs, agentRecommend, agentGetStats, agentStartReview } from "../../utils/loanApi";
-import { toast, ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import notify from "../../utils/notify";
 
 const STATUS_COLOR = {
   pending: { bg: "#fef9c3", color: "#92400e" },
   verified: { bg: "#dcfce7", color: "#16a34a" },
   rejected: { bg: "#fee2e2", color: "#dc2626" },
+  processed: { bg: "#e6f0ff", color: "#075985" },
 };
 
 const DOC_NAMES = {
@@ -156,10 +156,10 @@ export default function DocumentAction() {
     setActionLoading(doc.id);
     const res = await agentVerifyDoc(doc.applicationId, doc.docKey, 'verified');
     if (res && res.success === false) {
-      toast.error('Failed to verify document');
+      notify.error('Failed to verify document');
     } else {
       setDocs((prev) => prev.map((d) => (d.id === doc.id ? { ...d, status: "verified" } : d)));
-      toast.success('Document verified');
+      notify.success('Document verified');
     }
     setActionLoading(null);
   };
@@ -168,10 +168,10 @@ export default function DocumentAction() {
     setActionLoading(doc.id);
     const res = await agentVerifyDoc(doc.applicationId, doc.docKey, 'rejected');
     if (res && res.success === false) {
-      toast.error('Failed to reject document');
+      notify.error('Failed to reject document');
     } else {
       setDocs((prev) => prev.map((d) => (d.id === doc.id ? { ...d, status: "rejected" } : d)));
-      toast.warning('Document rejected');
+      notify.warn('Document rejected');
     }
     setActionLoading(null);
   };
@@ -182,9 +182,9 @@ export default function DocumentAction() {
     const res = await agentStartReview(applicationId);
     if (res?.success) {
       setAppStatuses(prev => ({ ...prev, [applicationId]: 'under_review' }));
-      toast.success('Review started — application is now under review');
+      notify.success('Review started — application is now under review');
     } else {
-      toast.error(res?.error || 'Failed to start review');
+      notify.error(res?.error || 'Failed to start review');
     }
     setActionLoading(null);
   };
@@ -194,9 +194,9 @@ export default function DocumentAction() {
     setActionLoading(applicationId);
     const res = await agentRecommend(applicationId, 'Agent Recommendation: All documents verified. Recommended for approval.');
     if (res?.success) {
-      toast.success('Recommendation sent to admin for approval');
+      notify.success('Recommendation sent to admin for approval');
     } else {
-      toast.error(res?.error || 'Failed to send recommendation');
+      notify.error(res?.error || 'Failed to send recommendation');
     }
     setActionLoading(null);
   };
@@ -206,10 +206,10 @@ export default function DocumentAction() {
     setActionLoading(requestDocModal);
     const res = await agentRequestDocs(requestDocModal, requestDocRemark.trim() || 'Additional documents requested by agent');
     if (res?.success) {
-      toast.success('Document request sent to applicant');
+      notify.success('Document request sent to applicant');
       setAppStatuses(prev => ({ ...prev, [requestDocModal]: 'documents_pending' }));
     } else {
-      toast.error(res?.error || 'Failed to send document request');
+      notify.error(res?.error || 'Failed to send document request');
     }
     setRequestDocModal(null);
     setRequestDocRemark("");
@@ -240,13 +240,12 @@ export default function DocumentAction() {
 
   return (
     <div style={{ padding:"28px" }}>
-      <ToastContainer position="top-right" autoClose={3000} />
       <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:20 }}>
         <h4 style={{ margin:0 }}>Document Action</h4>
         <div style={{ display:"flex", gap:8 }}>
           <input type="text" placeholder="Search name / loan ID..." value={search} onChange={e => setSearch(e.target.value)}
             style={{ padding:"7px 12px", border:"1.5px solid #d1d5db", borderRadius:8, fontSize:"0.88rem", width:220 }} />
-          {["All","pending","verified","rejected"].map(f => (
+          {["All","pending","verified","rejected","processed"].map(f => (
             <button key={f} onClick={() => setFilter(f)} style={{ padding:"6px 14px", borderRadius:8, border:"1.5px solid #d1d5db", cursor:"pointer", fontWeight:600, background:filter===f?"#0f2557":"#fff", color:filter===f?"#fff":"#374151", fontSize:"0.82rem" }}>
               {f==="All"?"All":f.charAt(0).toUpperCase()+f.slice(1)}
             </button>
@@ -285,9 +284,16 @@ export default function DocumentAction() {
                   {isSubmitted && (
                     <button style={{ background:"#eff6ff", color:"#1d4ed8", padding:"8px 14px", borderRadius:8, border:"1px solid #bfdbfe", fontWeight:700, cursor:"pointer" }} onClick={() => handleStartReview(app.applicationId)}>▶ Start Review</button>
                   )}
-                  {isUnderReview && allVerified && (
-                    <button style={{ background:"#dcfce7", color:"#15803d", padding:"8px 14px", borderRadius:8, border:"none", fontWeight:700, cursor:"pointer" }} onClick={() => handleRecommend(app.applicationId)}>✓ Request Approval</button>
-                  )}
+                  {isUnderReview && allVerified && (() => {
+                    const remarks = app.docs && app.docs.length ? (appStatuses[app.applicationId + '_remarks'] || []) : [];
+                    // fallback: check original app object for processing.remarks if available in parent list
+                    const rec = app.processing?.remarks ? [...app.processing.remarks].reverse().find(r => typeof r.text === 'string' && r.text.toLowerCase().includes('agent recommendation')) : null;
+                    return (
+                      <button style={{ background: rec ? "#e6f4ea" : "#dcfce7", color: rec ? "#15803d" : "#15803d", padding:"8px 14px", borderRadius:8, border:"none", fontWeight:700, cursor: rec ? "default" : "pointer" }} onClick={() => !rec && handleRecommend(app.applicationId)} disabled={!!rec} title={rec ? 'Recommendation already submitted' : 'Request approval'}>
+                        {rec ? 'Recommended' : '✓ Request Approval'}
+                      </button>
+                    );
+                  })()}
                   {(isUnderReview || isSubmitted) && !allVerified && (
                     <button style={{ background:"#fff7ed", color:"#92400e", padding:"8px 14px", borderRadius:8, border:"1px solid #fde68a", fontWeight:700, cursor:"pointer" }} onClick={() => { setRequestDocModal(app.applicationId); setRequestDocRemark(""); }}>📋 Request More Docs</button>
                   )}

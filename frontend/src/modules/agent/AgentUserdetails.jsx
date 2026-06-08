@@ -97,6 +97,7 @@ function AgentUserDetails({ show, onClose, application, onRefresh }) {
     verified: docs.filter(d => d.status === "verified").length,
     pending: docs.filter(d => d.status === "pending").length,
     rejected: docs.filter(d => d.status === "rejected").length,
+    processed: docs.filter(d => d.status === "processed").length,
   };
 
   // Timeline
@@ -132,7 +133,12 @@ function AgentUserDetails({ show, onClose, application, onRefresh }) {
       default: break;
     }
     setActionLoading(false);
-    if (res?.success && onRefresh) onRefresh();
+    if (res?.success) {
+      // notify parent to refresh
+      if (onRefresh) onRefresh();
+      // dispatch a global event so other dashboards can update
+      try { window.dispatchEvent(new CustomEvent('mlrr:application-updated', { detail: { id: app._id, type: 'recommendation' } })); } catch(e){}
+    }
     else if (res && !res.success) alert(res.error || "Action failed");
   };
 
@@ -144,6 +150,7 @@ function AgentUserDetails({ show, onClose, application, onRefresh }) {
     if (res?.success) {
       setRemarkText("");
       if (onRefresh) onRefresh();
+      try { window.dispatchEvent(new CustomEvent('mlrr:application-updated', { detail: { id: app._id, type: 'remark' } })); } catch(e){}
     } else alert(res?.error || "Failed to add remark");
   };
 
@@ -294,14 +301,22 @@ function AgentUserDetails({ show, onClose, application, onRefresh }) {
                   <Card className="mb-4" style={{ border: "1px solid #e5e7eb", borderRadius: "10px" }}>
                     <Card.Body>
                       <div className="d-flex justify-content-between mb-2">
-                        <span style={{ fontSize: "0.84rem", fontWeight: 600, color: "#374151" }}>Document Verification Progress</span>
-                        <span style={{ fontSize: "0.84rem", color: "#6b7280" }}>{Math.round((docStats.verified / docStats.total) * 100)}%</span>
-                      </div>
-                      <ProgressBar style={{ height: "8px", borderRadius: "4px" }}>
-                        <ProgressBar variant="success" now={(docStats.verified / docStats.total) * 100} />
-                        <ProgressBar variant="danger" now={(docStats.rejected / docStats.total) * 100} />
-                      </ProgressBar>
-                      <div className="d-flex gap-4 mt-2" style={{ fontSize: "0.75rem" }}>
+                                   <Button
+                                     variant="success"
+                                     onClick={() => handleAction("recommend")}
+                                     disabled={(() => {
+                                       const remarks = app.processing?.remarks || [];
+                                       const rec = [...remarks].reverse().find(r => typeof r.text === 'string' && r.text.toLowerCase().includes('agent recommendation'));
+                                       return !!rec;
+                                     })()}
+                                     style={{ fontWeight: 600 }}
+                                   >
+                                     {(() => {
+                                       const remarks = app.processing?.remarks || [];
+                                       const rec = [...remarks].reverse().find(r => typeof r.text === 'string' && r.text.toLowerCase().includes('agent recommendation'));
+                                       return rec ? 'Recommended' : 'Recommend for Approval';
+                                     })()}
+                                   </Button>
                         <span style={{ color: "#16a34a" }}>Verified: {docStats.verified}</span>
                         <span style={{ color: "#f59e0b" }}>Pending: {docStats.pending}</span>
                         <span style={{ color: "#dc2626" }}>Rejected: {docStats.rejected}</span>
@@ -612,8 +627,8 @@ function AgentUserDetails({ show, onClose, application, onRefresh }) {
                             <td style={{ padding: "12px 16px" }}>
                               <span style={{
                                 padding: "3px 10px", borderRadius: "100px", fontSize: "0.73rem", fontWeight: 700,
-                                background: doc.status === "verified" ? "#dcfce7" : doc.status === "rejected" ? "#fee2e2" : "#fef9c3",
-                                color: doc.status === "verified" ? "#16a34a" : doc.status === "rejected" ? "#dc2626" : "#92400e",
+                                background: doc.status === "verified" ? "#dcfce7" : doc.status === "rejected" ? "#fee2e2" : doc.status === "processed" ? "#e6f0ff" : "#fef9c3",
+                                  color: doc.status === "verified" ? "#16a34a" : doc.status === "rejected" ? "#dc2626" : doc.status === "processed" ? "#075985" : "#92400e",
                               }}>
                                 {doc.status.toUpperCase()}
                               </span>
@@ -630,7 +645,7 @@ function AgentUserDetails({ show, onClose, application, onRefresh }) {
                               <div style={{ display: "flex", gap: "6px" }}>
                                 <button
                                   onClick={() => handleDocAction(doc.key, "verified")}
-                                  disabled={doc.status === "verified" || actionLoading}
+                                  disabled={doc.status === "verified" || doc.status === "processed" || actionLoading}
                                   style={{
                                     padding: "4px 10px", border: "none", borderRadius: "5px", fontSize: "0.75rem", fontWeight: 600,
                                     background: doc.status === "verified" ? "#f3f4f6" : "#dcfce7",
@@ -642,7 +657,7 @@ function AgentUserDetails({ show, onClose, application, onRefresh }) {
                                 </button>
                                 <button
                                   onClick={() => handleDocAction(doc.key, "rejected")}
-                                  disabled={doc.status === "rejected" || actionLoading}
+                                  disabled={doc.status === "rejected" || doc.status === "processed" || actionLoading}
                                   style={{
                                     padding: "4px 10px", border: "none", borderRadius: "5px", fontSize: "0.75rem", fontWeight: 600,
                                     background: doc.status === "rejected" ? "#f3f4f6" : "#fee2e2",

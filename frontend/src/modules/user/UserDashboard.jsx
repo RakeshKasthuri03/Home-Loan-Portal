@@ -79,6 +79,7 @@ export default function UserDashboard() {
     status:   activeApp.status,
     officer:  activeApp.assignedAgent ? `${activeApp.assignedAgent.firstname || ""} ${activeApp.assignedAgent.lastname || ""}`.trim() || "Assigned" : "Pending assignment",
     steps:    buildSteps(activeApp),
+    foreclosureStatus: activeApp.documents?.foreclosureLetter?.status || null,
   } : null;
 
   // Recent activity from remarks
@@ -126,6 +127,24 @@ export default function UserDashboard() {
 
   const handleProfileUpdated = (updatedUser) => setCustomer(updatedUser);
 
+  // Build dynamic sidebar sections so "My documents" and badges reflect real data
+  const dynamicSections = [
+    {
+      heading: "MAIN",
+      items: [
+        { label: "Dashboard", to: "/dashboard" },
+        { label: "My applications", to: "/dashboard/applications", badge: String(total || 0) },
+        { label: "My documents", to: "/dashboard/mydocuments", badge: String(docsPending || 0) },
+        { label: "Loan tracker", to: "/dashboard/loan-tracker" },
+      ],
+    },
+    {
+      heading: "ACCOUNT",
+      items: [
+        { label: "My profile", to: "/dashboard/profile" },
+      ],
+    },
+  ];
   if (loading) return (
     <div className="UserDashboard">
       <div className="dashboard-layout" style={{ display:"flex", justifyContent:"center", alignItems:"center", height:"100vh" }}>
@@ -137,14 +156,14 @@ export default function UserDashboard() {
   return (
     <div className="UserDashboard">
       <div className="dashboard-layout">
-        <Sidebar user={user} sections={userMenuSections} onProfileUpdated={handleProfileUpdated} />
+        <Sidebar user={user} sections={dynamicSections} onProfileUpdated={handleProfileUpdated} />
         <div className="dashboard-content">
           <Routes>
             <Route index element={<DashboardMain dashboardData={dashboardData} />} />
             <Route path="applications"  element={<Applications user={user} />} />
             <Route path="mydocuments"   element={<Documents user={user} />} />
             <Route path="loan-tracker"  element={<LoanTracker />} />
-            <Route path="profile"       element={<Profile user={userProfile} onProfileUpdated={handleProfileUpdated} />} />
+            <Route path="profile"       element={<Profile user={userProfile} applications={applications} onProfileUpdated={handleProfileUpdated} />} />
             <Route path="*"             element={<Navigate replace to="/dashboard" />} />
           </Routes>
         </div>

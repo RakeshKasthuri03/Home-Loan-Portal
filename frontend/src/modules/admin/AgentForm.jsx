@@ -2,8 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../../Styles/AgentForm.css';
 import axios from 'axios';
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import notify from '../../utils/notify';
 // Props:
 // - show: boolean (whether to render modal)
 // - initial: { firstName, lastName, email, phone, tier }
@@ -39,23 +38,20 @@ export default function AgentForm({ show, initial = {}, tiers = ['Silver','Gold'
         if (res.status >= 200 && res.status < 300) {
           if (pageMode) {
             // show toast for 3s then navigate back to agents list
-            toast.success(res.data.message, {
-              autoClose: 3000,
-              onClose: () => navigate('/admin/agents'),
-            });
+            notify.success(res.data.message, { duration: 3000, onClose: () => navigate('/admin/agents') });
           } else {
-            toast.success(res.data.message, { autoClose: 3000 });
+            notify.success(res.data.message, { duration: 3000 });
             if (typeof onSubmit === 'function') {
               onSubmit(res.data.agent);
             }
           }
         }
           else{
-              toast.error(res.data.message);
+              notify.error(res.data.message);
           }
         }
         catch(err){
-            toast.error(err.response?.data?.message || "Something went wrong");
+            notify.error(err.response?.data?.message || "Something went wrong");
         }
         
   };
@@ -64,7 +60,7 @@ export default function AgentForm({ show, initial = {}, tiers = ['Silver','Gold'
 
   return (
     <>
-      <ToastContainer position="top-right" autoClose={3000} hideProgressBar={false} newestOnTop={false} closeOnClick pauseOnHover draggable />
+      {/* Toaster is provided globally in App.jsx; no local ToastContainer required */}
       {pageMode ? (
         <div className="af-page">
           <div className="af-panel af-panel--page">

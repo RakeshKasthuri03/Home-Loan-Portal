@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useFormik } from "formik";
-import toast from "react-hot-toast";
+import notify from "../utils/notify";
 import { LOAN_CHIPS, HOURS } from "../utils/Contact";
 import { contactSchema } from "../Validations/ContactValidation";
 import "../Styles/contact.css"
@@ -22,7 +22,7 @@ export default function ContactSection() {
     onSubmit: (values, { resetForm }) => {
       console.log("Submitted Data:", values);
 
-      toast.success("Request submitted successfully!");
+      notify.success("Request submitted successfully!");
 
       setSubmitted(true);
 
@@ -33,7 +33,7 @@ export default function ContactSection() {
       }, 2000);
     },
     onError: () => {
-      toast.error("Please fix the errors before submitting");
+      notify.error("Please fix the errors before submitting");
     },
   });
 
@@ -234,7 +234,7 @@ export default function ContactSection() {
               className="mlrr-submit-btn hdr-btn hdr-btn--primary"
               onClick={() => {
                 if (!formik.isValid) {
-                  toast.error("Please fill all required fields correctly");
+                  notify.error("Please fill all required fields correctly");
                 }
               }}
             >

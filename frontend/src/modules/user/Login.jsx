@@ -10,8 +10,7 @@ import { saveAuth } from "../../utils/auth";
 import "../../styles/Login.css";
 
 import axios from "axios";
-import { ToastContainer, toast } from "react-toastify";
-import 'react-toastify/dist/ReactToastify.css';
+import notify from "../../utils/notify";
 import ForgotPasswordModal from '../../Components/ForgotPasswordModal';
 
 const Login = ({ closeModal, openRegister, onLoginSuccess }) => {
@@ -48,7 +47,7 @@ const handleSubmit = async (e) => {
     saveAuth(user, token);
     
     if (res.status === 200) {
-      toast.success("Login successful..!");
+      notify.success("Login successful..!");
       if (closeModal) closeModal();
       if (onLoginSuccess) onLoginSuccess();
       if (!onLoginSuccess) {
@@ -61,7 +60,7 @@ const handleSubmit = async (e) => {
 
   } catch (error) {
     console.error("Login Error:", error);
-      toast.error(error?.response?.data?.message || "Login failed. Please try again.");
+      notify.error(error?.response?.data?.message || "Login failed. Please try again.");
     setError(
       error?.response?.data?.message || "Login failed. Please try again."
     );
@@ -168,7 +167,7 @@ const handleSubmit = async (e) => {
           </Col>
         </Row>
       </Container>
-      <ToastContainer position="top-center" autoClose={3000} hideProgressBar />
+      {/* Global Toaster in App.jsx handles notifications */}
       <ForgotPasswordModal open={showForgot} onClose={() => setShowForgot(false)} />
     </div>
   );

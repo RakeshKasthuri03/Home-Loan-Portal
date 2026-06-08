@@ -55,6 +55,14 @@ function Applicationsub() {
     else alert(res.error);
   };
 
+  // Listen for global updates (optional) to refresh list
+  // (This helps keep multiple views in sync)
+  useEffect(() => {
+    const handler = (e) => { fetchApplications(); };
+    window.addEventListener('mlrr:application-updated', handler);
+    return () => window.removeEventListener('mlrr:application-updated', handler);
+  }, []);
+
   const handleRequestDocs = async (id) => {
     const remarks = prompt("Specify which documents are needed:");
     if (!remarks) return;
@@ -127,16 +135,20 @@ function Applicationsub() {
                           Start Review
                         </Button>
                       )}
-                      {app.status === "under_review" && (
-                        <>
-                          <Button size="sm" variant="success" onClick={() => handleRecommend(app._id)}>
-                            Recommend
-                          </Button>
-                          <Button size="sm" variant="warning" onClick={() => handleRequestDocs(app._id)}>
-                            Request Docs
-                          </Button>
-                        </>
-                      )}
+                      {app.status === "under_review" && (() => {
+                        const remarks = app.processing?.remarks || [];
+                        const rec = [...remarks].reverse().find(r => typeof r.text === 'string' && r.text.toLowerCase().includes('agent recommendation'));
+                        return (
+                          <>
+                            <Button size="sm" variant="success" onClick={() => handleRecommend(app._id)} disabled={!!rec} title={rec ? 'Recommendation already submitted' : 'Recommend'}>
+                              {rec ? 'Recommended' : 'Recommend'}
+                            </Button>
+                            <Button size="sm" variant="warning" onClick={() => handleRequestDocs(app._id)}>
+                              Request Docs
+                            </Button>
+                          </>
+                        );
+                      })()}
                       <Button size="sm" variant="outline-secondary" onClick={() => handleAddRemarks(app._id)}>
                         Add Remarks
                       </Button>

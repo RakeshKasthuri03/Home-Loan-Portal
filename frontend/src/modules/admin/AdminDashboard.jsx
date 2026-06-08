@@ -1,10 +1,13 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import "../../styles/AdminDashboard.css";
-import { adminGetStats } from "../../utils/loanApi";
+import { adminGetStats, adminGetClosureRequests, adminCloseApplication } from "../../utils/loanApi";
+import notify from '../../utils/notify';
 
 function AdminDashboard() {
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [closureRequests, setClosureRequests] = useState([]);
+  const prevClosureCountRef = useRef(0);
 
   useEffect(() => {
     const fetchStats = async () => {
@@ -13,6 +16,23 @@ function AdminDashboard() {
       setLoading(false);
     };
     fetchStats();
+    // Also fetch closure requests and notify admin (deduped)
+    (async () => {
+      try {
+        const r = await adminGetClosureRequests();
+        if (r.success) {
+          const apps = r.data?.applications || [];
+          setClosureRequests(apps);
+          const prev = prevClosureCountRef.current || 0;
+          if (apps.length > prev) {
+            notify.warn(`⚠️ ${apps.length} loan closure request(s) received`, { id: 'closure-requests', position: 'top-right', duration: 7000 });
+          }
+          prevClosureCountRef.current = apps.length;
+        }
+      } catch (err) {
+        console.error('Failed to fetch closure requests', err);
+      }
+    })();
   }, []);
 
   if (loading) return <div className="UserDashboard"><div className="dashboard-layout"><main className="dashboard-content"><p>Loading dashboard...</p></main></div></div>;
@@ -109,6 +129,42 @@ function AdminDashboard() {
               </tbody>
             </table>
           </div>
+
+          {/* USER ACTIONS: Closure Requests */}
+          {closureRequests?.length > 0 && (
+            <div className="loan-config-section">
+              <div className="loan-config-header">
+                <h3>User Actions</h3>
+                <p className="muted">Pending closure requests from users</p>
+              </div>
+              <table className="loan-config-table">
+                <thead>
+                  <tr>
+                    <th>Application ID</th>
+                    <th>Applicant</th>
+                    <th>Requested At</th>
+                    <th>Preferred Date</th>
+                    <th>Reason</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {closureRequests.map((app) => (
+                    <tr key={app._id}>
+                      <td>{app.applicationId || app._id}</td>
+                      <td>{app.basicDetails?.fullName || '—'}</td>
+                      <td>{app.documents?.foreclosureLetter?.requestedAt ? new Date(app.documents.foreclosureLetter.requestedAt).toLocaleString() : '—'}</td>
+                      <td>{app.documents?.foreclosureLetter?.preferredDate || '—'}</td>
+                      <td style={{ maxWidth: 300 }}>{app.documents?.foreclosureLetter?.reason || '—'}</td>
+                      <td>
+                        <a className="btn small" href={`/admin/applications?openClose=${app._id}`}>Open</a>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
 
           {/* RECENT APPLICATIONS */}
           {stats?.recentApplications?.length > 0 && (

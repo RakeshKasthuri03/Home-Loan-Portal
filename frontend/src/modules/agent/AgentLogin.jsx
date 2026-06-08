@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { loginUser, saveAuth } from "../../utils/auth";
 import logo from "../../assets/logo.png";
 import axios from "axios";
-import { toast } from "react-toastify";
+import notify from "../../utils/notify";
 
 
 export default function AgentLogin() {
@@ -35,7 +35,7 @@ export default function AgentLogin() {
       setLoading(false);
        console.log(result);
       if (result.status === 200 && agent.role === "agent") {
-        toast.success("Signed in successfully");
+        notify.success("Signed in successfully");
        
          console.log("Navigating to agent dashboard in 3 seconds...");
           navigate("/agent/dashboard");
