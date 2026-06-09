@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { getToken } from './auth';
 
-const API_BASE = 'http://localhost:5000/api/loan';
+const API_BASE = '/api/loan';
 
 // Create axios instance with auth header
 const api = axios.create({
@@ -26,7 +26,7 @@ api.interceptors.request.use((config) => {
  */
 export const getLoanTypes = async () => {
   try {
-    const response = await api.get('http://localhost:5000/api/loan/types');
+    const response = await api.get('/types');
     return { success: true, data: response.data };
   } catch (error) {
     console.error('Get loan types error:', error);
@@ -45,11 +45,10 @@ export const getLoanTypes = async () => {
  */
 export const createApplication = async (loanType, formData = {}) => {
   try {
-    const response = await api.post('http://localhost:5000/api/loan/apply', { loanType, ...formData });
+    const response = await api.post('/apply', { loanType, ...formData });
     return { success: true, data: response.data };
   } catch (error) {
     console.error('Create application error:', error);
-    // Return error details including existing application info
     return { 
       success: false, 
       error: error.response?.data?.message || 'Failed to create application',
@@ -59,15 +58,9 @@ export const createApplication = async (loanType, formData = {}) => {
   }
 };
 
-/**
- * Save application progress (auto-save)
- * @param {string} applicationId - Application ID
- * @param {object} formData - Form data to save
- * @param {number} currentStep - Current step number
- */
 export const saveProgress = async (applicationId, formData, currentStep) => {
   try {
-    const response = await api.put(`http://localhost:5000/api/loan/save/${applicationId}`, { 
+    const response = await api.put(`/save/${applicationId}`, { 
       currentStep, 
       ...organizeFormData(formData) 
     });
@@ -78,13 +71,9 @@ export const saveProgress = async (applicationId, formData, currentStep) => {
   }
 };
 
-/**
- * Submit application for review
- * @param {string} applicationId - Application ID
- */
 export const submitApplication = async (applicationId) => {
   try {
-    const response = await api.put(`http://localhost:5000/api/loan/submit/${applicationId}`);
+    const response = await api.put(`/submit/${applicationId}`);
     return { success: true, data: response.data };
   } catch (error) {
     console.error('Submit application error:', error);
@@ -92,14 +81,9 @@ export const submitApplication = async (applicationId) => {
   }
 };
 
-/**
- * Upload a loan document file to the backend.
- * @param {File} file
- * @param {string} fieldName
- */
 export const uploadLoanDocument = async (file, fieldName) => {
   try {
-    const base = import.meta.env.VITE_API_BASE || 'http://localhost:5000';
+    const base = import.meta.env.VITE_API_BASE || '';
     const uploadUrl = `${base}/api/upload`;
     const formData = new FormData();
     formData.append('file', file);
@@ -420,6 +404,19 @@ export const agentVerifyDoc = async (applicationId, docField, status) => {
   } catch (error) {
     console.error('Agent verify doc error:', error);
     return { success: false, error: error.response?.data?.message || 'Failed to update document' };
+  }
+};
+
+/**
+ * User: Resubmit a rejected document (re-upload file URL to application)
+ */
+export const resubmitDocument = async (applicationId, docField, fileUrl) => {
+  try {
+    const response = await api.put(`/resubmit-doc/${applicationId}`, { docField, fileUrl });
+    return { success: true, data: response.data };
+  } catch (error) {
+    console.error('Resubmit document error:', error);
+    return { success: false, error: error.response?.data?.message || 'Failed to resubmit document' };
   }
 };
 

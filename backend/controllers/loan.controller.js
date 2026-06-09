@@ -413,6 +413,52 @@ const deleteApplication = async (req, res) => {
     }
   };
 
+/**
+ * User: Resubmit a rejected document
+ * PUT /api/loan/resubmit-doc/:applicationId
+ */
+const resubmitDocument = async (req, res) => {
+  try {
+    const { applicationId } = req.params;
+    const userId = req.user.id || req.user._id;
+    const { docField, fileUrl } = req.body;
+
+    if (!docField || !fileUrl) {
+      return res.status(400).json({ message: 'docField and fileUrl are required' });
+    }
+
+    const application = await Application.findOne({ _id: applicationId, user: userId });
+    if (!application) {
+      return res.status(404).json({ message: 'Application not found' });
+    }
+
+    if (!application.documents) application.documents = {};
+
+    // Reset document to pending with new file URL
+    application.documents[docField] = {
+      url: fileUrl,
+      status: 'pending',
+      uploadedAt: new Date()
+    };
+
+    // Add remark so agent can see the resubmission
+    application.processing.remarks.push({
+      text: `User resubmitted ${docField} — pending re-verification`,
+      by: userId,
+      date: new Date()
+    });
+
+    // If status was documents_pending and all other docs are now pending/verified, keep it there
+    // Agent will re-verify and update status
+    await application.save();
+
+    res.json({ message: 'Document resubmitted successfully', application });
+  } catch (error) {
+    console.error('Resubmit document error:', error);
+    res.status(500).json({ message: 'Failed to resubmit document', error: error.message });
+  }
+};
+
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // AGENT OPERATIONS - View Assigned, Update Status, Add Remarks
@@ -1122,6 +1168,7 @@ module.exports = {
   getApplicationById,
   deleteApplication,
   requestClosure,
+  resubmitDocument,
   
   // Agent operations
   getAgentApplications,

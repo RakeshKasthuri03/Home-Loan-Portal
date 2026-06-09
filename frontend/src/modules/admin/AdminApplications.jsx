@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useLocation } from 'react-router-dom';
 import axios from "axios";
 import "../../styles/AdminDashboard.css";
@@ -10,6 +10,7 @@ import {
   adminRejectApplication,
   adminDisburseApplication,
   adminCloseApplication,
+  adminGetClosureRequests,
 } from "../../utils/loanApi";
 
 const loanTypeLabels = {
@@ -44,16 +45,17 @@ function AdminApplications() {
   const [actionLoading, setActionLoading] = useState(null);
   const [searchTerm, setSearchTerm]     = useState("");
   const [agents, setAgents]             = useState([]);
+  const [closureRequests, setClosureRequests] = useState([]);
 
   // Modals
-  const [approveModal, setApproveModal]   = useState(null); // app object
-  const [rejectModal, setRejectModal]     = useState(null); // app._id
-  const [disburseModal, setDisburseModal] = useState(null); // app object
-  const [closeModal, setCloseModal]       = useState(null); // app._id
-  const [assignModal, setAssignModal]     = useState(null); // app._id
-  const [viewModal, setViewModal]         = useState(null); // app object
+  const [approveModal, setApproveModal]   = useState(null);
+  const [rejectModal, setRejectModal]     = useState(null);
+  const [disburseModal, setDisburseModal] = useState(null);
+  const [closeModal, setCloseModal]       = useState(null);
+  const [assignModal, setAssignModal]     = useState(null);
+  const [viewModal, setViewModal]         = useState(null);
 
-  // Form state for modals
+  // Form state
   const [approveForm, setApproveForm] = useState({ sanctionedAmount:"", interestRate:"", emiAmount:"", processingFee:"", sanctionedTenure:"" });
   const [rejectReason, setRejectReason]   = useState("");
   const [disburseForm, setDisburseForm]   = useState({ disbursedAmount:"", accountNumber:"", ifscCode:"", transactionRef:"" });
@@ -61,15 +63,19 @@ function AdminApplications() {
 
   const fetchApplications = async () => {
     setLoading(true);
-    const res = await adminGetAllApplications();
-    if (res.success) setApplications(res.data.applications || []);
+    const [appsRes, closureRes] = await Promise.all([
+      adminGetAllApplications(),
+      adminGetClosureRequests(),
+    ]);
+    if (appsRes.success) setApplications(appsRes.data.applications || []);
+    if (closureRes.success) setClosureRequests(closureRes.data?.applications || []);
     setLoading(false);
   };
 
   const fetchAgents = async () => {
     try {
       const token = getToken();
-      const res = await axios.get("http://localhost:5000/api/agent", { headers: { Authorization: `Bearer ${token}` } });
+      const res = await axios.get("/api/agent", { headers: { Authorization: `Bearer ${token}` } });
       setAgents(Array.isArray(res.data) ? res.data : res.data.agents || []);
     } catch (err) { console.error("Failed to fetch agents:", err); }
   };
@@ -213,56 +219,112 @@ function AdminApplications() {
   return (
     <div className="UserDashboard">
       <div className="dashboard-layout">
-        <main className="dashboard-content">
+        <main className="dashboard-content" style={{ padding:"20px 16px" }}>
 
-          <div className="admin-app-header">
-            <input type="text" className="apps-search" placeholder="Search by name / ID..."
-              value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
+          {/* Closure Requests Banner */}
+          {closureRequests.length > 0 && (
+            <div style={{ background:"#fff7ed", border:"1px solid #fed7aa", borderRadius:10, padding:"14px 18px", marginBottom:20 }}>
+              <strong style={{ color:"#92400e" }}>🔒 {closureRequests.length} Pending Loan Closure Request{closureRequests.length > 1 ? "s" : ""}</strong>
+              <div style={{ marginTop:10, display:"flex", flexDirection:"column", gap:8 }}>
+                {closureRequests.map(app => (
+                  <div key={app._id} style={{ display:"flex", justifyContent:"space-between", alignItems:"center", background:"#fff", borderRadius:8, padding:"10px 14px", border:"1px solid #fde68a", flexWrap:"wrap", gap:8 }}>
+                    <div>
+                      <strong style={{ color:"#0f2557", fontSize:"0.9rem" }}>{app.basicDetails?.fullName || "—"}</strong>
+                      <span style={{ color:"#6b7280", fontSize:"0.82rem", marginLeft:8 }}>{app.applicationId}</span>
+                      {app.documents?.foreclosureLetter?.reason && (
+                        <p style={{ margin:"3px 0 0", color:"#78350f", fontSize:"0.82rem" }}>Reason: {app.documents.foreclosureLetter.reason}</p>
+                      )}
+                    </div>
+                    <button
+                      onClick={() => { setCloseModal(app._id); setCloseReason("Loan closure processed"); }}
+                      style={{ padding:"6px 14px", borderRadius:7, border:"none", background:"#374151", color:"#fff", fontWeight:700, fontSize:"0.82rem", cursor:"pointer" }}>
+                      Process Closure
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Search + filter header */}
+          <div style={{ display:"flex", gap:12, marginBottom:16, flexWrap:"wrap", alignItems:"center", justifyContent:"space-between" }}>
+            <input type="text" placeholder="🔍 Search by name or application ID..."
+              value={searchTerm} onChange={e => setSearchTerm(e.target.value)}
+              style={{ padding:"9px 14px", border:"1.5px solid #d1d5db", borderRadius:9, fontSize:"0.9rem", width:280, outline:"none" }} />
+            <span style={{ color:"#6b7280", fontSize:"0.85rem" }}>{filteredApplications.length} application{filteredApplications.length !== 1 ? "s" : ""}</span>
           </div>
 
-          <div className="apps-tabs">
-            {tabStatuses.map((tab) => (
-              <button key={tab} className={`tab ${activeTab === tab ? "active" : ""}`} onClick={() => setActiveTab(tab)}>
-                {tab} ({getCount(tab)})
+          {/* Status tabs */}
+          <div style={{ display:"flex", gap:6, flexWrap:"wrap", marginBottom:20 }}>
+            {tabStatuses.map(tab => (
+              <button key={tab} onClick={() => setActiveTab(tab)}
+                style={{ padding:"5px 14px", borderRadius:20, border:"1.5px solid", cursor:"pointer", fontWeight:600, fontSize:"0.8rem", whiteSpace:"nowrap",
+                  borderColor: activeTab===tab ? "#0f2557" : "#e5e7eb",
+                  background:  activeTab===tab ? "#0f2557" : "#fff",
+                  color:       activeTab===tab ? "#fff" : "#374151" }}>
+                {tab} <span style={{ opacity:0.7, fontSize:"0.75rem" }}>({getCount(tab)})</span>
               </button>
             ))}
           </div>
 
-          {loading ? <p>Loading applications...</p> : (
-            <table className="apps-table">
-              <thead>
-                <tr>
-                  <th>App ID</th><th>Applicant</th><th>Loan Type</th><th>Amount</th>
-                  <th>Agent</th><th>Agent Note</th><th>Applied</th><th>Status</th><th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredApplications.length === 0 ? (
-                  <tr><td colSpan="9" style={{ textAlign:"center", padding:20 }}>No applications found</td></tr>
-                ) : filteredApplications.map((app) => (
-                  <tr key={app._id}>
-                    <td className="link">{app.applicationId}</td>
-                    <td>{app.basicDetails?.fullName || "—"}</td>
-                    <td>{loanTypeLabels[app.loanType] || app.loanType}</td>
-                    <td>{formatAmount(app.financialDetails?.loanAmount)}</td>
-                    <td>
-                      {app.assignedAgent
-                        ? (`${app.assignedAgent.firstname || ""} ${app.assignedAgent.lastname || ""}`.trim() || app.assignedAgent.agentid || app.assignedAgent._id)
-                        : <span style={{ color:"#9ca3af" }}>Unassigned</span>}
-                    </td>
-                    <td>
-                      {(() => {
-                        const rec = [...(app.processing?.remarks || [])].reverse().find(r => typeof r.text === "string" && r.text.toLowerCase().includes("agent recommendation"));
-                        return rec ? <div style={{ fontSize:"0.85rem", color:"#0f2557", fontWeight:600 }}>{rec.text}</div> : <span style={{ color:"#6b7280" }}>—</span>;
-                      })()}
-                    </td>
-                    <td>{new Date(app.createdAt).toLocaleDateString()}</td>
-                    <td><span className={`status ${app.status}`}>{app.status.replace(/_/g, " ")}</span></td>
-                    <td style={{ display:"flex", gap:4, flexWrap:"wrap", alignItems:"center" }}>{renderActions(app)}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+          {/* Cards grid */}
+          {loading ? (
+            <div style={{ textAlign:"center", padding:40, color:"#6b7280" }}>Loading applications...</div>
+          ) : filteredApplications.length === 0 ? (
+            <div style={{ textAlign:"center", padding:40, background:"#f9fafb", borderRadius:12, color:"#6b7280" }}>
+              <div style={{ fontSize:40, marginBottom:12 }}>📭</div>
+              <p>No applications found for this filter.</p>
+            </div>
+          ) : (
+            <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill, minmax(320px, 1fr))", gap:14 }}>
+              {filteredApplications.map(app => (
+                <div key={app._id} style={{ background:"#fff", borderRadius:12, border:"1px solid #e5e7eb", padding:18, boxShadow:"0 2px 6px rgba(0,0,0,0.05)", display:"flex", flexDirection:"column", gap:12 }}>
+                  {/* Top row: ID + status */}
+                  <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start" }}>
+                    <div>
+                      <div style={{ fontFamily:"monospace", fontSize:"0.8rem", color:"#6b7280" }}>{app.applicationId}</div>
+                      <div style={{ fontWeight:700, color:"#0f2557", fontSize:"1rem", marginTop:2 }}>{app.basicDetails?.fullName || "—"}</div>
+                      <div style={{ fontSize:"0.82rem", color:"#6b7280", marginTop:2 }}>{loanTypeLabels[app.loanType] || app.loanType}</div>
+                    </div>
+                    <span style={{
+                      padding:"4px 10px", borderRadius:20, fontSize:"0.75rem", fontWeight:700, whiteSpace:"nowrap",
+                      background: app.status==="approved"?"#dbeafe": app.status==="disbursed"?"#dcfce7": app.status==="rejected"?"#fee2e2": app.status==="under_review"?"#fef9c3": app.status==="documents_pending"?"#fff7ed": app.status==="closed"?"#e5e7eb":"#f3f4f6",
+                      color:      app.status==="approved"?"#1d4ed8": app.status==="disbursed"?"#15803d": app.status==="rejected"?"#dc2626": app.status==="under_review"?"#92400e": app.status==="documents_pending"?"#c2410c": app.status==="closed"?"#374151":"#6b7280",
+                    }}>
+                      {app.status.replace(/_/g," ")}
+                    </span>
+                  </div>
+
+                  {/* Info row */}
+                  <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:8, fontSize:"0.82rem" }}>
+                    <div><span style={{ color:"#9ca3af" }}>Amount</span><div style={{ fontWeight:700, color:"#0f2557" }}>{formatAmount(app.financialDetails?.loanAmount)}</div></div>
+                    <div><span style={{ color:"#9ca3af" }}>Applied</span><div style={{ fontWeight:600, color:"#374151" }}>{new Date(app.createdAt).toLocaleDateString("en-IN",{day:"2-digit",month:"short",year:"numeric"})}</div></div>
+                    <div><span style={{ color:"#9ca3af" }}>Agent</span><div style={{ fontWeight:600, color:"#374151" }}>
+                      {app.assignedAgent ? (`${app.assignedAgent.firstname||""} ${app.assignedAgent.lastname||""}`.trim() || app.assignedAgent.agentid) : <span style={{ color:"#f97316" }}>Unassigned</span>}
+                    </div></div>
+                    <div><span style={{ color:"#9ca3af" }}>Mobile</span><div style={{ fontWeight:600, color:"#374151" }}>{app.basicDetails?.mobile || "—"}</div></div>
+                  </div>
+
+                  {/* Agent recommendation */}
+                  {(() => {
+                    const rec = [...(app.processing?.remarks||[])].reverse().find(r => r.text?.toLowerCase().includes("agent recommendation"));
+                    return rec ? <div style={{ background:"#eff6ff", borderRadius:8, padding:"8px 12px", fontSize:"0.8rem", color:"#1d4ed8" }}>💬 {rec.text}</div> : null;
+                  })()}
+
+                  {/* Closure request indicator */}
+                  {app.documents?.foreclosureLetter?.status === "pending" && (
+                    <div style={{ background:"#fff7ed", borderRadius:8, padding:"8px 12px", fontSize:"0.8rem", color:"#92400e" }}>
+                      🔒 Loan closure requested by user
+                    </div>
+                  )}
+
+                  {/* Action buttons */}
+                  <div style={{ display:"flex", gap:6, flexWrap:"wrap", paddingTop:4, borderTop:"1px solid #f3f4f6" }}>
+                    {renderActions(app)}
+                  </div>
+                </div>
+              ))}
+            </div>
           )}
         </main>
       </div>
