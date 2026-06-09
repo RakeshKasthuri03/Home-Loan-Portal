@@ -93,12 +93,19 @@ const handleSubmit = async (e) => {
 
               <div className="text-center mb-4">
                 <Image src={logo} height={60} className="mb-3" />
-                <h1 className="h4 fw-bold heading">Login to Your Account</h1>
-                <Button variant="light" className="border w-100 py-2 mt-2"
+                            <h1
+                          className="h4 fw-bold heading"
+                          style={{ marginBottom: '3rem' }}
+                        >
+                          Login to Your Account
+                        </h1>
+                        <hr/>
+                     
+                {/* <Button variant="light" className="border w-100 py-2 mt-2"
                  >
                   <Image src={google} height={20} className="me-2 google-linear" />
                   Continue with Google
-                </Button>
+                </Button> */}
               </div>
 
               {error && (

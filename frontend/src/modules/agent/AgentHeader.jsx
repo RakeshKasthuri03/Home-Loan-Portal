@@ -180,17 +180,19 @@ const agent = {
         <div className="overlay" onClick={() => setShowProfile(false)}>
           <div onClick={e => e.stopPropagation()}>
           <AgentDashboard
-          agent={{
-            name: `${agentUser?.firstname || ""} ${agentUser?.lastname || ""}`,
-            email: agentUser?.email || "",
-            phone: agentUser?.phone || "",
-            gender: agentUser?.gender || "",
-            address: agentUser?.address || "—",
-            loansGiven: agentUser?.loansgiven || 0, // ✅ mapped correctly
-            photo: "https://via.placeholder.com/100",
-          }}
-          closeModal={() => setShowProfile(false)}
-        />
+            agent={{
+              id: agentUser?._id,
+              name: `${agentUser?.firstname || ""} ${agentUser?.lastname || ""}`,
+              email: agentUser?.email || "",
+              phone: agentUser?.phone || "",
+              gender: agentUser?.gender || "",
+              address: agentUser?.address || "",
+              loansGiven: agentUser?.loansgiven || 0,
+              photo: agentUser?.profilePhoto || "https://via.placeholder.com/100",
+            }}
+            closeModal={() => setShowProfile(false)}
+            onUpdated={() => getAgent()}
+          />
 
 
           </div>

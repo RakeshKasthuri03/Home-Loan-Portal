@@ -3,7 +3,7 @@ import axios from 'axios';
 import { FiUpload } from 'react-icons/fi';
 import './Upload.css';
 
-export default function Upload({ uploadUrl = '/api/upload', fieldName = 'file', accept = '*/*', multiple = false, purpose = '', userId, onUploaded, compact = false }) {
+export default function Upload({ uploadUrl = 'http://localhost:5000/api/upload', fieldName = 'file', accept = '*/*', multiple = false, purpose = '', userId, onUploaded, compact = false }) {
   const [uploading, setUploading] = useState(false);
   const [preview, setPreview] = useState(null);
 

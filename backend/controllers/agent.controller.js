@@ -23,20 +23,38 @@ const getagentbyid=async(req,res)=>{
 
 const updateagent=async(req,res)=>{
     const {id}=req.params;
-    const {firstname,lastname,email,phone,gender,password,confirmpassword}=req.body;
+    const {firstname,lastname,email,phone,gender,password,confirmpassword,profilePhoto,address,loansGiven} = req.body;
     try{
         const existingAgent=await agent.findById(id);
         if(!existingAgent){
             return res.status(404).json({message:"Agent doesn't exist"});
         }
-        if(password!==confirmpassword){
-            return res.status(400).json({message:"Passwords don't match"});
+
+        const updateData = {};
+        if(firstname !== undefined) updateData.firstname = firstname;
+        if(lastname !== undefined) updateData.lastname = lastname;
+        if(email !== undefined) updateData.email = email;
+        if(phone !== undefined) updateData.phone = phone;
+        if(gender !== undefined) updateData.gender = gender;
+        if(profilePhoto !== undefined) updateData.profilePhoto = profilePhoto;
+        if(address !== undefined) updateData.address = address;
+        if(loansGiven !== undefined) updateData.loansgiven = Number(loansGiven) || 0;
+
+        // Only update password if provided
+        if(password || confirmpassword) {
+            if(password !== confirmpassword){
+                return res.status(400).json({message:"Passwords don't match"});
+            }
+            const hashedPassword=await bcrypt.hash(password,12);
+            updateData.password = hashedPassword;
+            updateData.confirmpassword = hashedPassword;
         }
-        const hashedPassword=await bcrypt.hash(password,12);
-        const updatedAgent=await agent.findByIdAndUpdate(id,{firstname,lastname,email,phone,gender,password:hashedPassword,confirmpassword:hashedPassword},{new:true});
+
+        const updatedAgent=await agent.findByIdAndUpdate(id, updateData, {new:true});
         res.status(200).json({message:"Agent updated successfully",updatedAgent});
     }
     catch(error){
+        console.error('Update agent error:', error);
         res.status(500).json({message:"Something went wrong"});
     }
 }

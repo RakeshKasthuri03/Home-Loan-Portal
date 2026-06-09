@@ -2,6 +2,7 @@ const path = require('path');
 const fs = require('fs');
 const multer = require('multer');
 const User = require('../models/user.model');
+const Agent = require('../models/agent.model');
 
 // ensure uploads dir exists
 const UPLOAD_DIR = path.join(__dirname, '..', 'uploads');
@@ -73,11 +74,10 @@ const handleUpload = async (req, res) => {
     const { userId, purpose, docName, docType } = req.body || {};
 
     if (userId) {
+      // Try User first
       const user = await User.findById(userId);
-
       if (user) {
-
-        // ✅ profile upload
+        // ✅ profile upload for user
         if (purpose === 'profile') {
           user.profilePhoto = url;
           await user.save();
@@ -89,7 +89,7 @@ const handleUpload = async (req, res) => {
           });
         }
 
-        // ✅ document upload
+        // ✅ document upload for user
         const docEntry = {
           name: docName || req.file.originalname,
           url,
@@ -105,6 +105,27 @@ const handleUpload = async (req, res) => {
           message: 'Document uploaded ✅',
           doc: docEntry,
           user,
+        });
+      }
+
+      // If not a User, try Agent
+      const agent = await Agent.findById(userId);
+      if (agent) {
+        if (purpose === 'profile') {
+          agent.profilePhoto = url;
+          await agent.save();
+          return res.status(200).json({
+            message: 'Agent profile photo uploaded ✅',
+            url,
+            agent,
+          });
+        }
+
+        // Not handling agent documents for now
+        return res.status(200).json({
+          message: 'File uploaded for agent',
+          file: { url, filename, originalname: req.file.originalname },
+          agent,
         });
       }
     }

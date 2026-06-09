@@ -21,6 +21,7 @@ export default function AgentForm({ show, initial = {}, tiers = ['Silver','Gold'
     confirmpassword: '',
     tier: tiers[0],
   });
+  const [errors, setErrors] = useState({});
   const navigate = useNavigate();
 
   // If `show` is explicitly false, hide. If `show` is undefined (rendered as a page route), render in page mode.
@@ -32,19 +33,36 @@ export default function AgentForm({ show, initial = {}, tiers = ['Silver','Gold'
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-     
-      try{
+    // client-side validation
+    const newErrors = {};
+    if (!form.firstname || form.firstname.trim().length < 2) newErrors.firstname = 'First name is required (min 2 chars)';
+    if (!form.gender) newErrors.gender = 'Please select gender';
+    if (!form.email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) newErrors.email = 'Enter a valid email';
+    if (!form.password || form.password.length < 6) newErrors.password = 'Password must be at least 6 characters';
+    if (form.password !== form.confirmpassword) newErrors.confirmpassword = 'Passwords do not match';
+
+    setErrors(newErrors);
+    if (Object.keys(newErrors).length > 0) {
+      // show first error as toast
+      const first = newErrors[Object.keys(newErrors)[0]];
+      notify.error(first);
+      return;
+    }
+
+    try{
        const res=await axios.post('http://localhost:5000/api/agent/signup',form);
         if (res.status >= 200 && res.status < 300) {
-          if (pageMode) {
-            // show toast for 3s then navigate back to agents list
-            notify.success(res.data.message, { duration: 3000, onClose: () => navigate('/admin/agents') });
-          } else {
-            notify.success(res.data.message, { duration: 3000 });
-            if (typeof onSubmit === 'function') {
-              onSubmit(res.data.agent);
+            if (pageMode) {
+              // navigate immediately to agents list
+              notify.success(res.data.message);
+              navigate('/admin/agents');
+              return;
+            } else {
+              notify.success(res.data.message, { duration: 3000 });
+              if (typeof onSubmit === 'function') {
+                onSubmit(res.data.agent);
+              }
             }
-          }
         }
           else{
               notify.error(res.data.message);
@@ -72,6 +90,7 @@ export default function AgentForm({ show, initial = {}, tiers = ['Silver','Gold'
               <div className="af-row">
                 <label>First name</label>
                 <input name="firstname" value={form.firstname} onChange={handleChange} required />
+                {errors.firstname && <div className="af-error">{errors.firstname}</div>}
               </div>
 
               <div className="af-row">
@@ -86,11 +105,13 @@ export default function AgentForm({ show, initial = {}, tiers = ['Silver','Gold'
                   <option value="Female">Female</option>
                   <option value="Other">Other</option>
                 </select>
+                {errors.gender && <div className="af-error">{errors.gender}</div>}
               </div>
 
               <div className="af-row">
                 <label>Email</label>
                 <input name="email" type="email" value={form.email} onChange={handleChange} required />
+                {errors.email && <div className="af-error">{errors.email}</div>}
               </div>
 
               <div className="af-row">
@@ -101,10 +122,12 @@ export default function AgentForm({ show, initial = {}, tiers = ['Silver','Gold'
               <div className="af-row">
                 <label>Password</label>
                 <input name="password" type="password" value={form.password} onChange={handleChange} />
+                {errors.password && <div className="af-error">{errors.password}</div>}
               </div>
               <div className="af-row">
                 <label>Confirm Password</label>
                 <input name="confirmpassword" type="password" value={form.confirmpassword} onChange={handleChange} />
+                {errors.confirmpassword && <div className="af-error">{errors.confirmpassword}</div>}
               </div>
 
               <div className="af-row">
