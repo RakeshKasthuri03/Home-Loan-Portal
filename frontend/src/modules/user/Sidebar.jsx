@@ -87,7 +87,7 @@ export default function Sidebar({ user, sections = [], role = "user", onProfileU
             </span>
           )}
         </div>
-        <h4>{displayUser?.name || "User"}</h4>
+        <h4>{displayUser?.name || role}</h4>
         <p>{displayUser?.email}</p>
         <span className="badge">
           {role === "admin" ? "Administrator" : "✔ Verified"}
