@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Container, Row, Col, Form, Button } from "react-bootstrap";
 import {
   FaFacebookF,
@@ -8,10 +8,24 @@ import {
   FaGooglePlusG,
 } from "react-icons/fa";
 import "../Styles/Footer.css";
+import notify from "../utils/notify";
 import Image from 'react-bootstrap/Image';
 import logo from '../assets/logo.png';
 
 function Footer() {
+  const [phone, setPhone] = useState("");
+
+  const handleRequest = (e) => {
+    if (e && e.preventDefault) e.preventDefault();
+    const digits = (phone || "").replace(/\D/g, "");
+    if (!/^\d{10}$/.test(digits)) {
+      notify.error("Please enter a valid 10-digit phone number");
+      return;
+    }
+    notify.success("Our agent will contact you soon");
+    setPhone("");
+  };
+
   return (
     <footer className="footer light-blue">
       <Container>
@@ -24,7 +38,7 @@ function Footer() {
               We help turn your dream of owning a home into reality with simple, transparent, and affordable home loan solutions.
             </p>
             <h6>Contact Us</h6>
-            <p className="mb-1">📞 +91 98485 70949</p>
+            <p className="mb-1">📞 +91 1800-123-4567</p>
             <p>✉️ mlrrhomeloan@gmail.com</p>
           </Col>
 
@@ -53,13 +67,20 @@ function Footer() {
           {/* Subscribe */}
           <Col md={3} sm={12}>
             <h5 className="footer-title">Talk to a Home Loan Expert</h5>
-            <Form>
+            <Form onSubmit={handleRequest}>
               <Form.Control
                 type="tel"
                 placeholder="Enter your Phone number"
                 className="mb-2"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                aria-label="phone"
               />
-              <Button className="subscribe-btn w-100">
+              <Button
+                type="submit"
+                className="subscribe-btn w-100"
+                disabled={!/^\d{10}$/.test((phone || "").replace(/\D/g, ""))}
+              >
                 Request a Call Back
               </Button>
             </Form>

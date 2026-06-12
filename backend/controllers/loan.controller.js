@@ -733,7 +733,7 @@ const getAllApplications = async (req, res) => {
       Application.find(query)
         .populate('user', 'firstname lastname email phone')
         .populate('assignedAgent', 'firstname lastname email')
-        .select('applicationId loanType status basicDetails.fullName basicDetails.mobile financialDetails.loanAmount assignedAgent createdAt processing')
+        .select('applicationId loanType status basicDetails.fullName basicDetails.mobile financialDetails.loanAmount financialDetails.accountNumber financialDetails.ifscCode sanctionedDetails.sanctionedAmount sanctionedDetails.processingFee sanctionedDetails.sanctionedTenure assignedAgent createdAt processing')
         .sort({ createdAt: -1 })
         .skip(skip)
         .limit(parseInt(limit)),
@@ -830,7 +830,8 @@ const assignAgent = async (req, res) => {
 const approveApplication = async (req, res) => {
   try {
     const { applicationId } = req.params;
-    const { sanctionedAmount, sanctionedTenure, interestRate, emiAmount, processingFee } = req.body;
+    // Force sanctioned amount to be the user's requested amount (financialDetails.loanAmount)
+    const { sanctionedTenure, interestRate, emiAmount, processingFee } = req.body;
 
     const application = await Application.findById(applicationId);
 
@@ -844,12 +845,14 @@ const approveApplication = async (req, res) => {
 
     application.status = 'approved';
     application.processing.approvedAt = new Date();
+    // Set sanctioned amount equal to the originally requested loan amount
+    const requestedAmount = application.financialDetails?.loanAmount || 0;
     application.sanctionedDetails = {
-      sanctionedAmount: sanctionedAmount || application.financialDetails.loanAmount,
-      sanctionedTenure: sanctionedTenure || application.financialDetails.loanTenure,
+      sanctionedAmount: requestedAmount,
+      sanctionedTenure: sanctionedTenure || application.financialDetails?.loanTenure,
       interestRate,
       emiAmount,
-      processingFee,
+      processingFee: processingFee || 0,
       sanctionDate: new Date()
     };
 
@@ -912,7 +915,7 @@ const rejectApplication = async (req, res) => {
 const disburseApplication = async (req, res) => {
   try {
     const { applicationId } = req.params;
-    const { disbursedAmount, accountNumber, ifscCode, transactionRef } = req.body;
+    const { accountNumber, ifscCode } = req.body;
 
     const application = await Application.findById(applicationId);
 
@@ -924,18 +927,22 @@ const disburseApplication = async (req, res) => {
       return res.status(400).json({ message: 'Only approved applications can be disbursed' });
     }
 
+    // Compute disbursed amount from sanctioned amount minus processing fee
+    const sanctioned = application.sanctionedDetails?.sanctionedAmount || application.financialDetails?.loanAmount || 0;
+    const processingFee = application.sanctionedDetails?.processingFee || 0;
+    const computedDisbursed = Math.max(0, Number(sanctioned) - Number(processingFee));
+
     application.status = 'disbursed';
     application.processing.disbursedAt = new Date();
     application.disbursement = {
-      disbursedAmount: disbursedAmount || application.sanctionedDetails.sanctionedAmount,
+      disbursedAmount: computedDisbursed,
       disbursementDate: new Date(),
-      accountNumber,
-      ifscCode,
-      transactionRef
+      accountNumber: accountNumber || application.financialDetails?.accountNumber,
+      ifscCode: ifscCode || application.financialDetails?.ifscCode
     };
 
     application.processing.remarks.push({
-      text: `Loan disbursed: ₹${disbursedAmount || application.sanctionedDetails.sanctionedAmount}`,
+      text: `Loan disbursed: ₹${computedDisbursed}`,
       by: req.user.id || req.user._id,
       date: new Date()
     });

@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { getUser } from "../../utils/auth";
 import { getMyApplications, getApplicationById, requestClosure } from "../../utils/loanApi";
+import { FIELD_VALIDATORS } from "../../Validations/LoanValidation";
 import "../../styles/LoanTracker.css";
 
 const fmt = (n) => n ? "₹" + Number(n).toLocaleString("en-IN") : "—";
@@ -39,6 +40,8 @@ export default function LoanTracker() {
   const [selectedId, setSelectedId] = useState(null);
   const [activeTab, setActiveTab]   = useState("overview");
   const [closureMsg, setClosureMsg] = useState("");
+  const [closureDate, setClosureDate] = useState("");
+  const [closureError, setClosureError] = useState("");
 
   useEffect(() => {
     const load = async () => {
@@ -75,9 +78,24 @@ export default function LoanTracker() {
     e.preventDefault();
     (async () => {
       try {
-        const res = await requestClosure(loan._id, { reason: e.target[0]?.value || '', preferredDate: e.target[1]?.value || null });
+        const reason = e.target[0]?.value || '';
+        // prefer controlled state if present
+        const preferredDate = closureDate || e.target[1]?.value || null;
+
+        // Validate preferredDate using Yup helper
+        if (preferredDate) {
+          const err = FIELD_VALIDATORS.closureDate(preferredDate);
+          if (err) {
+            setClosureError(err);
+            return;
+          }
+        }
+        setClosureError('');
+
+        const res = await requestClosure(loan._id, { reason, preferredDate: preferredDate || null });
         if (res.success) {
           setClosureMsg("✅ Closure request submitted. Our team will contact you within 3 business days with the foreclosure statement.");
+          setClosureDate('');
         } else {
           setClosureMsg(`❌ ${res.error || 'Failed to submit closure request'}`);
         }
@@ -229,7 +247,7 @@ export default function LoanTracker() {
             <p style={{ margin:"4px 0 0", color:"#374151", fontSize:"0.88rem" }}>
               {fmt(dis.disbursedAmount)} disbursed on {dis.disbursementDate ? new Date(dis.disbursementDate).toLocaleDateString("en-IN",{day:"2-digit",month:"short",year:"numeric"}) : "—"}
             </p>
-            {dis.transactionRef && <p style={{ margin:"2px 0 0", color:"#6b7280", fontSize:"0.82rem" }}>Ref: {dis.transactionRef}</p>}
+            {/* UTR / transaction reference removed */}
           </div>
           {dis.accountNumber && (
             <div style={{ textAlign:"right", color:"#374151", fontSize:"0.88rem" }}>
@@ -418,7 +436,16 @@ export default function LoanTracker() {
                   </select>
                 </div>
                 <div className="lt-form-group"><label>Preferred Closure Date</label>
-                  <input type="date" className="lt-input" required />
+                  <input
+                    type="date"
+                    className="lt-input"
+                    required
+                    value={closureDate}
+                    onChange={(ev) => { setClosureDate(ev.target.value); if (closureError) setClosureError(''); }}
+                  />
+                  {closureError && (
+                    <div style={{ color: 'red', fontSize: '0.9rem', marginTop: 6 }}>{closureError}</div>
+                  )}
                 </div>
                 <button type="submit" className="lt-btn lt-btn--danger">Request Loan Closure</button>
               </form>

@@ -4,7 +4,7 @@ import * as Yup from "yup";
 export const nameValidation = Yup.string()
   .required("This field is required")
   .min(4, "Minimum 4 characters required")
-  .max(20, "Maximum 20 characters allowed");
+  .max(30, "Maximum 20 characters allowed");
 
 
 // ✅ Email: Only gmail or outlook + min 4 chars

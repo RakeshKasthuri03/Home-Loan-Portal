@@ -21,10 +21,10 @@ export const pinCodeValidation = Yup.string()
 
 export const dobValidation = Yup.string()
   .required("Date of birth is required")
-  .test("min-age", "Applicant must be at least 18 years old", (val) => {
+  .test("min-age", "Applicant must be at least 21 years old", (val) => {
     if (!val) return false;
     const age = Math.floor((new Date() - new Date(val)) / (365.25 * 24 * 60 * 60 * 1000));
-    return age >= 18;
+    return age >= 21;
   })
   .test("max-age", "Applicant age must be below 70 years", (val) => {
     if (!val) return false;
@@ -84,6 +84,12 @@ export const financialSchema = Yup.object({
   existingLoans: Yup.string().required("Please select existing loans status"),
   bankName:      Yup.string().min(2, "Bank name is required").required("Bank name is required"),
   accountType:   Yup.string().required("Account type is required"),
+  accountNumber: Yup.string()
+    .matches(/^[0-9]{6,18}$/, "Enter a valid account number (6-18 digits)")
+    .required("Account number is required"),
+  ifscCode:      Yup.string()
+    .matches(/^[A-Z]{4}0[0-9]{6}$/i, "Enter a valid IFSC code (e.g. HDFC0001234)")
+    .required("IFSC code is required"),
   cibilScore:    Yup.string().required("CIBIL score is required"),
 });
 
@@ -93,6 +99,18 @@ export const consentSchema = Yup.object({
   consentMarketing:   Yup.boolean(),
   eSignature:         Yup.string().min(2, "Digital signature (full name) is required").required("Digital signature is required"),
 });
+
+// Closure date validation: must be strictly greater than today (date-only comparison)
+export const closureDateValidation = Yup.string()
+  .required('Preferred closure date is required')
+  .test('is-future-date', 'Closure date should be greater than today', (val) => {
+    if (!val) return false;
+    const sel = new Date(val);
+    const today = new Date();
+    sel.setHours(0,0,0,0);
+    today.setHours(0,0,0,0);
+    return sel > today;
+  });
 
 // ─── FIELD-LEVEL VALIDATOR MAP ────────────────────────────────────────────────
 // Maps field `pattern` → validator function used in LoanApplicationContainer
@@ -109,6 +127,9 @@ export const FIELD_VALIDATORS = {
   monthlyIncome: (v) => runYup(monthlyIncomeValidation, v),
   passport:      (v) => runYup(passportValidation, v),
   currentROI:    (v) => runYup(interestRateValidation, v),
+  accountNumber: (v) => runYup(Yup.string().matches(/^[0-9]{6,18}$/, "Enter a valid account number (6-18 digits)").required("Account number is required"), v),
+  ifscCode:      (v) => runYup(Yup.string().matches(/^[A-Z]{4}0[0-9]{6}$/i, "Enter a valid IFSC code (e.g. HDFC0001234)").required("IFSC code is required"), v),
+  closureDate:   (v) => runYup(closureDateValidation, v),
 };
 
 // Helper — validates a single value with a Yup schema, returns error string or null

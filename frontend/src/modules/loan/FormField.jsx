@@ -1,6 +1,6 @@
 import { useState } from "react";
 import axios from "axios";
-import { getToken } from "../../utils/auth";
+import { getToken, getUser } from "../../utils/auth";
 import "./LoanForm.css";
 
 const FormField = ({ field, value, onChange, error, fullWidth }) => {
@@ -9,10 +9,16 @@ const FormField = ({ field, value, onChange, error, fullWidth }) => {
   const [uploading, setUploading] = useState(false);
   const [fileName, setFileName] = useState("");
 
+  const me = getUser();
+  // lock key identity fields coming from profile so user cannot edit them in application
+  const locked = me && (name === "fullName" || name === "email" || name === "gender" || name === "eSignature");
+
   const baseClass = `lf-input ${error ? "lf-input--error" : ""}`;
 
   // ✅ HANDLE INPUT CHANGE
   const handleChange = async (e) => {
+    // Prevent editing locked profile fields
+    if (locked && type !== "file") return;
     if (type === "file") {
       const file = e.target.files[0];
       if (!file) return;
@@ -68,7 +74,7 @@ const FormField = ({ field, value, onChange, error, fullWidth }) => {
 
       case "select":
         return (
-          <select className={baseClass} value={value || ""} onChange={handleChange}>
+          <select className={baseClass} value={value || ""} onChange={handleChange} disabled={locked}>
             {options.map((opt) => (
               <option key={opt} value={opt.startsWith("Select") ? "" : opt}>
                 {opt}
@@ -83,6 +89,7 @@ const FormField = ({ field, value, onChange, error, fullWidth }) => {
             className={baseClass}
             value={value || ""}
             onChange={handleChange}
+            readOnly={locked}
             placeholder={placeholder}
             rows={3}
           />
@@ -148,9 +155,15 @@ const FormField = ({ field, value, onChange, error, fullWidth }) => {
                 <br />
 
                 {/* ✅ VIEW FILE */}
-                <a href={value} target="_blank" rel="noreferrer">
-                  View
-                </a>
+                {(() => {
+                  const raw = value || "";
+                  const normalized = (typeof raw === 'string' && raw.startsWith('/http')) ? raw.slice(1) : raw;
+                  return (
+                    <a href={normalized} target="_blank" rel="noreferrer">
+                      View
+                    </a>
+                  );
+                })()}
               </div>
             )}
           </div>
@@ -164,6 +177,8 @@ const FormField = ({ field, value, onChange, error, fullWidth }) => {
             className={baseClass}
             value={value || ""}
             onChange={handleChange}
+            readOnly={locked}
+            title={locked ? "Taken from your profile — not editable" : undefined}
             placeholder={placeholder}
             maxLength={maxLength}
           />

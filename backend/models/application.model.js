@@ -87,6 +87,8 @@ const applicationSchema = new mongoose.Schema({
     existingLoans: { type: String },
     existingEMI: { type: Number, default: 0 },
     bankName: { type: String },
+    accountNumber: { type: String },
+    ifscCode: { type: String },
     accountType: { type: String, enum: ['Savings', 'Current', 'Salary'] },
     cibilScore: { type: String },
     // NRI specific
@@ -204,7 +206,7 @@ const applicationSchema = new mongoose.Schema({
     disbursementDate: { type: Date },
     accountNumber: { type: String },
     ifscCode: { type: String },
-    transactionRef: { type: String }
+    // transactionRef removed (UTR) per admin UI change
   }
 
 }, { 

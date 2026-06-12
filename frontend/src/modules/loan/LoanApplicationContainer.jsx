@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { LOAN_TYPES } from "../../utils/loanTypeConfig";
+import { getUser } from "../../utils/auth";
 import { FIELD_VALIDATORS } from "../../Validations/LoanValidation";
 import StepProgressBar from "./StepProgressBar";
 import StepRenderer from "./StepRenderer";
@@ -98,9 +99,32 @@ const LoanApplicationContainer = ({ loanTypeKey }) => {
               const errorMsg = `You already have a ${activeApp.loanType} application in progress (Status: ${activeApp.status}). Please complete or close it before applying for another loan.`;
               setInitError(errorMsg);
               notify.error(errorMsg, { position: "top-right", duration: 7000 });
-            } else {
+              } else {
               // No blocking application - user can proceed
               setIsInitialized(true);
+
+              // Prefill basic applicant info from logged-in user profile
+              try {
+                const me = getUser();
+                if (me) {
+                  setFormData((prev) => {
+                    // don't overwrite if form already has values (e.g., resumed draft)
+                    if (prev && Object.keys(prev).length > 0) return prev;
+                    const fullName = me.name || `${me.firstname || me.firstName || ""} ${me.lastname || me.lastName || ""}`.trim();
+                    return {
+                      ...prev,
+                      fullName: fullName || prev.fullName,
+                      email: me.email || prev.email,
+                      mobile: me.phone || me.mobile || prev.mobile,
+                      gender: me.gender || prev.gender,
+                      // Default digital signature to user's full name (can be edited later)
+                      eSignature: prev.eSignature || fullName || me.name || "",
+                    };
+                  });
+                }
+              } catch (e) {
+                // ignore if auth not available
+              }
             }
           } else {
             // Couldn't check - let them proceed (backend will catch it)

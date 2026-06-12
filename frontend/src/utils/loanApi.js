@@ -83,8 +83,9 @@ export const submitApplication = async (applicationId) => {
 
 export const uploadLoanDocument = async (file, fieldName) => {
   try {
-    const base = import.meta.env.VITE_API_BASE || '';
-    const uploadUrl = `${base}/api/upload`;
+    const baseRaw = import.meta.env.VITE_API_BASE || '';
+    const base = (typeof baseRaw === 'string') ? baseRaw.replace(/\/+$|\/+$/g, '').replace(/\/$/, '') : baseRaw;
+    const uploadUrl = base ? `${base}/api/upload` : '/api/upload';
     const formData = new FormData();
     formData.append('file', file);
     if (fieldName) formData.append('docName', fieldName);
@@ -168,7 +169,7 @@ const organizeFormData = (formData) => {
     'monthlyIncome', 'officeAddress', 'incomeCurrency'];
   
   const financialFields = ['loanAmount', 'loanTenure', 'existingLoans', 'existingEMI', 'bankName', 
-    'accountType', 'cibilScore', 'nreAccount', 'remittanceMode'];
+    'accountNumber', 'ifscCode', 'accountType', 'cibilScore', 'nreAccount', 'remittanceMode'];
   
   const propertyFields = ['propertyType', 'propertyLocation', 'propertyValue', 'builderName', 
     'possessionStatus', 'propertyAddress', 'poaHolder'];

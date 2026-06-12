@@ -52,7 +52,20 @@ export const saveAuth = (user, token) => {
         phone: user.phone,
         role: user.role || 'user'
       };
-      localStorage.setItem(AUTH_KEY, JSON.stringify({ id: userData.id ,role: userData.role}));
+      // Persist a fuller user profile so frontend can prefill forms (name, email, phone)
+      const stored = {
+        id: userData.id,
+        role: userData.role,
+        email: userData.email,
+        firstname: userData.firstname,
+        lastname: userData.lastname,
+        name: user.name || `${user.firstname || ''} ${user.lastname || ''}`.trim(),
+        phone: userData.phone,
+        // include gender and mobile aliases if present so frontend can prefill/lock fields
+        gender: user.gender || userData.gender || null,
+        mobile: user.mobile || user.phone || null,
+      };
+      localStorage.setItem(AUTH_KEY, JSON.stringify(stored));
     }
     if (token) localStorage.setItem(TOKEN_KEY, token);
   } catch (e) {

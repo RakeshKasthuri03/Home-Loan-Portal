@@ -58,7 +58,7 @@ function AdminApplications() {
   // Form state
   const [approveForm, setApproveForm] = useState({ sanctionedAmount:"", interestRate:"", emiAmount:"", processingFee:"", sanctionedTenure:"" });
   const [rejectReason, setRejectReason]   = useState("");
-  const [disburseForm, setDisburseForm]   = useState({ disbursedAmount:"", accountNumber:"", ifscCode:"", transactionRef:"" });
+  const [disburseForm, setDisburseForm]   = useState({ accountNumber:"", ifscCode:"" });
   const [closeReason, setCloseReason]     = useState("");
 
   const fetchApplications = async () => {
@@ -112,13 +112,12 @@ function AdminApplications() {
 
   // ── APPROVE ──────────────────────────────────────────────────────────────────
   const handleApproveSubmit = async () => {
-    if (!approveForm.sanctionedAmount || !approveForm.interestRate) {
-      alert("Sanctioned amount and interest rate are required.");
+    if (!approveForm.interestRate) {
+      alert("Interest rate is required.");
       return;
     }
     setActionLoading(approveModal._id);
     const res = await adminApproveApplication(approveModal._id, {
-      sanctionedAmount: Number(approveForm.sanctionedAmount),
       interestRate:     Number(approveForm.interestRate),
       emiAmount:        Number(approveForm.emiAmount) || undefined,
       processingFee:    Number(approveForm.processingFee) || undefined,
@@ -145,17 +144,14 @@ function AdminApplications() {
 
   // ── DISBURSE ──────────────────────────────────────────────────────────────────
   const handleDisburseSubmit = async () => {
-    if (!disburseForm.disbursedAmount) { alert("Disbursed amount is required."); return; }
     setActionLoading(disburseModal._id);
     const res = await adminDisburseApplication(disburseModal._id, {
-      disbursedAmount: Number(disburseForm.disbursedAmount),
       accountNumber:   disburseForm.accountNumber || undefined,
       ifscCode:        disburseForm.ifscCode || undefined,
-      transactionRef:  disburseForm.transactionRef || undefined,
     });
     setActionLoading(null);
     setDisburseModal(null);
-    setDisburseForm({ disbursedAmount:"", accountNumber:"", ifscCode:"", transactionRef:"" });
+    setDisburseForm({ accountNumber:"", ifscCode:"" });
     if (res.success) fetchApplications();
     else alert(res.error);
   };
@@ -188,14 +184,14 @@ function AdminApplications() {
     const btns = [];
 
     if (app.status === "submitted" || app.status === "under_review") {
-      btns.push(<button key="approve" className="approve" onClick={() => { setApproveForm({ sanctionedAmount: app.financialDetails?.loanAmount || "", interestRate:"", emiAmount:"", processingFee:"", sanctionedTenure: app.financialDetails?.loanTenure || "" }); setApproveModal(app); }}>Approve</button>);
+      btns.push(<button key="approve" className="approve" onClick={() => { setApproveForm({ sanctionedAmount: app.sanctionedDetails?.sanctionedAmount || app.financialDetails?.loanAmount || "", interestRate:"", emiAmount:"", processingFee: app.sanctionedDetails?.processingFee || "", sanctionedTenure: app.sanctionedDetails?.sanctionedTenure || app.financialDetails?.loanTenure || "" }); setApproveModal(app); }}>Approve</button>);
       btns.push(<button key="reject"  className="reject"  onClick={() => setRejectModal(app._id)}>Reject</button>);
       if (!app.assignedAgent)
         btns.push(<span key="assign" className="link-only" onClick={() => setAssignModal(app._id)}>Assign</span>);
     }
 
     if (app.status === "approved") {
-      btns.push(<button key="disburse" className="approve" onClick={() => { setDisburseForm({ disbursedAmount: app.sanctionedDetails?.sanctionedAmount || "", accountNumber:"", ifscCode:"", transactionRef:"" }); setDisburseModal(app); }}>Disburse</button>);
+      btns.push(<button key="disburse" className="approve" onClick={() => { setDisburseForm({ accountNumber: app.financialDetails?.accountNumber || app.disbursement?.accountNumber || "", ifscCode: app.financialDetails?.ifscCode || app.disbursement?.ifscCode || "" }); setDisburseModal(app); }}>Disburse</button>);
       btns.push(<button key="reject" className="reject" onClick={() => setRejectModal(app._id)}>Reject</button>);
     }
 
@@ -334,7 +330,7 @@ function AdminApplications() {
         <ModalWrap onClose={() => setApproveModal(null)}>
           <h3 style={{ margin:"0 0 4px", color:"#0f2557" }}>Approve Application</h3>
           <p style={{ color:"#6b7280", fontSize:"0.85rem", marginBottom:18 }}>{approveModal.applicationId} — {approveModal.basicDetails?.fullName}</p>
-          <div style={rowStyle}><label style={labelStyle}>Sanctioned Amount (₹) *</label><input style={inputStyle} type="number" value={approveForm.sanctionedAmount} onChange={e => setApproveForm(f => ({...f, sanctionedAmount: e.target.value}))} placeholder="e.g. 5000000" /></div>
+          <div style={rowStyle}><label style={labelStyle}>Sanctioned Amount (₹)</label><input style={inputStyle} type="number" value={approveForm.sanctionedAmount} readOnly /></div>
           <div style={rowStyle}><label style={labelStyle}>Interest Rate (% p.a.) *</label><input style={inputStyle} type="number" step="0.1" value={approveForm.interestRate} onChange={e => setApproveForm(f => ({...f, interestRate: e.target.value}))} placeholder="e.g. 8.5" /></div>
           <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:12 }}>
             <div style={rowStyle}><label style={labelStyle}>EMI Amount (₹)</label><input style={inputStyle} type="number" value={approveForm.emiAmount} onChange={e => setApproveForm(f => ({...f, emiAmount: e.target.value}))} placeholder="Monthly EMI" /></div>
@@ -370,11 +366,18 @@ function AdminApplications() {
         <ModalWrap onClose={() => setDisburseModal(null)}>
           <h3 style={{ margin:"0 0 4px", color:"#0f2557" }}>Disburse Loan</h3>
           <p style={{ color:"#6b7280", fontSize:"0.85rem", marginBottom:18 }}>{disburseModal.applicationId} — {disburseModal.basicDetails?.fullName}</p>
-          <div style={rowStyle}><label style={labelStyle}>Disbursed Amount (₹) *</label><input style={inputStyle} type="number" value={disburseForm.disbursedAmount} onChange={e => setDisburseForm(f => ({...f, disbursedAmount: e.target.value}))} placeholder="Amount to disburse" /></div>
+          {(() => {
+            const sanctioned = disburseModal.sanctionedDetails?.sanctionedAmount || disburseModal.financialDetails?.loanAmount || 0;
+            const processingFee = disburseModal.sanctionedDetails?.processingFee || 0;
+            const computed = Math.max(0, Number(sanctioned) - Number(processingFee));
+            return (
+              <div style={rowStyle}><label style={labelStyle}>Disbursed Amount (₹)</label><input style={inputStyle} type="text" value={computed} readOnly /></div>
+            );
+          })()}
           <div style={rowStyle}><label style={labelStyle}>Account Number</label><input style={inputStyle} type="text" value={disburseForm.accountNumber} onChange={e => setDisburseForm(f => ({...f, accountNumber: e.target.value}))} placeholder="Beneficiary account number" /></div>
           <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:12 }}>
             <div style={rowStyle}><label style={labelStyle}>IFSC Code</label><input style={inputStyle} type="text" value={disburseForm.ifscCode} onChange={e => setDisburseForm(f => ({...f, ifscCode: e.target.value}))} placeholder="e.g. HDFC0001234" /></div>
-            <div style={rowStyle}><label style={labelStyle}>Transaction Ref</label><input style={inputStyle} type="text" value={disburseForm.transactionRef} onChange={e => setDisburseForm(f => ({...f, transactionRef: e.target.value}))} placeholder="UTR / Ref no." /></div>
+            <div style={rowStyle}><label style={labelStyle}>&nbsp;</label><div /></div>
           </div>
           <div style={{ display:"flex", gap:10, marginTop:8 }}>
             <button onClick={() => setDisburseModal(null)} style={{ flex:1, padding:"10px", border:"1.5px solid #d1d5db", borderRadius:8, background:"#fff", cursor:"pointer", fontWeight:600 }}>Cancel</button>

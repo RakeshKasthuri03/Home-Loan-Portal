@@ -82,7 +82,8 @@ export default function Documents({ user }) {
       return;
     }
 
-    const fileUrl = uploadRes.data?.url || uploadRes.data?.file?.url || uploadRes.data?.doc?.url;
+    const fileUrlRaw = uploadRes.data?.url || uploadRes.data?.file?.url || uploadRes.data?.doc?.url;
+    const fileUrl = (typeof fileUrlRaw === 'string' && fileUrlRaw.startsWith('/http')) ? fileUrlRaw.slice(1) : fileUrlRaw;
     if (!fileUrl) {
       toast.error("Upload failed — no URL returned");
       setUploading(p => ({ ...p, [docKey]: false }));
@@ -193,7 +194,8 @@ export default function Documents({ user }) {
             {expectedDocs.map((docKey, i) => {
               const docData = appDocs[docKey];
               const status  = docData?.status || "pending";
-              const fileUrl = docData?.url;
+                    const rawUrl = docData?.url;
+                    const fileUrl = (typeof rawUrl === 'string' && rawUrl.startsWith('/http')) ? rawUrl.slice(1) : rawUrl;
               const cfg     = STATUS_CONFIG[status] || STATUS_CONFIG.pending;
               const isRejected = status === "rejected";
               const isUploading = uploading[docKey];
@@ -221,9 +223,9 @@ export default function Documents({ user }) {
                   {/* File preview/link */}
                   <td style={{ padding:"14px 16px" }}>
                     {fileUrl ? (
-                      fileUrl.match(/\.(jpg|jpeg|png|gif|webp)$/i)
+                      fileUrl && fileUrl.match(/\.(jpg|jpeg|png|gif|webp)$/i)
                         ? <img src={fileUrl} alt={docKey} style={{ width:60, height:46, objectFit:"cover", borderRadius:6, cursor:"pointer", border:"1px solid #e5e7eb" }} onClick={() => window.open(fileUrl)} />
-                        : <a href={fileUrl} target="_blank" rel="noreferrer" style={{ color:"#0f4c8a", fontWeight:600, fontSize:"0.85rem" }}>📎 View File</a>
+                        : fileUrl ? <a href={fileUrl} target="_blank" rel="noreferrer" style={{ color:"#0f4c8a", fontWeight:600, fontSize:"0.85rem" }}>📎 View File</a> : <span style={{ color:"#9ca3af", fontSize:"0.82rem" }}>No file</span>
                     ) : (
                       <span style={{ color:"#9ca3af", fontSize:"0.82rem" }}>No file</span>
                     )}

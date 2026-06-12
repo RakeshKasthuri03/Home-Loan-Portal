@@ -30,6 +30,8 @@ const financialFields = [
   { name: "existingEMI",   label: "Existing EMI per month (₹)",  type: "number", required: false, placeholder: "0 if none" },
   { name: "bankName",      label: "Primary Bank Name",           type: "text",   required: true,  placeholder: "Your salary/savings bank" },
   { name: "accountType",   label: "Account Type",                type: "select", required: true,  options: ["Select", "Savings", "Current", "Salary"] },
+  { name: "accountNumber", label: "Account Number",             type: "text",   required: true,  placeholder: "Bank account number" },
+  { name: "ifscCode",      label: "IFSC Code",                   type: "text",   required: true,  placeholder: "e.g. HDFC0001234" },
   { name: "cibilScore",    label: "Approximate CIBIL Score",     type: "select", required: true,  options: ["Select", "Below 650", "650-700", "700-750", "750-800", "800+", "Don't Know"] },
 ];
 

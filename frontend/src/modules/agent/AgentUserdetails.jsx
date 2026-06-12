@@ -505,7 +505,7 @@ function AgentUserDetails({ show, onClose, application, onRefresh }) {
                       <Col md={6}>
                         <InfoRow label="Account Number" value={app.disbursement.accountNumber} />
                         <InfoRow label="IFSC Code" value={app.disbursement.ifscCode} />
-                        <InfoRow label="Transaction Ref" value={app.disbursement.transactionRef} />
+                        {/* Transaction Ref (UTR) removed from UI */}
                       </Col>
                     </Row>
                   </SectionCard>
@@ -639,9 +639,18 @@ function AgentUserDetails({ show, onClose, application, onRefresh }) {
                               {doc.uploadedAt ? formatDate(doc.uploadedAt) : "—"}
                             </td>
                             <td style={{ padding: "12px 16px" }}>
-                              <a href={doc.url} target="_blank" rel="noreferrer" style={{ fontSize: "0.8rem", color: "#2563eb", fontWeight: 600 }}>
-                                View File
-                              </a>
+                              {
+                                (() => {
+                                  const raw = doc.url || "";
+                                  const normalized = (typeof raw === 'string' && raw.startsWith('/http')) ? raw.slice(1) : raw;
+                                  return (
+                                    <a href={normalized} target="_blank" rel="noreferrer" style={{ fontSize: "0.8rem", color: "#2563eb", fontWeight: 600 }}>
+                                      View File
+                                    </a>
+                                  );
+                                })()
+                              }
+                              
                             </td>
                             <td style={{ padding: "12px 16px" }}>
                               <div style={{ display: "flex", gap: "6px" }}>

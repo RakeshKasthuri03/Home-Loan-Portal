@@ -89,7 +89,7 @@
   .mlrr-contact-section { padding: 80px 60px;}
   .mlrr-section-header { text-align: center; margin-bottom: 56px; }
   .mlrr-section-tag {
-    display: inline-block;
+    display: flex;
     background: #eff6ff;
     color: #2771e2;
     font-size: 0.78rem;
@@ -111,106 +111,46 @@
     max-width: 1100px;
     margin: 0 auto;
     display: grid;
-    grid-template-columns: 340px 1fr;
+    /* Use single column so sidebar's two-column card grid spans the full area */
+    grid-template-columns: 1fr;
     gap: 40px;
     align-items: start;
   }
-  .mlrr-contact-sidebar { display: flex; flex-direction: column; gap: 16px; }
+  /* Two-column grid for contact cards on desktop; collapses on small screens */
+  .mlrr-contact-sidebar { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 36px; row-gap: 22px; align-items: start; }
   .mlrr-contact-card {
     background: #fff;
-    border: 1.5px solid #e5e7eb;
+    border: 1.5px solid #e9eef6;
     border-radius: 18px;
-    padding: 26px 24px;
-    box-shadow: 0 8px 40px rgba(15,37,64,0.10);
-    transition: transform 0.2s, box-shadow 0.2s;
+    padding: 28px 24px;
+    box-shadow: 0 10px 30px rgba(15,37,64,0.06);
+    transition: transform 0.22s, box-shadow 0.22s, border-color 0.22s;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 140px;
   }
-  .mlrr-contact-card:hover { 
-    border-color: #2771e2;
-    box-shadow: 0 12px 32px rgba(39,113,226,0.12);
+  .mlrr-contact-card:hover {
+    border-color: #e7f0ff;
+    box-shadow: 0 16px 40px rgba(39,113,226,0.07);
     transform: translateY(-4px);
- }
+  }
   .mlrr-card-icon {
     width: 46px; height: 46px;
     background: linear-gradient(135deg, #1a3c6e, #2771e2);
     border-radius: 12px;
     display: flex; align-items: center; justify-content: center;
     font-size: 1.2rem;
-    margin-bottom: 14px;
-    box-shadow: 0 4px 16px rgba(15,37,64,0.2);
+    margin-bottom: 12px;
+    box-shadow: 0 6px 18px rgba(15,37,64,0.10);
   }
-  .mlrr-card-label { font-size: 0.72rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #0f2557;; margin-bottom: 6px; }
-  .mlrr-card-value { font-size: 0.95rem; color: #1a1a2e; font-weight: 500; }
-  .mlrr-card-sub { font-size: 0.82rem; color: #5a6478; margin-top: 4px; font-weight: 300; }
+  .mlrr-card-label { font-size: 0.72rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #0f2557; margin-bottom: 8px; }
+  .mlrr-card-value { font-size: 1rem; color: #0f1724; font-weight: 600; margin-top: 6px; }
+  .mlrr-card-sub { font-size: 0.84rem; color: #5a6478; margin-top: 8px; font-weight: 300; }
   .mlrr-hours-row { display: flex; justify-content: space-between; font-size: 0.85rem; padding: 5px 0; border-bottom: 1px solid #f0ebe0; }
   .mlrr-hours-row:last-child { border-bottom: none; }
   .mlrr-hours-day { color: #5a6478; }
   .mlrr-hours-time { color: #1a1a2e; font-weight: 500; }
-
-  /* FORM */
-  .mlrr-form-wrap {
-    background: #fff;
-    border-radius: 22px;
-    padding: 46px 44px;
-    box-shadow: 0 8px 40px rgba(15,37,64,0.10);
-    border: 1.5px solid #e5e7eb;
-  }
-  .mlrr-form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-  .mlrr-form-group { margin-bottom: 22px; }
-  .mlrr-label { display: block; font-size: 0.82rem; font-weight: 600; color: #0f2540; margin-bottom: 8px; letter-spacing: 0.3px; }
-  .mlrr-req { color: #c9a84c; margin-left: 3px; }
-  .mlrr-input, .mlrr-select, .mlrr-textarea {
-    width: 100%;
-    padding: 13px 16px;
-    border: 1.5px solid #ddd5c8;
-    border-radius: 10px;
-    font-size: 0.93rem;
-    color: #1a1a2e;
-    background: #faf7f2;
-    transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
-    outline: none;
-  }
-  .mlrr-input:focus, .mlrr-select:focus, .mlrr-textarea:focus {
-    border-color: #0f2540;
-    background: #fff;
-    box-shadow: 0 0 0 3px rgba(15,37,64,0.07);
-  }
-  .mlrr-textarea { resize: vertical; min-height: 110px; }
-  .mlrr-select { cursor: pointer; }
-  .mlrr-chip-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 4px; }
-  .mlrr-chip {
-    padding: 10px 8px;
-    border: 1.5px solid #ddd5c8;
-    border-radius: 10px;
-    text-align: center;
-    font-size: 0.8rem;
-    font-weight: 500;
-    color: #5a6478;
-    cursor: pointer;
-    transition: all 0.18s;
-    background: #faf7f2;
-    user-select: none;
-  }
-  .mlrr-chip:hover { border-color: #0f2540; color: #0f2540; background: #fff; }
-  .mlrr-chip.selected { border-color: #0f2540; background: #0f2540; color: #fff; }
-  .mlrr-submit-btn {
-    width: 100%;
-    padding: 16px;
-    color: #fff;
-    border: none;
-    border-radius: 12px;
-    font-size: 1rem;
-    font-weight: 600;
-    cursor: pointer;
-    letter-spacing: 0.5px;
-    transition: transform 0.2s, box-shadow 0.2s;
-    box-shadow: 0 6px 24px rgba(15,37,64,0.25);
-    margin-top: 8px;
-  }
-  
-  .mlrr-submit-btn.success { background: linear-gradient(135deg, #1a7a4c, #25a366); cursor: default; }
-  .mlrr-form-note { text-align: center; font-size: 0.78rem; color: #5a6478; margin-top: 14px; font-weight: 300; }
-  .mlrr-form-note a { color: #0f2540; text-decoration: underline; }
-
   /* FAQ */
   .mlrr-faq-section {
     background: linear-gradient(135deg, #0f2557 0%, #1a3c6e 50%, #2771e2 100%);

@@ -16,6 +16,25 @@ const agentRoute=require('./routes/agent.route');
 const loanRoute=require('./routes/loan.route');
 const adminRoute=require('./routes/admin.route');
 
+// Fix for malformed absolute URLs accidentally stored with a leading slash
+// Example: "/http://localhost:5000/api/file/.." — the browser will request
+// "/http://localhost:5000/..." which the server treats as a path and returns
+// 404. This middleware will detect such requests and redirect the client to
+// the corrected URL without the leading slash.
+app.use((req, res, next) => {
+    try {
+        const orig = req.originalUrl || req.url || '';
+        if (typeof orig === 'string' && orig.startsWith('/http')) {
+            const target = orig.slice(1);
+            console.warn('Redirecting malformed absolute URL request', orig, '->', target);
+            return res.redirect(302, target);
+        }
+    } catch (e) {
+        // ignore and continue
+    }
+    return next();
+});
+
 mongoose.connect(process.env.MONGO_URL)
 .then(()=>{
     console.log("Connected to MongoDB");

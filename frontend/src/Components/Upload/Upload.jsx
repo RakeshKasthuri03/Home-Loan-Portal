@@ -26,7 +26,10 @@ export default function Upload({ uploadUrl = 'http://localhost:5000/api/upload',
 
       const res = await axios.post(url, fd, { headers: { 'Content-Type': 'multipart/form-data' } });
       const fileUrl = res.data?.url || res.data?.file?.url || res.data?.doc?.url || (res.data?.user && res.data.user.profilePhoto) || null;
-      if (fileUrl) setPreview(fileUrl);
+      if (fileUrl) {
+        const normalized = (typeof fileUrl === 'string' && fileUrl.startsWith('/http')) ? fileUrl.slice(1) : fileUrl;
+        setPreview(normalized);
+      }
       // Ensure callers receive the resolved URL even if backend response shape varies
       const payload = { ...(res.data || {}), url: fileUrl };
       if (onUploaded) onUploaded(payload);
