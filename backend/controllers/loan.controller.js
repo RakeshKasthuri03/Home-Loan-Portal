@@ -55,7 +55,7 @@ const createApplication = async (req, res) => {
       loanType: loanType,
       status: 'draft'
     });
-
+     
     if (existingDraft) {
       // Return existing draft instead of creating new one
       console.log('Returning existing draft application:', existingDraft._id);
@@ -65,7 +65,7 @@ const createApplication = async (req, res) => {
         isExisting: true
       });
     }
-
+      
     // Create new application with minimal fields only
     const application = new Application({
       user: userId,
@@ -145,7 +145,12 @@ const saveProgress = async (req, res) => {
       }
       return Object.keys(cleaned).length > 0 ? cleaned : null;
     };
+    // const user = await User.findById(userId);
+    //   let name=user.firstname+""+user.lastname;
 
+    //    if(name!=formData.basicDetails.name || user.email!=formData.basicDetails.email || user.phone!=formData.basicDetails.phone){
+    //     return res.status(400).json({ message: 'Basic details do not match your profile information' });
+    //    }
     // Only update sections that have actual data
     const cleanedBasicDetails = cleanObjectData(formData.basicDetails);
     if (cleanedBasicDetails) {
@@ -710,6 +715,7 @@ const getAllApplications = async (req, res) => {
     } else if (assignedAgent) {
       query.assignedAgent = assignedAgent;
     }
+    // console.log('Admin get all applications query:', query, 'Search:', search);
     
     // Search by applicationId, name, mobile, or email
     if (search) {

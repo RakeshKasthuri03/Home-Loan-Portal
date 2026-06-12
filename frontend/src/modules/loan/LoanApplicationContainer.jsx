@@ -174,7 +174,7 @@ const LoanApplicationContainer = ({ loanTypeKey }) => {
 
       setErrors((prev) => ({
         ...prev,
-        [name]: uploadResult.error || 'Unable to upload file. Please try again.',
+        [name]: uploadResult.error || 'Unable to upload file. Please check size and try again..',
       }));
       return;
     }
