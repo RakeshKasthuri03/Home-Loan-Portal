@@ -8,8 +8,7 @@ const Agent = require('../models/agent.model');
 const UPLOAD_DIR = path.join(__dirname, '..', 'uploads');
 if (!fs.existsSync(UPLOAD_DIR)) fs.mkdirSync(UPLOAD_DIR, { recursive: true });
 
-
-// ✅ ✅ Allowed file types
+//  Allowed file types
 const allowedTypes = [
   'application/pdf',
   'application/msword',
@@ -27,7 +26,7 @@ const allowedImageTypes = [
 ];
 
 
-// ✅ storage config
+//  storage config
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, UPLOAD_DIR);
@@ -42,7 +41,7 @@ const storage = multer.diskStorage({
 });
 
 
-// ✅ ✅ file filter (PDF, DOC, DOCX, and image files)
+//  file filter (PDF, DOC, DOCX, and image files)
 const fileFilter = (req, file, cb) => {
   if (allowedTypes.includes(file.mimetype) || allowedImageTypes.includes(file.mimetype)) {
     cb(null, true);
@@ -52,7 +51,7 @@ const fileFilter = (req, file, cb) => {
 };
 
 
-// ✅ multer config
+// multer config
 const upload = multer({
   storage,
   fileFilter,
@@ -62,7 +61,7 @@ const upload = multer({
 });
 
 
-// ✅ ✅ POST /api/upload
+//  POST /api/upload
 const handleUpload = async (req, res) => {
   try {
     if (!req.file)
@@ -77,7 +76,7 @@ const handleUpload = async (req, res) => {
       // Try User first
       const user = await User.findById(userId);
       if (user) {
-        // ✅ profile upload for user
+        //  profile upload for user
         if (purpose === 'profile') {
           user.profilePhoto = url;
           await user.save();
@@ -89,7 +88,7 @@ const handleUpload = async (req, res) => {
           });
         }
 
-        // ✅ document upload for user
+        //  document upload for user
         const docEntry = {
           name: docName || req.file.originalname,
           url,
@@ -130,7 +129,7 @@ const handleUpload = async (req, res) => {
       }
     }
 
-    // ✅ general upload
+    //  general upload
     return res.status(200).json({
       message: 'File uploaded ✅',
       file: {
@@ -143,12 +142,12 @@ const handleUpload = async (req, res) => {
   } catch (error) {
     console.error('Upload error:', error);
 
-    // ✅ handle file type error
+    //  handle file type error
     if (error.message.includes('Only PDF')) {
       return res.status(400).json({ message: error.message });
     }
 
-    // ✅ file size error
+    //  file size error
     if (error.code === 'LIMIT_FILE_SIZE') {
       return res.status(400).json({ message: 'File too large (Max 5MB) ❌' });
     }
@@ -159,7 +158,7 @@ const handleUpload = async (req, res) => {
 
 
 
-// ✅ ✅ GET FILE (view/download)
+//  GET FILE (view/download)
 const getFile = (req, res) => {
   try {
     const { filename } = req.params;
@@ -180,7 +179,7 @@ const getFile = (req, res) => {
 
 
 
-// ✅ ✅ DELETE FILE
+//  DELETE FILE
 const deleteFile = (req, res) => {
   try {
     const { filename } = req.params;
