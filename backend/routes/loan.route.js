@@ -1,7 +1,5 @@
 const router = require('express').Router();
 const auth = require('../middelwares/athentications');
-const User = require('../models/user.model');
-const Agent = require('../models/agent.model');
 const {
   // User operations
   createApplication,
