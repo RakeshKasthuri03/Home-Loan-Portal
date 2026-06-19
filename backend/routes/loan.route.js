@@ -19,17 +19,6 @@ const {
   recommendApplication,
   getAgentStats,
   verifyDocument,
-  
-  // Admin operations
-  getAllApplications,
-  getClosureRequests,
-  assignAgent,
-  approveApplication,
-  rejectApplication,
-  disburseApplication,
-  closeApplication,
-  getDashboardStats,
-  
   // Loan types
   getLoanTypes,
   createLoanType,
@@ -98,32 +87,7 @@ router.put('/agent/recommend/:applicationId', auth, isAgent, recommendApplicatio
 // Verify/Reject document
 router.put('/agent/verify-doc/:applicationId', auth, isAgent, verifyDocument);
 
-// ═══════════════════════════════════════════════════════════════════════════════
-// ADMIN ROUTES
-// ═══════════════════════════════════════════════════════════════════════════════
-
-// Get all applications (with filters)
-router.get('/admin/applications', auth, isAdmin, getAllApplications);
-
-// Get admin dashboard stats
-router.get('/admin/stats', auth, isAdmin, getDashboardStats);
-// Get pending closure requests for admin
-router.get('/admin/closure-requests', auth, isAdmin, getClosureRequests);
-
-// Assign agent to application
-router.put('/admin/assign/:applicationId', auth, isAdmin, assignAgent);
-
-// Approve application
-router.put('/admin/approve/:applicationId', auth, isAdmin, approveApplication);
-
-// Reject application
-router.put('/admin/reject/:applicationId', auth, isAdmin, rejectApplication);
-
-// Disburse loan
-router.put('/admin/disburse/:applicationId', auth, isAdmin, disburseApplication);
-
-// Close application
-router.put('/admin/close/:applicationId', auth, isAdmin, closeApplication);
+// Admin routes have been moved to `admin.route.js`
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // LOAN TYPES MANAGEMENT (Admin only)

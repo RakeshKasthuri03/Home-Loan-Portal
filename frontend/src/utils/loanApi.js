@@ -111,10 +111,11 @@ export const uploadLoanDocument = async (file, fieldName) => {
 
 /**
  * Get user's applications
+ * @param {object} params - Optional query parameters (status, loanType)
  */
-export const getMyApplications = async () => {
+export const getMyApplications = async (params = {}) => {
   try {
-    const response = await api.get('/my-applications');
+    const response = await api.get('/my-applications', { params });
     return { success: true, data: response.data };
   } catch (error) {
     console.error('Get applications error:', error);
@@ -234,13 +235,15 @@ const organizeFormData = (formData) => {
   return organized;
 };
 
+
 // ═══════════════════════════════════════════════════════════════════════════════
 // ADMIN OPERATIONS
 // ═══════════════════════════════════════════════════════════════════════════════
 
-export const adminGetAllApplications = async () => {
+export const adminGetAllApplications = async (params = {}) => {
   try {
-    const response = await api.get('/admin/applications');
+    const token = getToken();
+    const response = await axios.get('/api/admin/applications', { params, headers: { Authorization: token ? `Bearer ${token}` : undefined } });
     return { success: true, data: response.data };
   } catch (error) {
     console.error('Admin get applications error:', error);
@@ -250,7 +253,8 @@ export const adminGetAllApplications = async () => {
 
 export const adminGetStats = async () => {
   try {
-    const response = await api.get('/admin/stats');
+    const token = getToken();
+    const response = await axios.get('/api/admin/stats', { headers: { Authorization: token ? `Bearer ${token}` : undefined } });
     return { success: true, data: response.data };
   } catch (error) {
     console.error('Admin get stats error:', error);
@@ -260,7 +264,8 @@ export const adminGetStats = async () => {
 
 export const adminAssignAgent = async (applicationId, agentId) => {
   try {
-    const response = await api.put(`/admin/assign/${applicationId}`, { agentId });
+    const token = getToken();
+    const response = await axios.put(`/api/admin/assign/${applicationId}`, { agentId }, { headers: { Authorization: token ? `Bearer ${token}` : undefined } });
     return { success: true, data: response.data };
   } catch (error) {
     console.error('Admin assign agent error:', error);
@@ -270,7 +275,8 @@ export const adminAssignAgent = async (applicationId, agentId) => {
 
 export const adminApproveApplication = async (applicationId, sanctionData) => {
   try {
-    const response = await api.put(`/admin/approve/${applicationId}`, sanctionData);
+    const token = getToken();
+    const response = await axios.put(`/api/admin/approve/${applicationId}`, sanctionData, { headers: { Authorization: token ? `Bearer ${token}` : undefined } });
     return { success: true, data: response.data };
   } catch (error) {
     console.error('Admin approve error:', error);
@@ -280,7 +286,8 @@ export const adminApproveApplication = async (applicationId, sanctionData) => {
 
 export const adminRejectApplication = async (applicationId, reason) => {
   try {
-    const response = await api.put(`/admin/reject/${applicationId}`, { reason });
+    const token = getToken();
+    const response = await axios.put(`/api/admin/reject/${applicationId}`, { reason }, { headers: { Authorization: token ? `Bearer ${token}` : undefined } });
     return { success: true, data: response.data };
   } catch (error) {
     console.error('Admin reject error:', error);
@@ -290,7 +297,8 @@ export const adminRejectApplication = async (applicationId, reason) => {
 
 export const adminDisburseApplication = async (applicationId, disburseData) => {
   try {
-    const response = await api.put(`/admin/disburse/${applicationId}`, disburseData);
+    const token = getToken();
+    const response = await axios.put(`/api/admin/disburse/${applicationId}`, disburseData, { headers: { Authorization: token ? `Bearer ${token}` : undefined } });
     return { success: true, data: response.data };
   } catch (error) {
     console.error('Admin disburse error:', error);
@@ -300,7 +308,8 @@ export const adminDisburseApplication = async (applicationId, disburseData) => {
 
 export const adminCloseApplication = async (applicationId, reason) => {
   try {
-    const response = await api.put(`/admin/close/${applicationId}`, { reason });
+    const token = getToken();
+    const response = await axios.put(`/api/admin/close/${applicationId}`, { reason }, { headers: { Authorization: token ? `Bearer ${token}` : undefined } });
     return { success: true, data: response.data };
   } catch (error) {
     console.error('Admin close error:', error);
@@ -326,7 +335,8 @@ export const requestClosure = async (applicationId, data = {}) => {
  */
 export const adminGetClosureRequests = async () => {
   try {
-    const response = await api.get('/admin/closure-requests');
+    const token = getToken();
+    const response = await axios.get('/api/admin/closure-requests', { headers: { Authorization: token ? `Bearer ${token}` : undefined } });
     return { success: true, data: response.data };
   } catch (error) {
     console.error('Admin get closure requests error:', error);
@@ -338,9 +348,9 @@ export const adminGetClosureRequests = async () => {
 // AGENT OPERATIONS
 // ═══════════════════════════════════════════════════════════════════════════════
 
-export const agentGetApplications = async () => {
+export const agentGetApplications = async (params = {}) => {
   try {
-    const response = await api.get('/agent/applications');
+    const response = await api.get('/agent/applications', { params });
     return { success: true, data: response.data };
   } catch (error) {
     console.error('Agent get applications error:', error);

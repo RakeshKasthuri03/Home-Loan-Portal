@@ -1,8 +1,6 @@
 const Application = require('../models/application.model');
 const LoanType = require('../models/loan.model');
-const User = require('../models/user.model');
-
-// ═══════════════════════════════════════════════════════════════════════════════
+//══════════════════════════════════
 // USER OPERATIONS - Create, Update, View Applications
 // ═══════════════════════════════════════════════════════════════════════════════
 
@@ -695,385 +693,12 @@ const verifyDocument = async (req, res) => {
 };
 
 
-// ═══════════════════════════════════════════════════════════════════════════════
-// ADMIN OPERATIONS - Assign Agent, Approve/Reject, Disburse
-// ═══════════════════════════════════════════════════════════════════════════════
-
-/**
- * Admin: Get all applications with filters
- * GET /api/loan/admin/applications
- */
-const getAllApplications = async (req, res) => {
-  try {
-    const { status, loanType, assignedAgent, search, page = 1, limit = 20 } = req.query;
-
-    const query = {};
-    if (status) query.status = status;
-    if (loanType) query.loanType = loanType;
-    if (assignedAgent === 'unassigned') {
-      query.assignedAgent = { $exists: false };
-    } else if (assignedAgent) {
-      query.assignedAgent = assignedAgent;
-    }
-    // console.log('Admin get all applications query:', query, 'Search:', search);
-    
-    // Search by applicationId, name, mobile, or email
-    if (search) {
-      query.$or = [
-        { applicationId: { $regex: search, $options: 'i' } },
-        { 'basicDetails.fullName': { $regex: search, $options: 'i' } },
-        { 'basicDetails.mobile': { $regex: search, $options: 'i' } },
-        { 'basicDetails.email': { $regex: search, $options: 'i' } }
-      ];
-    }
-
-    const skip = (page - 1) * limit;
-
-    const [applications, total] = await Promise.all([
-      Application.find(query)
-        .populate('user', 'firstname lastname email phone')
-        .populate('assignedAgent', 'firstname lastname email')
-        .select('applicationId loanType status basicDetails.fullName basicDetails.mobile financialDetails.loanAmount financialDetails.accountNumber financialDetails.ifscCode sanctionedDetails.sanctionedAmount sanctionedDetails.processingFee sanctionedDetails.sanctionedTenure assignedAgent createdAt processing')
-        .sort({ createdAt: -1 })
-        .skip(skip)
-        .limit(parseInt(limit)),
-      Application.countDocuments(query)
-    ]);
-
-    res.json({ 
-      applications, 
-      pagination: {
-        total,
-        page: parseInt(page),
-        pages: Math.ceil(total / limit)
-      }
-    });
-  } catch (error) {
-    console.error('Get all applications error:', error);
-    res.status(500).json({ message: 'Failed to fetch applications', error: error.message });
-  }
-};
-
-  /**
-   * Admin: Get pending closure requests
-   * GET /api/loan/admin/closure-requests
-   */
-  const getClosureRequests = async (req, res) => {
-    try {
-      const apps = await Application.find({ 'documents.foreclosureLetter.status': 'pending' })
-        .select('applicationId loanType status basicDetails.fullName financialDetails.loanAmount documents processing user')
-        .populate('user', 'firstname lastname email');
-      res.json({ applications: apps });
-    } catch (error) {
-      console.error('Get closure requests error:', error);
-      res.status(500).json({ message: 'Failed to fetch closure requests', error: error.message });
-    }
-  };
-
-/**
- * Admin: Assign agent to application
- * PUT /api/loan/admin/assign/:applicationId
- */
-const assignAgent = async (req, res) => {
-  try {
-    const { applicationId } = req.params;
-    const { agentId } = req.body;
-
-    if (!agentId) {
-      return res.status(400).json({ message: 'Agent ID is required' });
-    }
-
-    // Look up agent by _id or agentid field
-    const Agent = require('../models/agent.model');
-    let agent;
-    if (agentId.match(/^[0-9a-fA-F]{24}$/)) {
-      agent = await Agent.findById(agentId);
-    }
-    if (!agent) {
-      agent = await Agent.findOne({ agentid: agentId });
-    }
-    if (!agent) {
-      return res.status(404).json({ message: 'Agent not found' });
-    }
-
-    const application = await Application.findById(applicationId);
-
-    if (!application) {
-      return res.status(404).json({ message: 'Application not found' });
-    }
-
-    application.assignedAgent = agent._id;
-    
-    // Add assignment note
-    application.processing.remarks.push({
-      text: `Application assigned to agent`,
-      by: req.user.id || req.user._id,
-      date: new Date()
-    });
-
-    await application.save();
-
-    const updatedApplication = await Application.findById(applicationId)
-      .populate('assignedAgent', 'firstname lastname email');
-
-    res.json({ message: 'Agent assigned successfully', application: updatedApplication });
-  } catch (error) {
-    console.error('Assign agent error:', error);
-    res.status(500).json({ message: 'Failed to assign agent', error: error.message });
-  }
-};
-
-/**
- * Admin: Approve application
- * PUT /api/loan/admin/approve/:applicationId
- */
-const approveApplication = async (req, res) => {
-  try {
-    const { applicationId } = req.params;
-    // Force sanctioned amount to be the user's requested amount (financialDetails.loanAmount)
-    const { sanctionedTenure, interestRate, emiAmount, processingFee } = req.body;
-
-    const application = await Application.findById(applicationId);
-
-    if (!application) {
-      return res.status(404).json({ message: 'Application not found' });
-    }
-
-    if (!['submitted', 'under_review'].includes(application.status)) {
-      return res.status(400).json({ message: 'Application cannot be approved in current status' });
-    }
-
-    application.status = 'approved';
-    application.processing.approvedAt = new Date();
-    // Set sanctioned amount equal to the originally requested loan amount
-    const requestedAmount = application.financialDetails?.loanAmount || 0;
-    application.sanctionedDetails = {
-      sanctionedAmount: requestedAmount,
-      sanctionedTenure: sanctionedTenure || application.financialDetails?.loanTenure,
-      interestRate,
-      emiAmount,
-      processingFee: processingFee || 0,
-      sanctionDate: new Date()
-    };
-
-    application.processing.remarks.push({
-      text: 'Application approved',
-      by: req.user.id || req.user._id,
-      date: new Date()
-    });
-
-    await application.save();
-
-    res.json({ message: 'Application approved', application });
-  } catch (error) {
-    console.error('Approve application error:', error);
-    res.status(500).json({ message: 'Failed to approve application', error: error.message });
-  }
-};
-
-/**
- * Admin: Reject application
- * PUT /api/loan/admin/reject/:applicationId
- */
-const rejectApplication = async (req, res) => {
-  try {
-    const { applicationId } = req.params;
-    const { reason } = req.body;
-
-    if (!reason) {
-      return res.status(400).json({ message: 'Rejection reason is required' });
-    }
-
-    const application = await Application.findById(applicationId);
-
-    if (!application) {
-      return res.status(404).json({ message: 'Application not found' });
-    }
-
-    application.status = 'rejected';
-    application.processing.rejectedAt = new Date();
-    application.processing.rejectionReason = reason;
-    application.processing.remarks.push({
-      text: `Application rejected: ${reason}`,
-      by: req.user.id || req.user._id,
-      date: new Date()
-    });
-
-    await application.save();
-
-    res.json({ message: 'Application rejected', application });
-  } catch (error) {
-    console.error('Reject application error:', error);
-    res.status(500).json({ message: 'Failed to reject application', error: error.message });
-  }
-};
-
-/**
- * Admin: Mark as disbursed
- * PUT /api/loan/admin/disburse/:applicationId
- */
-const disburseApplication = async (req, res) => {
-  try {
-    const { applicationId } = req.params;
-    const { accountNumber, ifscCode } = req.body;
-
-    const application = await Application.findById(applicationId);
-
-    if (!application) {
-      return res.status(404).json({ message: 'Application not found' });
-    }
-
-    if (application.status !== 'approved') {
-      return res.status(400).json({ message: 'Only approved applications can be disbursed' });
-    }
-
-    // Compute disbursed amount from sanctioned amount minus processing fee
-    const sanctioned = application.sanctionedDetails?.sanctionedAmount || application.financialDetails?.loanAmount || 0;
-    const processingFee = application.sanctionedDetails?.processingFee || 0;
-    const computedDisbursed = Math.max(0, Number(sanctioned) - Number(processingFee));
-
-    application.status = 'disbursed';
-    application.processing.disbursedAt = new Date();
-    application.disbursement = {
-      disbursedAmount: computedDisbursed,
-      disbursementDate: new Date(),
-      accountNumber: accountNumber || application.financialDetails?.accountNumber,
-      ifscCode: ifscCode || application.financialDetails?.ifscCode
-    };
-
-    application.processing.remarks.push({
-      text: `Loan disbursed: ₹${computedDisbursed}`,
-      by: req.user.id || req.user._id,
-      date: new Date()
-    });
-
-    await application.save();
-
-    res.json({ message: 'Loan disbursed successfully', application });
-  } catch (error) {
-    console.error('Disburse application error:', error);
-    res.status(500).json({ message: 'Failed to disburse loan', error: error.message });
-  }
-};
-
-/**
- * Admin: Close application
- * PUT /api/loan/admin/close/:applicationId
- */
-const closeApplication = async (req, res) => {
-  try {
-    const { applicationId } = req.params;
-    const { reason } = req.body;
-
-    const application = await Application.findById(applicationId);
-
-    if (!application) {
-      return res.status(404).json({ message: 'Application not found' });
-    }
-
-    application.status = 'closed';
-    application.processing.remarks.push({
-      text: `Application closed: ${reason || 'Loan completed'}`,
-      by: req.user.id || req.user._id,
-      date: new Date()
-    });
-
-    // If there was a user-requested foreclosureLetter, mark it processed
-    try {
-      application.documents = application.documents || {};
-      if (application.documents.foreclosureLetter && application.documents.foreclosureLetter.status === 'pending') {
-        application.documents.foreclosureLetter.status = 'processed';
-        application.documents.foreclosureLetter.processedAt = new Date();
-        application.documents.foreclosureLetter.processedBy = req.user.id || req.user._id;
-        application.processing.remarks.push({
-          text: `Closure request processed by admin`,
-          by: req.user.id || req.user._id,
-          date: new Date()
-        });
-      }
-    } catch (e) {
-      // non-fatal
-      console.warn('Failed to update foreclosureLetter during closeApplication', e);
-    }
-
-    await application.save();
-
-    res.json({ message: 'Application closed', application });
-  } catch (error) {
-    console.error('Close application error:', error);
-    res.status(500).json({ message: 'Failed to close application', error: error.message });
-  }
-};
+// Admin operations have been moved to admin.controller.js
 
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// DASHBOARD STATS & ANALYTICS
+// DASHBOARD STATS & ANALYTICS (Agent+Admin where appropriate)
 // ═══════════════════════════════════════════════════════════════════════════════
-
-/**
- * Get dashboard stats (Admin)
- * GET /api/loan/admin/stats
- */
-const getDashboardStats = async (req, res) => {
-  try {
-    const [
-      totalApplications,
-      statusCounts,
-      loanTypeCounts,
-      recentApplications,
-      monthlyTrend
-    ] = await Promise.all([
-      Application.countDocuments(),
-      Application.aggregate([
-        { $group: { _id: '$status', count: { $sum: 1 } } }
-      ]),
-      Application.aggregate([
-        { $group: { _id: '$loanType', count: { $sum: 1 }, totalAmount: { $sum: '$financialDetails.loanAmount' } } }
-      ]),
-      Application.find()
-        .select('applicationId loanType status basicDetails.fullName financialDetails.loanAmount createdAt')
-        .sort({ createdAt: -1 })
-        .limit(5),
-      Application.aggregate([
-        {
-          $match: {
-            createdAt: { $gte: new Date(new Date().setMonth(new Date().getMonth() - 6)) }
-          }
-        },
-        {
-          $group: {
-            _id: { $dateToString: { format: '%Y-%m', date: '$createdAt' } },
-            count: { $sum: 1 },
-            totalAmount: { $sum: '$financialDetails.loanAmount' }
-          }
-        },
-        { $sort: { _id: 1 } }
-      ])
-    ]);
-
-    // Transform status counts to object
-    const statusStats = {};
-    statusCounts.forEach(s => { statusStats[s._id] = s.count; });
-
-    // Transform loan type counts
-    const loanTypeStats = {};
-    loanTypeCounts.forEach(l => { 
-      loanTypeStats[l._id] = { count: l.count, totalAmount: l.totalAmount }; 
-    });
-
-    res.json({
-      totalApplications,
-      statusStats,
-      loanTypeStats,
-      recentApplications,
-      monthlyTrend
-    });
-  } catch (error) {
-    console.error('Get dashboard stats error:', error);
-    res.status(500).json({ message: 'Failed to fetch stats', error: error.message });
-  }
-};
-
 /**
  * Get agent dashboard stats
  * GET /api/loan/agent/stats
@@ -1120,19 +745,14 @@ const getAgentStats = async (req, res) => {
   }
 };
 
-
-// ═══════════════════════════════════════════════════════════════════════════════
-// LOAN TYPES MANAGEMENT
-// ═══════════════════════════════════════════════════════════════════════════════
-
 /**
- * Get all loan types
+ * Public: Get available loan types
  * GET /api/loan/types
  */
 const getLoanTypes = async (req, res) => {
   try {
-    const loanTypes = await LoanType.find({ isActive: true });
-    res.json({ loanTypes });
+    const types = await LoanType.find({ isActive: true }).sort({ key: 1 });
+    res.json({ loanTypes: types });
   } catch (error) {
     console.error('Get loan types error:', error);
     res.status(500).json({ message: 'Failed to fetch loan types', error: error.message });
@@ -1140,14 +760,17 @@ const getLoanTypes = async (req, res) => {
 };
 
 /**
- * Create loan type (Admin)
+ * Admin: Create a new loan type
  * POST /api/loan/types
  */
 const createLoanType = async (req, res) => {
   try {
-    const loanType = new LoanType(req.body);
-    await loanType.save();
-    res.status(201).json({ message: 'Loan type created', loanType });
+    const payload = req.body;
+    const existing = await LoanType.findOne({ key: payload.key });
+    if (existing) return res.status(400).json({ message: 'Loan type with this key already exists' });
+    const lt = new LoanType(payload);
+    await lt.save();
+    res.status(201).json({ message: 'Loan type created', loanType: lt });
   } catch (error) {
     console.error('Create loan type error:', error);
     res.status(500).json({ message: 'Failed to create loan type', error: error.message });
@@ -1155,22 +778,21 @@ const createLoanType = async (req, res) => {
 };
 
 /**
- * Update loan type (Admin)
+ * Admin: Update existing loan type
  * PUT /api/loan/types/:id
  */
 const updateLoanType = async (req, res) => {
   try {
-    const loanType = await LoanType.findByIdAndUpdate(req.params.id, req.body, { new: true });
-    if (!loanType) {
-      return res.status(404).json({ message: 'Loan type not found' });
-    }
-    res.json({ message: 'Loan type updated', loanType });
+    const { id } = req.params;
+    const updates = req.body;
+    const updated = await LoanType.findByIdAndUpdate(id, updates, { new: true });
+    if (!updated) return res.status(404).json({ message: 'Loan type not found' });
+    res.json({ message: 'Loan type updated', loanType: updated });
   } catch (error) {
     console.error('Update loan type error:', error);
     res.status(500).json({ message: 'Failed to update loan type', error: error.message });
   }
 };
-
 
 module.exports = {
   // User operations
@@ -1191,19 +813,7 @@ module.exports = {
   recommendApplication,
   getAgentStats,
   verifyDocument,
-  
-  // Admin operations
-  getAllApplications,
-  getClosureRequests,
-  assignAgent,
-  approveApplication,
-  rejectApplication,
-  disburseApplication,
-  closeApplication,
-  getDashboardStats,
-  
-  // Loan types
   getLoanTypes,
   createLoanType,
-  updateLoanType
+  updateLoanType,
 };

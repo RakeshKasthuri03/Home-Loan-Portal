@@ -11,6 +11,7 @@ import {
   adminDisburseApplication,
   adminCloseApplication,
   adminGetClosureRequests,
+  adminGetStats,
 } from "../../utils/loanApi";
 
 const loanTypeLabels = {
@@ -38,6 +39,13 @@ const ModalWrap = ({ children, onClose }) => (
   </div>
 );
 
+const statusMap = {
+  All:null, Draft:"draft", Submitted:"submitted", "Under Review":"under_review",
+  "Docs Pending":"documents_pending", Approved:"approved", Rejected:"rejected",
+  Disbursed:"disbursed", Closed:"closed",
+};
+const tabStatuses = ["All","Draft","Submitted","Under Review","Docs Pending","Approved","Rejected","Disbursed","Closed"];
+
 function AdminApplications() {
   const [activeTab, setActiveTab]       = useState("All");
   const [applications, setApplications] = useState([]);
@@ -46,6 +54,7 @@ function AdminApplications() {
   const [searchTerm, setSearchTerm]     = useState("");
   const [agents, setAgents]             = useState([]);
   const [closureRequests, setClosureRequests] = useState([]);
+  const [stats, setStats] = useState({ totalApplications: 0, statusStats: {} });
 
   // Modals
   const [approveModal, setApproveModal]   = useState(null);
@@ -61,14 +70,25 @@ function AdminApplications() {
   const [disburseForm, setDisburseForm]   = useState({ accountNumber:"", ifscCode:"" });
   const [closeReason, setCloseReason]     = useState("");
 
+  // Initial load for closure requests and overall application stats
+  const fetchInitialData = async () => {
+    const [closureRes, statsRes] = await Promise.all([
+      adminGetClosureRequests(),
+      adminGetStats()
+    ]);
+    if (closureRes.success) setClosureRequests(closureRes.data?.applications || []);
+    if (statsRes.success) setStats(statsRes.data || { totalApplications: 0, statusStats: {} });
+    fetchAgents();
+  };
+
   const fetchApplications = async () => {
     setLoading(true);
-    const [appsRes, closureRes] = await Promise.all([
-      adminGetAllApplications(),
-      adminGetClosureRequests(),
-    ]);
+    const params = {};
+    if (activeTab !== "All") params.status = statusMap[activeTab];
+    if (searchTerm.trim()) params.search = searchTerm.trim();
+
+    const appsRes = await adminGetAllApplications(params);
     if (appsRes.success) setApplications(appsRes.data.applications || []);
-    if (closureRes.success) setClosureRequests(closureRes.data?.applications || []);
     setLoading(false);
   };
 
@@ -80,35 +100,39 @@ function AdminApplications() {
     } catch (err) { console.error("Failed to fetch agents:", err); }
   };
 
-  useEffect(() => { fetchApplications(); fetchAgents(); }, []);
+  useEffect(() => { fetchInitialData(); }, []);
+
+  // Fetch applications when tab or search changes (debounced)
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      fetchApplications();
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [activeTab, searchTerm]);
+
+  // Call this after a successful action to refresh both lists and counts
+  const refreshAll = async () => {
+    fetchApplications();
+    const statsRes = await adminGetStats();
+    if (statsRes.success) setStats(statsRes.data || { totalApplications: 0, statusStats: {} });
+  };
 
   // Open close modal if query param provided (reused from AdminDashboard link)
-  const location = useLocation();
-  useEffect(() => {
-    const params = new URLSearchParams(location.search);
-    const openClose = params.get('openClose');
-    if (openClose) {
-      // Ensure applications are loaded first, then open modal
-      const timer = setTimeout(() => setCloseModal(openClose), 400);
-      return () => clearTimeout(timer);
-    }
-  }, [location.search]);
+  // const location = useLocation();
+  // useEffect(() => {
+  //   const params = new URLSearchParams(location.search);
+  //   const openClose = params.get('openClose');
+  //   if (openClose) {
+  //     // Ensure applications are loaded first, then open modal
+  //     const timer = setTimeout(() => setCloseModal(openClose), 400);
+  //     return () => clearTimeout(timer);
+  //   }
+  // }, [location.search]);
 
-  const statusMap = {
-    All:null, Draft:"draft", Submitted:"submitted", "Under Review":"under_review",
-    "Docs Pending":"documents_pending", Approved:"approved", Rejected:"rejected",
-    Disbursed:"disbursed", Closed:"closed",
+  const getCount = (tab) => {
+    if (tab === "All") return stats.totalApplications || 0;
+    return stats.statusStats?.[statusMap[tab]] || 0;
   };
-  const tabStatuses = ["All","Draft","Submitted","Under Review","Docs Pending","Approved","Rejected","Disbursed","Closed"];
-  const getCount = (tab) => tab === "All" ? applications.length : applications.filter(a => a.status === statusMap[tab]).length;
-
-  const filteredApplications = applications.filter((app) => {
-    const matchTab    = activeTab === "All" || app.status === statusMap[activeTab];
-    const matchSearch = !searchTerm ||
-      (app.applicationId || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (app.basicDetails?.fullName || "").toLowerCase().includes(searchTerm.toLowerCase());
-    return matchTab && matchSearch;
-  });
 
   // ── APPROVE ──────────────────────────────────────────────────────────────────
   const handleApproveSubmit = async () => {
@@ -126,7 +150,7 @@ function AdminApplications() {
     setActionLoading(null);
     setApproveModal(null);
     setApproveForm({ sanctionedAmount:"", interestRate:"", emiAmount:"", processingFee:"", sanctionedTenure:"" });
-    if (res.success) fetchApplications();
+    if (res.success) refreshAll();
     else alert(res.error);
   };
 
@@ -138,7 +162,7 @@ function AdminApplications() {
     setActionLoading(null);
     setRejectModal(null);
     setRejectReason("");
-    if (res.success) fetchApplications();
+    if (res.success) refreshAll();
     else alert(res.error);
   };
 
@@ -152,7 +176,7 @@ function AdminApplications() {
     setActionLoading(null);
     setDisburseModal(null);
     setDisburseForm({ accountNumber:"", ifscCode:"" });
-    if (res.success) fetchApplications();
+    if (res.success) refreshAll();
     else alert(res.error);
   };
 
@@ -163,7 +187,7 @@ function AdminApplications() {
     setActionLoading(null);
     setCloseModal(null);
     setCloseReason("");
-    if (res.success) fetchApplications();
+    if (res.success) refreshAll();
     else alert(res.error);
   };
 
@@ -173,7 +197,7 @@ function AdminApplications() {
     const res = await adminAssignAgent(appId, agentId);
     setActionLoading(null);
     setAssignModal(null);
-    if (res.success) fetchApplications();
+    if (res.success) refreshAll();
     else alert(res.error);
   };
 
@@ -183,8 +207,14 @@ function AdminApplications() {
 
     const btns = [];
 
-    if (app.status === "submitted" || app.status === "under_review") {
+    if (app.status === "under_review") {
       btns.push(<button key="approve" className="approve" onClick={() => { setApproveForm({ sanctionedAmount: app.sanctionedDetails?.sanctionedAmount || app.financialDetails?.loanAmount || "", interestRate:"", emiAmount:"", processingFee: app.sanctionedDetails?.processingFee || "", sanctionedTenure: app.sanctionedDetails?.sanctionedTenure || app.financialDetails?.loanTenure || "" }); setApproveModal(app); }}>Approve</button>);
+      btns.push(<button key="reject"  className="reject"  onClick={() => setRejectModal(app._id)}>Reject</button>);
+      if (!app.assignedAgent)
+        btns.push(<span key="assign" className="link-only" onClick={() => setAssignModal(app._id)}>Assign</span>);
+    }
+
+    if (app.status === "submitted") {
       btns.push(<button key="reject"  className="reject"  onClick={() => setRejectModal(app._id)}>Reject</button>);
       if (!app.assignedAgent)
         btns.push(<span key="assign" className="link-only" onClick={() => setAssignModal(app._id)}>Assign</span>);
@@ -247,7 +277,7 @@ function AdminApplications() {
             <input type="text" placeholder="🔍 Search by name or application ID..."
               value={searchTerm} onChange={e => setSearchTerm(e.target.value)}
               style={{ padding:"9px 14px", border:"1.5px solid #d1d5db", borderRadius:9, fontSize:"0.9rem", width:280, outline:"none" }} />
-            <span style={{ color:"#6b7280", fontSize:"0.85rem" }}>{filteredApplications.length} application{filteredApplications.length !== 1 ? "s" : ""}</span>
+            <span style={{ color:"#6b7280", fontSize:"0.85rem" }}>{applications.length} application{applications.length !== 1 ? "s" : ""}</span>
           </div>
 
           {/* Status tabs */}
@@ -266,14 +296,14 @@ function AdminApplications() {
           {/* Cards grid */}
           {loading ? (
             <div style={{ textAlign:"center", padding:40, color:"#6b7280" }}>Loading applications...</div>
-          ) : filteredApplications.length === 0 ? (
+          ) : applications.length === 0 ? (
             <div style={{ textAlign:"center", padding:40, background:"#f9fafb", borderRadius:12, color:"#6b7280" }}>
               <div style={{ fontSize:40, marginBottom:12 }}>📭</div>
               <p>No applications found for this filter.</p>
             </div>
           ) : (
             <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill, minmax(320px, 1fr))", gap:14 }}>
-              {filteredApplications.map(app => (
+              {applications.map(app => (
                 <div key={app._id} style={{ background:"#fff", borderRadius:12, border:"1px solid #e5e7eb", padding:18, boxShadow:"0 2px 6px rgba(0,0,0,0.05)", display:"flex", flexDirection:"column", gap:12 }}>
                   {/* Top row: ID + status */}
                   <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start" }}>
