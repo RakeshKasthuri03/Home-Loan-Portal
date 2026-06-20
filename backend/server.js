@@ -44,10 +44,10 @@ mongoose.connect(process.env.MONGO_URL)
 });
 
 //agent routes
-app.use('/api/agent',agentRoute);
 app.use('/api/admin',adminRoute);
 //loan application routes
 app.use('/api/loan', loanRoute);
+app.use('/api/agent',agentRoute);
 // serve api routes under /api
 app.use('/', userRoute);
 app.use('/api', uploadRoute);

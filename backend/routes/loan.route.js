@@ -12,13 +12,13 @@ const {
   resubmitDocument,
   
   // Agent operations
-  getAgentApplications,
-  startReview,
-  requestDocuments,
-  addRemarks,
-  recommendApplication,
-  getAgentStats,
-  verifyDocument,
+  // getAgentApplications,
+  // startReview,
+  // requestDocuments,
+  // addRemarks,
+  // recommendApplication,
+  // getAgentStats,
+  // verifyDocument,
   // Loan types
   getLoanTypes,
   createLoanType,
@@ -67,25 +67,25 @@ router.put('/resubmit-doc/:applicationId', auth, resubmitDocument);
 // ═══════════════════════════════════════════════════════════════════════════════
 
 // Get agent's assigned applications
-router.get('/agent/applications', auth, isAgent, getAgentApplications);
+// router.get('/agent/applications', auth, isAgent, getAgentApplications);
 
-// Get agent dashboard stats
-router.get('/agent/stats', auth, isAgent, getAgentStats);
+// // Get agent dashboard stats
+// router.get('/agent/stats', auth, isAgent, getAgentStats);
 
-// Start review
-router.put('/agent/review/:applicationId', auth, isAgent, startReview);
+// // Start review
+// router.put('/agent/review/:applicationId', auth, isAgent, startReview);
 
-// Request additional documents
-router.put('/agent/request-docs/:applicationId', auth, isAgent, requestDocuments);
+// // Request additional documents
+// router.put('/agent/request-docs/:applicationId', auth, isAgent, requestDocuments);
 
-// Add remarks
-router.post('/agent/remarks/:applicationId', auth, isAgent, addRemarks);
+// // Add remarks
+// router.post('/agent/remarks/:applicationId', auth, isAgent, addRemarks);
 
-// Recommend for approval
-router.put('/agent/recommend/:applicationId', auth, isAgent, recommendApplication);
+// // Recommend for approval
+// router.put('/agent/recommend/:applicationId', auth, isAgent, recommendApplication);
 
-// Verify/Reject document
-router.put('/agent/verify-doc/:applicationId', auth, isAgent, verifyDocument);
+// // Verify/Reject document
+// router.put('/agent/verify-doc/:applicationId', auth, isAgent, verifyDocument);
 
 // Admin routes have been moved to `admin.route.js`
 

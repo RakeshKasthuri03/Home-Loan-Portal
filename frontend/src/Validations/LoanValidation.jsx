@@ -63,7 +63,7 @@ export const basicDetailsSchema = Yup.object({
   panCard:              panValidation,
   aadharLast4:          aadharLast4Validation,
   maritalStatus:        Yup.string().required("Marital status is required"),
-  residentialAddress:   Yup.string().min(5, "Residential address is required").required("Residential address is required"),
+  residentialAddress:   Yup.string().min(10, "Residential address must be at least 10 characters long").max(200, "Residential address must be at most 200 characters long").required("Residential address is required"),
   city:                 Yup.string().required("City is required"),
   state:                Yup.string().required("State is required"),
   pinCode:              pinCodeValidation,

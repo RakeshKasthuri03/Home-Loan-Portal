@@ -24,7 +24,7 @@ const STATUS_COLORS = {
 };
 
 function LeadsDetails() {
-  const [stats, setStats] = useState(null);
+  const [stats, setStats] = useState(null);  
   const [applications, setApplications] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showUserModal, setShowUserModal] = useState(false);
@@ -310,6 +310,7 @@ function LeadsDetails() {
       </Container>
 
       {/* Detail Modal */}
+    { showUserModal && (
       <AgentUserDetails
         show={showUserModal}
         application={selectedApp}
@@ -322,6 +323,7 @@ function LeadsDetails() {
           fetchData();
         }}
       />
+)}
     </div>
   );
 }

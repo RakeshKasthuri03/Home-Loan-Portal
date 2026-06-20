@@ -6,25 +6,8 @@ import axios from 'axios';
 // AUTH UTILITIES
 // ═══════════════════════════════════════════════════════════════════════════════
 
-const MOCK_USERS = [
+
  
-  { id: 3, name: "Agent Karthik", email: "agent@mlrr.com",    mobile: "7777777777", password: "agent123",   role: "agent" },
-  { id: 4, name: "Admin User",    email: "admin@mlrr.com",    mobile: "6666666666", password: "admin123",   role: "admin" },
-];
- 
-export const loginUser = (identifier, password) => {
-  const user = MOCK_USERS.find(
-    (u) =>
-      (u.email === identifier || u.mobile === identifier) &&
-      u.password === password
-  );
-  if (user) {
-    const { password: _, ...safeUser } = user;
-    localStorage.setItem(AUTH_KEY, JSON.stringify(safeUser));
-    return { success: true, user: safeUser };
-  }
-  return { success: false, error: "Invalid email/mobile or password" };
-};
 
 export const getUser = () => {
   try {

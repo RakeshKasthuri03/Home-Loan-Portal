@@ -43,7 +43,7 @@ function AgentDashboard({ agent, closeModal, onUpdated }) {
 
       // Now update agent profile
       const body = { address, loansGiven, profilePhoto };
-      const res = await axios.put(`http://localhost:5000/api/agent/${agent.id}`, body, {
+      const res = await axios.patch(`http://localhost:5000/api/agent/${agent.id}`, body, {
         headers: { Authorization: token ? `Bearer ${token}` : undefined }
       });
 

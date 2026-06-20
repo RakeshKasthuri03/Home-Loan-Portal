@@ -1,16 +1,17 @@
 const User = require('../models/user.model');
 const Agent = require('../models/agent.model');
 
+
 const isAgent = async (req, res, next) => {
   try {
     // Check User collection first (admin can also access agent routes)
-    let user = await User.findById(req.user.id || req.user._id);
+    let user = await User.findById(req.user.id);
     if (user && (user.role === 'agent' || user.role === 'admin')) {
       req.user.role = user.role;
       return next();
     }
     // Check Agent collection
-    const agent = await Agent.findById(req.user.id || req.user._id);
+    const agent = await Agent.findById(req.user.id);
     if (agent && agent.role === 'agent') {
       req.user.role = 'agent';
       return next();

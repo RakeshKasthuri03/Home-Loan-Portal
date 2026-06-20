@@ -471,226 +471,227 @@ const resubmitDocument = async (req, res) => {
  * Get applications assigned to agent
  * GET /api/loan/agent/applications
  */
-const getAgentApplications = async (req, res) => {
-  try {
-    const agentId = req.user.id || req.user._id;
-    const { status, loanType, page = 1, limit = 10 } = req.query;
 
-    const query = { assignedAgent: agentId };
-    if (status) query.status = status;
-    if (loanType) query.loanType = loanType;
+// const getAgentApplications = async (req, res) => {
+//   try {
+//     const agentId = req.user.id || req.user._id;
+//     const { status, loanType, page = 1, limit = 10 } = req.query;
 
-    const skip = (page - 1) * limit;
+//     const query = { assignedAgent: agentId };
+//     if (status) query.status = status;
+//     if (loanType) query.loanType = loanType;
 
-    const [applications, total] = await Promise.all([
-      Application.find(query)
-        .populate('user', 'firstname lastname email phone')
-        .populate('assignedAgent', 'firstname lastname email phone')
-        // Return full application record for agents so all form fields are visible in the portal
-        .sort({ 'processing.submittedAt': -1 })
-        .skip(skip)
-        .limit(parseInt(limit)),
+//     const skip = (page - 1) * limit;
 
-      Application.countDocuments(query)
-    ]);
+//     const [applications, total] = await Promise.all([
+//       Application.find(query)
+//         .populate('user', 'firstname lastname email phone')
+//         .populate('assignedAgent', 'firstname lastname email phone')
+//         // Return full application record for agents so all form fields are visible in the portal
+//         .sort({ 'processing.submittedAt': -1 })
+//         .skip(skip)
+//         .limit(parseInt(limit)),
 
-    res.json({ 
-      applications, 
-      pagination: {
-        total,
-        page: parseInt(page),
-        pages: Math.ceil(total / limit)
-      }
-    });
+//       Application.countDocuments(query)
+//     ]);
 
-  } catch (error) {
-    console.error('Get agent applications error:', error);
-    res.status(500).json({ 
-      message: 'Failed to fetch applications', 
-      error: error.message 
-    });
-  }
-};
+//     res.json({ 
+//       applications, 
+//       pagination: {
+//         total,
+//         page: parseInt(page),
+//         pages: Math.ceil(total / limit)
+//       }
+//     });
 
-/**
- * Agent: Start review of application
- * PUT /api/loan/agent/review/:applicationId
- */
-const startReview = async (req, res) => {
-  try {
-    const { applicationId } = req.params;
-    const agentId = req.user.id || req.user._id;
+//   } catch (error) {
+//     console.error('Get agent applications error:', error);
+//     res.status(500).json({ 
+//       message: 'Failed to fetch applications', 
+//       error: error.message 
+//     });
+//   }
+// };
 
-    const application = await Application.findOne({ 
-      _id: applicationId,
-      assignedAgent: agentId,
-      status: { $in: ['submitted', 'documents_pending'] }
-    });
+// /**
+//  * Agent: Start review of application
+//  * PUT /api/loan/agent/review/:applicationId
+//  */
+// const startReview = async (req, res) => {
+//   try {
+//     const { applicationId } = req.params;
+//     const agentId = req.user.id || req.user._id;
 
-    if (!application) {
-      return res.status(404).json({ message: 'Application not found or not assigned to you' });
-    }
+//     const application = await Application.findOne({ 
+//       _id: applicationId,
+//       assignedAgent: agentId,
+//       status: { $in: ['submitted', 'documents_pending'] }
+//     });
 
-    application.status = 'under_review';
-    application.processing.reviewedAt = new Date();
+//     if (!application) {
+//       return res.status(404).json({ message: 'Application not found or not assigned to you' });
+//     }
 
-    await application.save();
+//     application.status = 'under_review';
+//     application.processing.reviewedAt = new Date();
 
-    res.json({ message: 'Review started', application });
-  } catch (error) {
-    console.error('Start review error:', error);
-    res.status(500).json({ message: 'Failed to start review', error: error.message });
-  }
-};
+//     await application.save();
 
-/**
- * Agent: Request additional documents
- * PUT /api/loan/agent/request-docs/:applicationId
- */
-const requestDocuments = async (req, res) => {
-  try {
-    const { applicationId } = req.params;
-    const agentId = req.user.id || req.user._id;
-    const { remarks } = req.body;
+//     res.json({ message: 'Review started', application });
+//   } catch (error) {
+//     console.error('Start review error:', error);
+//     res.status(500).json({ message: 'Failed to start review', error: error.message });
+//   }
+// };
 
-    const application = await Application.findOne({ 
-      _id: applicationId,
-      assignedAgent: agentId
-    });
+// /**
+//  * Agent: Request additional documents
+//  * PUT /api/loan/agent/request-docs/:applicationId
+//  */
+// const requestDocuments = async (req, res) => {
+//   try {
+//     const { applicationId } = req.params;
+//     const agentId = req.user.id || req.user._id;
+//     const { remarks } = req.body;
 
-    if (!application) {
-      return res.status(404).json({ message: 'Application not found or not assigned to you' });
-    }
+//     const application = await Application.findOne({ 
+//       _id: applicationId,
+//       assignedAgent: agentId
+//     });
 
-    application.status = 'documents_pending';
-    application.processing.remarks.push({
-      text: remarks || 'Additional documents required',
-      by: agentId,
-      date: new Date()
-    });
+//     if (!application) {
+//       return res.status(404).json({ message: 'Application not found or not assigned to you' });
+//     }
 
-    await application.save();
+//     application.status = 'documents_pending';
+//     application.processing.remarks.push({
+//       text: remarks || 'Additional documents required',
+//       by: agentId,
+//       date: new Date()
+//     });
 
-    res.json({ message: 'Document request sent', application });
-  } catch (error) {
-    console.error('Request documents error:', error);
-    res.status(500).json({ message: 'Failed to request documents', error: error.message });
-  }
-};
+//     await application.save();
 
-/**
- * Agent: Add remarks to application
- * POST /api/loan/agent/remarks/:applicationId
- */
-const addRemarks = async (req, res) => {
-  try {
-    const { applicationId } = req.params;
-    const agentId = req.user.id || req.user._id;
-    const { remarks } = req.body;
+//     res.json({ message: 'Document request sent', application });
+//   } catch (error) {
+//     console.error('Request documents error:', error);
+//     res.status(500).json({ message: 'Failed to request documents', error: error.message });
+//   }
+// };
 
-    if (!remarks) {
-      return res.status(400).json({ message: 'Remarks are required' });
-    }
+// /**
+//  * Agent: Add remarks to application
+//  * POST /api/loan/agent/remarks/:applicationId
+//  */
+// const addRemarks = async (req, res) => {
+//   try {
+//     const { applicationId } = req.params;
+//     const agentId = req.user.id || req.user._id;
+//     const { remarks } = req.body;
 
-    const application = await Application.findOne({ 
-      _id: applicationId,
-      assignedAgent: agentId
-    });
+//     if (!remarks) {
+//       return res.status(400).json({ message: 'Remarks are required' });
+//     }
 
-    if (!application) {
-      return res.status(404).json({ message: 'Application not found or not assigned to you' });
-    }
+//     const application = await Application.findOne({ 
+//       _id: applicationId,
+//       assignedAgent: agentId
+//     });
 
-    application.processing.remarks.push({
-      text: remarks,
-      by: agentId,
-      date: new Date()
-    });
+//     if (!application) {
+//       return res.status(404).json({ message: 'Application not found or not assigned to you' });
+//     }
 
-    await application.save();
+//     application.processing.remarks.push({
+//       text: remarks,
+//       by: agentId,
+//       date: new Date()
+//     });
 
-    res.json({ message: 'Remarks added', application });
-  } catch (error) {
-    console.error('Add remarks error:', error);
-    res.status(500).json({ message: 'Failed to add remarks', error: error.message });
-  }
-};
+//     await application.save();
 
-/**
- * Agent: Recommend for approval (forward to admin)
- * PUT /api/loan/agent/recommend/:applicationId
- */
-const recommendApplication = async (req, res) => {
-  try {
-    const { applicationId } = req.params;
-    const agentId = req.user.id || req.user._id;
-    const { recommendation } = req.body;
+//     res.json({ message: 'Remarks added', application });
+//   } catch (error) {
+//     console.error('Add remarks error:', error);
+//     res.status(500).json({ message: 'Failed to add remarks', error: error.message });
+//   }
+// };
 
-    const application = await Application.findOne({ 
-      _id: applicationId,
-      assignedAgent: agentId,
-      status: 'under_review'
-    });
+// /**
+//  * Agent: Recommend for approval (forward to admin)
+//  * PUT /api/loan/agent/recommend/:applicationId
+//  */
+// const recommendApplication = async (req, res) => {
+//   try {
+//     const { applicationId } = req.params;
+//     const agentId = req.user.id || req.user._id;
+//     const { recommendation } = req.body;
 
-    if (!application) {
-      return res.status(404).json({ message: 'Application not found or not under review' });
-    }
+//     const application = await Application.findOne({ 
+//       _id: applicationId,
+//       assignedAgent: agentId,
+//       status: 'under_review'
+//     });
 
-    application.processing.remarks.push({
-      text: `Agent Recommendation: ${recommendation || 'Recommended for approval'}`,
-      by: agentId,
-      date: new Date()
-    });
+//     if (!application) {
+//       return res.status(404).json({ message: 'Application not found or not under review' });
+//     }
 
-    await application.save();
+//     application.processing.remarks.push({
+//       text: `Agent Recommendation: ${recommendation || 'Recommended for approval'}`,
+//       by: agentId,
+//       date: new Date()
+//     });
 
-    res.json({ message: 'Recommendation submitted', application });
-  } catch (error) {
-    console.error('Recommend application error:', error);
-    res.status(500).json({ message: 'Failed to recommend application', error: error.message });
-  }
-};
+//     await application.save();
 
-/**
- * Agent: Update document status (verify/reject)
- * PUT /api/loan/agent/verify-doc/:applicationId
- */
-const verifyDocument = async (req, res) => {
-  try {
-    const { applicationId } = req.params;
-    const agentId = req.user.id || req.user._id;
-    const { docField, status } = req.body; // docField: 'panDoc', status: 'verified'|'rejected'
+//     res.json({ message: 'Recommendation submitted', application });
+//   } catch (error) {
+//     console.error('Recommend application error:', error);
+//     res.status(500).json({ message: 'Failed to recommend application', error: error.message });
+//   }
+// };
 
-    if (!docField || !status) {
-      return res.status(400).json({ message: 'docField and status are required' });
-    }
+// /**
+//  * Agent: Update document status (verify/reject)
+//  * PUT /api/loan/agent/verify-doc/:applicationId
+//  */
+// const verifyDocument = async (req, res) => {
+//   try {
+//     const { applicationId } = req.params;
+//     const agentId = req.user.id || req.user._id;
+//     const { docField, status } = req.body; // docField: 'panDoc', status: 'verified'|'rejected'
 
-    if (!['verified', 'rejected', 'pending'].includes(status)) {
-      return res.status(400).json({ message: 'Invalid status. Use: verified, rejected, pending' });
-    }
+//     if (!docField || !status) {
+//       return res.status(400).json({ message: 'docField and status are required' });
+//     }
 
-    const application = await Application.findOne({
-      _id: applicationId,
-      assignedAgent: agentId
-    });
+//     if (!['verified', 'rejected', 'pending'].includes(status)) {
+//       return res.status(400).json({ message: 'Invalid status. Use: verified, rejected, pending' });
+//     }
 
-    if (!application) {
-      return res.status(404).json({ message: 'Application not found or not assigned to you' });
-    }
+//     const application = await Application.findOne({
+//       _id: applicationId,
+//       assignedAgent: agentId
+//     });
 
-    if (!application.documents || !application.documents[docField]) {
-      return res.status(404).json({ message: 'Document not found' });
-    }
+//     if (!application) {
+//       return res.status(404).json({ message: 'Application not found or not assigned to you' });
+//     }
 
-    application.documents[docField].status = status;
-    await application.save();
+//     if (!application.documents || !application.documents[docField]) {
+//       return res.status(404).json({ message: 'Document not found' });
+//     }
 
-    res.json({ message: `Document ${status}`, documents: application.documents });
-  } catch (error) {
-    console.error('Verify document error:', error);
-    res.status(500).json({ message: 'Failed to update document status', error: error.message });
-  }
-};
+//     application.documents[docField].status = status;
+//     await application.save();
+
+//     res.json({ message: `Document ${status}`, documents: application.documents });
+//   } catch (error) {
+//     console.error('Verify document error:', error);
+//     res.status(500).json({ message: 'Failed to update document status', error: error.message });
+//   }
+// };
 
 
 // Admin operations have been moved to admin.controller.js
@@ -703,47 +704,47 @@ const verifyDocument = async (req, res) => {
  * Get agent dashboard stats
  * GET /api/loan/agent/stats
  */
-const getAgentStats = async (req, res) => {
-  try {
-    const mongoose = require('mongoose');
-    const agentId = req.user.id || req.user._id;
-    const agentObjectId = new mongoose.Types.ObjectId(agentId);
+// const getAgentStats = async (req, res) => {
+//   try {
+//     const mongoose = require('mongoose');
+//     const agentId = req.user.id || req.user._id;
+//     const agentObjectId = new mongoose.Types.ObjectId(agentId);
 
-    const [
-      totalAssigned,
-      statusCounts,
-      pendingReview,
-      recentApplications
-    ] = await Promise.all([
-      Application.countDocuments({ assignedAgent: agentObjectId }),
-      Application.aggregate([
-        { $match: { assignedAgent: agentObjectId } },
-        { $group: { _id: '$status', count: { $sum: 1 } } }
-      ]),
-      Application.countDocuments({ 
-        assignedAgent: agentObjectId, 
-        status: { $in: ['submitted', 'documents_pending'] } 
-      }),
-      Application.find({ assignedAgent: agentObjectId })
-        .select('applicationId loanType status basicDetails.fullName financialDetails.loanAmount createdAt')
-        .sort({ createdAt: -1 })
-        .limit(5)
-    ]);
+//     const [
+//       totalAssigned,
+//       statusCounts,
+//       pendingReview,
+//       recentApplications
+//     ] = await Promise.all([
+//       Application.countDocuments({ assignedAgent: agentObjectId }),
+//       Application.aggregate([
+//         { $match: { assignedAgent: agentObjectId } },
+//         { $group: { _id: '$status', count: { $sum: 1 } } }
+//       ]),
+//       Application.countDocuments({ 
+//         assignedAgent: agentObjectId, 
+//         status: { $in: ['submitted', 'documents_pending'] } 
+//       }),
+//       Application.find({ assignedAgent: agentObjectId })
+//         .select('applicationId loanType status basicDetails.fullName financialDetails.loanAmount createdAt')
+//         .sort({ createdAt: -1 })
+//         .limit(5)
+//     ]);
 
-    const statusStats = {};
-    statusCounts.forEach(s => { statusStats[s._id] = s.count; });
+//     const statusStats = {};
+//     statusCounts.forEach(s => { statusStats[s._id] = s.count; });
 
-    res.json({
-      totalAssigned,
-      statusStats,
-      pendingReview,
-      recentApplications
-    });
-  } catch (error) {
-    console.error('Get agent stats error:', error);
-    res.status(500).json({ message: 'Failed to fetch stats', error: error.message });
-  }
-};
+//     res.json({
+//       totalAssigned,
+//       statusStats,
+//       pendingReview,
+//       recentApplications
+//     });
+//   } catch (error) {
+//     console.error('Get agent stats error:', error);
+//     res.status(500).json({ message: 'Failed to fetch stats', error: error.message });
+//   }
+// };
 
 /**
  * Public: Get available loan types
@@ -806,13 +807,25 @@ module.exports = {
   resubmitDocument,
   
   // Agent operations
-  getAgentApplications,
-  startReview,
-  requestDocuments,
-  addRemarks,
-  recommendApplication,
-  getAgentStats,
-  verifyDocument,
+  // getAgentApplications,
+  // startReview,
+  // requestDocuments,
+  // addRemarks,
+  // recommendApplication,
+  // getAgentStats,
+  // verifyDocument,
+  
+  // Admin operations
+  // getAllApplications,
+  // getClosureRequests,
+  // assignAgent,
+  // approveApplication,
+  // rejectApplication,
+  // disburseApplication,
+  // closeApplication,
+  // getDashboardStats,
+  
+  // Loan types
   getLoanTypes,
   createLoanType,
   updateLoanType,

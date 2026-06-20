@@ -101,6 +101,7 @@ export default function DocumentAction() {
               });
             }
           });
+           console.log("documents",documents);
         });
 
         console.log("FINAL DOCS:", documents);
@@ -117,40 +118,40 @@ export default function DocumentAction() {
     fetchDocuments();
   }, []);
 
-  const handleUpload = (id, file) => {
-    if (!file) return;
+  // const handleUpload = (id, file) => {
+  //   if (!file) return;
 
-    const base =
-      import.meta.env.VITE_API_BASE || "";
+  //   const base =
+  //     import.meta.env.VITE_API_BASE || "";
 
-    const formData = new FormData();
-    const doc = docs.find((d) => d.id === id);
+  //   const formData = new FormData();
+  //   const doc = docs.find((d) => d.id === id);
 
-    formData.append("file", file);
-    formData.append("docName", doc?.doc || file.name);
+  //   formData.append("file", file);
+  //   formData.append("docName", doc?.doc || file.name);
 
-    axios
-      .post(`${base}/api/upload`, formData, {
-        headers: {
-          Authorization: `Bearer ${getToken()}`,
-        },
-      })
-      .then((res) => {
-        const fileUrl =
-          res.data?.file?.url ||
-          res.data?.url ||
-          res.data?.doc?.url;
+  //   axios
+  //     .post(`${base}/api/upload`, formData, {
+  //       headers: {
+  //         Authorization: `Bearer ${getToken()}`,
+  //       },
+  //     })
+  //     .then((res) => {
+  //       const fileUrl =
+  //         res.data?.file?.url ||
+  //         res.data?.url ||
+  //         res.data?.doc?.url;
 
-        setDocs((prev) =>
-          prev.map((d) =>
-            d.id === id
-              ? { ...d, fileUrl: fileUrl, status: "pending" }
-              : d
-          )
-        );
-      })
-      .catch(console.error);
-  };
+  //       setDocs((prev) =>
+  //         prev.map((d) =>
+  //           d.id === id
+  //             ? { ...d, fileUrl: fileUrl, status: "pending" }
+  //             : d
+  //         )
+  //       );
+  //     })
+  //     .catch(console.error);
+  // };
 
   const handleVerify = async (doc) => {
     setActionLoading(doc.id);
@@ -314,7 +315,7 @@ export default function DocumentAction() {
                         ? doc.fileUrl.match(/\.(jpg|jpeg|png|gif|webp)$/i)
                           ? <img src={doc.fileUrl} style={{ width:80, height:60, objectFit:"cover", borderRadius:4, cursor:"pointer" }} onClick={() => window.open(doc.fileUrl)} />
                           : <a href={doc.fileUrl} target="_blank" rel="noreferrer" style={{ color:"#0f4c8a", fontWeight:600 }}>📎 View</a>
-                        : <input type="file" onChange={(e) => handleUpload(doc.id, e.target.files[0])} style={{ fontSize:"0.8rem" }} />
+                        : <span style={{ color:"#6b7280" }}>No file</span>
                       }
                     </td>
                     <td style={{ padding:"10px 12px" }}>
@@ -334,20 +335,31 @@ export default function DocumentAction() {
       })}
 
       {requestDocModal && (
-        <div style={{ position:"fixed", inset:0, background:"rgba(0,0,0,0.45)", display:"flex", alignItems:"center", justifyContent:"center", zIndex:1000 }}>
+        <div className="overlay">
+
           <div style={{ background:"#fff", borderRadius:12, padding:"28px 32px", width:"100%", maxWidth:440, boxShadow:"0 8px 32px rgba(0,0,0,0.15)" }}>
+
             <h3 style={{ margin:"0 0 8px", color:"#0f2557" }}>Request Additional Documents</h3>
+
             <p style={{ color:"#6b7280", fontSize:"0.85rem", marginBottom:16 }}>The applicant will be notified to upload the missing documents.</p>
+
+
             <textarea value={requestDocRemark} onChange={e => setRequestDocRemark(e.target.value)}
               placeholder="e.g. Please upload latest salary slips and 6-month bank statement"
               style={{ width:"100%", padding:"8px 12px", border:"1.5px solid #d1d5db", borderRadius:8, minHeight:80, resize:"vertical", fontSize:"0.9rem", boxSizing:"border-box" }} />
+
+
             <div style={{ display:"flex", gap:10, marginTop:16 }}>
+
               <button onClick={() => setRequestDocModal(null)} style={{ flex:1, padding:10, border:"1.5px solid #d1d5db", borderRadius:8, background:"#fff", cursor:"pointer", fontWeight:600 }}>Cancel</button>
               <button onClick={handleRequestMoreDocsSubmit} disabled={actionLoading===requestDocModal}
                 style={{ flex:2, padding:10, border:"none", borderRadius:8, background:"#92400e", color:"#fff", cursor:"pointer", fontWeight:700 }}>
                 {actionLoading===requestDocModal ? "Sending..." : "📋 Send Request"}
               </button>
+
             </div>
+
+
           </div>
         </div>
       )}

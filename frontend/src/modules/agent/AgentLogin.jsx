@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { loginUser, saveAuth } from "../../utils/auth";
+import { logoutUser, saveAuth } from "../../utils/auth";
 import logo from "../../assets/logo.png";
 import axios from "axios";
 import notify from "../../utils/notify";
-
+ 
 
 export default function AgentLogin() {
   const navigate = useNavigate();
@@ -26,9 +26,10 @@ export default function AgentLogin() {
 
          console.log("token:", token);
          console.log("agent:", agent);
-     localStorage.setItem("mlrr_user", JSON.stringify({id: agent._id, email: agent.email,role: agent.role}));
-      localStorage.setItem("mlrr_token", token);
-      
+       logoutUser();
+    //  localStorage.setItem("mlrr_user", JSON.stringify({id: agent._id, email: agent.email,role: agent.role}));
+    //   localStorage.setItem("mlrr_token", token);
+      saveAuth({ id: agent._id, email: agent.email, role: agent.role }, token);
          
        
          

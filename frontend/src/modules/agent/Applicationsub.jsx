@@ -138,6 +138,7 @@ function Applicationsub() {
                       {app.status === "under_review" && (() => {
                         const remarks = app.processing?.remarks || [];
                         const rec = [...remarks].reverse().find(r => typeof r.text === 'string' && r.text.toLowerCase().includes('agent recommendation'));
+                       
                         return (
                           <>
                             <Button size="sm" variant="success" onClick={() => handleRecommend(app._id)} disabled={!!rec} title={rec ? 'Recommendation already submitted' : 'Recommend'}>

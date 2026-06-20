@@ -20,6 +20,7 @@ const auth=async(req,res,next)=>{
             if(err){
                 return res.status(401).json({message:"Unauthorized - Invalid token"});
             }
+            console.log("Token verified successfully:", data);
             req.user = data;
             next();
         });

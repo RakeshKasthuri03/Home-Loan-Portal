@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { getToken } from './auth';
 
-const API_BASE = '/api/loan';
+const API_BASE = '/api';
 
 // Create axios instance with auth header
 const api = axios.create({
@@ -26,7 +26,7 @@ api.interceptors.request.use((config) => {
  */
 export const getLoanTypes = async () => {
   try {
-    const response = await api.get('/types');
+    const response = await api.get('/loan/types');
     return { success: true, data: response.data };
   } catch (error) {
     console.error('Get loan types error:', error);
@@ -45,7 +45,7 @@ export const getLoanTypes = async () => {
  */
 export const createApplication = async (loanType, formData = {}) => {
   try {
-    const response = await api.post('/apply', { loanType, ...formData });
+    const response = await api.post('/loan/apply', { loanType, ...formData });
     return { success: true, data: response.data };
   } catch (error) {
     console.error('Create application error:', error);
@@ -60,7 +60,7 @@ export const createApplication = async (loanType, formData = {}) => {
 
 export const saveProgress = async (applicationId, formData, currentStep) => {
   try {
-    const response = await api.put(`/save/${applicationId}`, { 
+    const response = await api.put(`/loan/save/${applicationId}`, { 
       currentStep, 
       ...organizeFormData(formData) 
     });
@@ -73,7 +73,7 @@ export const saveProgress = async (applicationId, formData, currentStep) => {
 
 export const submitApplication = async (applicationId) => {
   try {
-    const response = await api.put(`/submit/${applicationId}`);
+    const response = await api.put(`/loan/submit/${applicationId}`);
     return { success: true, data: response.data };
   } catch (error) {
     console.error('Submit application error:', error);
@@ -115,7 +115,7 @@ export const uploadLoanDocument = async (file, fieldName) => {
  */
 export const getMyApplications = async (params = {}) => {
   try {
-    const response = await api.get('/my-applications', { params });
+    const response = await api.get('/loan/my-applications', { params });
     return { success: true, data: response.data };
   } catch (error) {
     console.error('Get applications error:', error);
@@ -129,7 +129,7 @@ export const getMyApplications = async (params = {}) => {
  */
 export const getApplicationById = async (applicationId) => {
   try {
-    const response = await api.get(`/application/${applicationId}`);
+    const response = await api.get(`/loan/application/${applicationId}`);
     return { success: true, data: response.data };
   } catch (error) {
     console.error('Get application error:', error);
@@ -143,7 +143,7 @@ export const getApplicationById = async (applicationId) => {
  */
 export const deleteApplication = async (applicationId) => {
   try {
-    const response = await api.delete(`/application/${applicationId}`);
+    const response = await api.delete(`/loan/application/${applicationId}`);
     return { success: true, data: response.data };
   } catch (error) {
     console.error('Delete application error:', error);
@@ -242,8 +242,7 @@ const organizeFormData = (formData) => {
 
 export const adminGetAllApplications = async (params = {}) => {
   try {
-    const token = getToken();
-    const response = await axios.get('/api/admin/applications', { params, headers: { Authorization: token ? `Bearer ${token}` : undefined } });
+    const response = await api.get('/admin/applications');
     return { success: true, data: response.data };
   } catch (error) {
     console.error('Admin get applications error:', error);
@@ -253,8 +252,7 @@ export const adminGetAllApplications = async (params = {}) => {
 
 export const adminGetStats = async () => {
   try {
-    const token = getToken();
-    const response = await axios.get('/api/admin/stats', { headers: { Authorization: token ? `Bearer ${token}` : undefined } });
+    const response = await api.get('/admin/stats');
     return { success: true, data: response.data };
   } catch (error) {
     console.error('Admin get stats error:', error);
@@ -264,8 +262,7 @@ export const adminGetStats = async () => {
 
 export const adminAssignAgent = async (applicationId, agentId) => {
   try {
-    const token = getToken();
-    const response = await axios.put(`/api/admin/assign/${applicationId}`, { agentId }, { headers: { Authorization: token ? `Bearer ${token}` : undefined } });
+    const response = await api.put(`/admin/assign/${applicationId}`, { agentId });
     return { success: true, data: response.data };
   } catch (error) {
     console.error('Admin assign agent error:', error);
@@ -275,8 +272,7 @@ export const adminAssignAgent = async (applicationId, agentId) => {
 
 export const adminApproveApplication = async (applicationId, sanctionData) => {
   try {
-    const token = getToken();
-    const response = await axios.put(`/api/admin/approve/${applicationId}`, sanctionData, { headers: { Authorization: token ? `Bearer ${token}` : undefined } });
+    const response = await api.put(`/admin/approve/${applicationId}`, sanctionData);
     return { success: true, data: response.data };
   } catch (error) {
     console.error('Admin approve error:', error);
@@ -286,8 +282,7 @@ export const adminApproveApplication = async (applicationId, sanctionData) => {
 
 export const adminRejectApplication = async (applicationId, reason) => {
   try {
-    const token = getToken();
-    const response = await axios.put(`/api/admin/reject/${applicationId}`, { reason }, { headers: { Authorization: token ? `Bearer ${token}` : undefined } });
+    const response = await api.put(`/admin/reject/${applicationId}`, { reason });
     return { success: true, data: response.data };
   } catch (error) {
     console.error('Admin reject error:', error);
@@ -297,8 +292,7 @@ export const adminRejectApplication = async (applicationId, reason) => {
 
 export const adminDisburseApplication = async (applicationId, disburseData) => {
   try {
-    const token = getToken();
-    const response = await axios.put(`/api/admin/disburse/${applicationId}`, disburseData, { headers: { Authorization: token ? `Bearer ${token}` : undefined } });
+    const response = await api.put(`/admin/disburse/${applicationId}`, disburseData);
     return { success: true, data: response.data };
   } catch (error) {
     console.error('Admin disburse error:', error);
@@ -308,8 +302,7 @@ export const adminDisburseApplication = async (applicationId, disburseData) => {
 
 export const adminCloseApplication = async (applicationId, reason) => {
   try {
-    const token = getToken();
-    const response = await axios.put(`/api/admin/close/${applicationId}`, { reason }, { headers: { Authorization: token ? `Bearer ${token}` : undefined } });
+    const response = await api.put(`/admin/close/${applicationId}`, { reason });
     return { success: true, data: response.data };
   } catch (error) {
     console.error('Admin close error:', error);
@@ -322,7 +315,7 @@ export const adminCloseApplication = async (applicationId, reason) => {
  */
 export const requestClosure = async (applicationId, data = {}) => {
   try {
-    const response = await api.put(`/closure/${applicationId}`, data);
+    const response = await api.put(`/loan/closure/${applicationId}`, data);
     return { success: true, data: response.data };
   } catch (error) {
     console.error('Request closure error:', error);
@@ -335,8 +328,7 @@ export const requestClosure = async (applicationId, data = {}) => {
  */
 export const adminGetClosureRequests = async () => {
   try {
-    const token = getToken();
-    const response = await axios.get('/api/admin/closure-requests', { headers: { Authorization: token ? `Bearer ${token}` : undefined } });
+    const response = await api.get('/admin/closure-requests');
     return { success: true, data: response.data };
   } catch (error) {
     console.error('Admin get closure requests error:', error);
@@ -423,7 +415,7 @@ export const agentVerifyDoc = async (applicationId, docField, status) => {
  */
 export const resubmitDocument = async (applicationId, docField, fileUrl) => {
   try {
-    const response = await api.put(`/resubmit-doc/${applicationId}`, { docField, fileUrl });
+    const response = await api.put(`/loan/resubmit-doc/${applicationId}`, { docField, fileUrl });
     return { success: true, data: response.data };
   } catch (error) {
     console.error('Resubmit document error:', error);
