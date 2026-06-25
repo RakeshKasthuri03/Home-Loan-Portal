@@ -49,7 +49,7 @@ function Header() {
 
   return (
     <>
-      <header className={`hdr-main ${scrolled ? 'hdr-main--scrolled' : ''}`}>
+      <header className={`hdr-main ${scrolled ? 'hdr-main--scrolled' : ''} ${menuOpen ? 'hdr-main--open' : ''}`}>
         <div className="hdr-inner">
 
           {/* Logo */}
@@ -109,6 +109,7 @@ function Header() {
             className={`hdr-hamburger ${menuOpen ? 'hdr-hamburger--open' : ''}`}
             onClick={() => setMenuOpen(!menuOpen)}
             aria-label="Toggle menu"
+            aria-expanded={menuOpen}
           >
             <span /><span /><span />
           </button>
@@ -133,6 +134,43 @@ function Header() {
                 {link.label}
               </a>
             ))}
+
+            <div className="hdr-mobile-actions">
+              {user ? (
+                <>
+                  <button
+                    className="hdr-btn hdr-btn--ghost w-100"
+                    onClick={() => {
+                      setMenuOpen(false);
+                      if (user.role === 'admin') navigate('/admin/dashboard');
+                      else if (user.role === 'agent') navigate('/agent/dashboard');
+                      else navigate('/dashboard');
+                    }}
+                  >
+                    My Dashboard
+                  </button>
+                  <button
+                    className="hdr-btn hdr-btn--ghost w-100"
+                    onClick={() => {
+                      setMenuOpen(false);
+                      handleLogout();
+                    }}
+                  >
+                    Logout
+                  </button>
+                </>
+              ) : (
+                <button
+                  className="hdr-btn hdr-btn--ghost w-100"
+                  onClick={() => {
+                    setMenuOpen(false);
+                    openLogin();
+                  }}
+                >
+                  Sign In
+                </button>
+              )}
+            </div>
           </div>
         )}
       </header>

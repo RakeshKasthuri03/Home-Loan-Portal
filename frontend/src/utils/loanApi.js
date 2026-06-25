@@ -242,7 +242,7 @@ const organizeFormData = (formData) => {
 
 export const adminGetAllApplications = async (params = {}) => {
   try {
-    const response = await api.get('/admin/applications');
+    const response = await api.get('/admin/applications', { params });
     return { success: true, data: response.data };
   } catch (error) {
     console.error('Admin get applications error:', error);

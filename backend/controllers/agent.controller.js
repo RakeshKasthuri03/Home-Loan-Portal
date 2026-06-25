@@ -81,9 +81,6 @@ const agentsignup=async (req,res)=>{
     try{
         console.log("Agent signup data received:", {firstname,lastname,email,phone,gender,password,confirmpassword});
         const existingAgent=await agent.findOne({email:email});
-          if(existingAgent.phone===phone){
-                 return res.status(400).json({message:"Phone number already in use"});
-          }
         if(existingAgent){
             return res.status(400).json({message:"Agent already exists"});
         }

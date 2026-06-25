@@ -7,6 +7,9 @@
   border-bottom: 1px solid #e5e7eb;
   transition: box-shadow 0.3s ease;
   font-family: 'Inter', 'Poppins', sans-serif;
+  left: 0;
+  right: 0;
+  overflow-x: hidden;
 }
 
 .hdr-main--scrolled {
@@ -21,6 +24,7 @@
   display: flex;
   align-items: center;
   gap: 32px;
+  box-sizing: border-box;
 }
 
 /* ─── LOGO ─────────────────────────────────────────────────────────────────── */
@@ -157,6 +161,8 @@
   flex-direction: column;
   gap: 2px;
   animation: mobileMenuIn 0.2s ease;
+  box-sizing: border-box;
+  width: 100%;
 }
 
 @keyframes mobileMenuIn {
@@ -173,6 +179,8 @@
   border-radius: 10px;
   text-decoration: none;
   transition: background 0.15s;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .hdr-mobile-link:hover {
@@ -206,6 +214,25 @@
   .hdr-topbar-right {
     display: none;
   }
+}
+
+/* small-screen tweaks to avoid horizontal overflow */
+@media (max-width: 480px) {
+  .hdr-inner { padding: 0 12px; }
+  .hdr-mobile-menu { padding-left: 12px; padding-right: 12px; }
+  .hdr-mobile-link, .hdr-mobile-actions .hdr-btn { width: 100%; box-sizing: border-box; }
+}
+
+/* When the mobile menu is open, hide desktop actions to avoid duplicates */
+.hdr-main.hdr-main--open .hdr-actions {
+  display: none !important;
+}
+
+/* Collapse action buttons into hamburger earlier so Dashboard/Logout live in menu */
+@media (max-width: 1180px) {
+  .hdr-actions { display: none !important; }
+  .hdr-hamburger { display: flex !important; }
+  .hdr-inner { gap: 12px; }
 }
 
 /* ─── AGENT AVATAR INITIALS ────────────────────────────────────────────────── */
