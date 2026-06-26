@@ -5,7 +5,7 @@ const AgentLayout = () => {
   return (
     <>
       <AgentHeader />
-      <main>
+      <main style={{ minWidth: 0, overflowX: "hidden" }}>
         <Outlet />
       </main>
     </>

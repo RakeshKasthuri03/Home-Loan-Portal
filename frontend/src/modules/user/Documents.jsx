@@ -181,79 +181,74 @@ export default function Documents({ user }) {
 
       {/* Documents table */}
       <div className="docs-table-scroll">
-      <div>
-        <table style={{ width:"100%", borderCollapse:"collapse" }}>
+        <table className="docs-table">
           <thead>
-            <tr style={{ background:"#f8fafc" }}>
-              <th style={{ padding:"12px 16px", textAlign:"left", fontSize:"0.8rem", color:"#6b7280", fontWeight:700, borderBottom:"2px solid #e5e7eb" }}>Document</th>
-              <th style={{ padding:"12px 16px", textAlign:"left", fontSize:"0.8rem", color:"#6b7280", fontWeight:700, borderBottom:"2px solid #e5e7eb" }}>Status</th>
-              <th style={{ padding:"12px 16px", textAlign:"left", fontSize:"0.8rem", color:"#6b7280", fontWeight:700, borderBottom:"2px solid #e5e7eb" }}>File</th>
-              <th style={{ padding:"12px 16px", textAlign:"left", fontSize:"0.8rem", color:"#6b7280", fontWeight:700, borderBottom:"2px solid #e5e7eb" }}>Action</th>
+            <tr>
+              <th>Document</th>
+              <th>Status</th>
+              <th>File</th>
+              <th>Action</th>
             </tr>
           </thead>
           <tbody>
             {expectedDocs.map((docKey, i) => {
-              const docData = appDocs[docKey];
-              const status  = docData?.status || "pending";
-                    const rawUrl = docData?.url;
-                    const fileUrl = (typeof rawUrl === 'string' && rawUrl.startsWith('/http')) ? rawUrl.slice(1) : rawUrl;
-              const cfg     = STATUS_CONFIG[status] || STATUS_CONFIG.pending;
-              const isRejected = status === "rejected";
+              const docData  = appDocs[docKey];
+              const status   = docData?.status || "pending";
+              const rawUrl   = docData?.url;
+              const fileUrl  = (typeof rawUrl === 'string' && rawUrl.startsWith('/http')) ? rawUrl.slice(1) : rawUrl;
+              const cfg      = STATUS_CONFIG[status] || STATUS_CONFIG.pending;
+              const isRejected  = status === "rejected";
               const isUploading = uploading[docKey];
 
               return (
-                <tr key={docKey} style={{ borderBottom: i < expectedDocs.length-1 ? "1px solid #f3f4f6" : "none", background: isRejected ? "#fff5f5" : "transparent" }}>
+                <tr key={docKey} className={isRejected ? "docs-row-rejected" : ""}>
                   {/* Doc name */}
-                  <td style={{ padding:"14px 16px" }}>
-                    <div style={{ fontWeight:600, color:"#1f2937", fontSize:"0.9rem" }}>{DOC_LABELS[docKey] || docKey}</div>
-                    {isRejected && <div style={{ fontSize:"0.75rem", color:"#dc2626", marginTop:3 }}>⚠️ Rejected — please reupload</div>}
+                  <td className="docs-td">
+                    <div className="docs-doc-name">{DOC_LABELS[docKey] || docKey}</div>
+                    {isRejected && <div className="docs-rejected-hint">⚠️ Rejected — please reupload</div>}
                   </td>
 
                   {/* Status pill */}
-                  <td style={{ padding:"14px 16px" }}>
-                    <span style={{ background:cfg.bg, color:cfg.color, padding:"4px 12px", borderRadius:20, fontSize:"0.78rem", fontWeight:700, whiteSpace:"nowrap" }}>
+                  <td className="docs-td">
+                    <span className="docs-status-pill" style={{ background: cfg.bg, color: cfg.color }}>
                       {cfg.label}
                     </span>
                     {docData?.uploadedAt && (
-                      <div style={{ fontSize:"0.72rem", color:"#9ca3af", marginTop:4 }}>
-                        {new Date(docData.uploadedAt).toLocaleDateString("en-IN",{day:"2-digit",month:"short",year:"numeric"})}
+                      <div className="docs-date">
+                        {new Date(docData.uploadedAt).toLocaleDateString("en-IN", { day:"2-digit", month:"short", year:"numeric" })}
                       </div>
                     )}
                   </td>
 
                   {/* File preview/link */}
-                  <td style={{ padding:"14px 16px" }}>
+                  <td className="docs-td">
                     {fileUrl ? (
-                      fileUrl && fileUrl.match(/\.(jpg|jpeg|png|gif|webp)$/i)
-                        ? <img src={fileUrl} alt={docKey} style={{ width:60, height:46, objectFit:"cover", borderRadius:6, cursor:"pointer", border:"1px solid #e5e7eb" }} onClick={() => window.open(fileUrl)} />
-                        : fileUrl ? <a href={fileUrl} target="_blank" rel="noreferrer" style={{ color:"#0f4c8a", fontWeight:600, fontSize:"0.85rem" }}>📎 View File</a> : <span style={{ color:"#9ca3af", fontSize:"0.82rem" }}>No file</span>
+                      fileUrl.match(/\.(jpg|jpeg|png|gif|webp)$/i)
+                        ? <img src={fileUrl} alt={docKey} className="docs-preview-img" onClick={() => window.open(fileUrl)} />
+                        : <a href={fileUrl} target="_blank" rel="noreferrer" className="docs-file-link">📎 View File</a>
                     ) : (
-                      <span style={{ color:"#9ca3af", fontSize:"0.82rem" }}>No file</span>
+                      <span className="docs-no-file">No file</span>
                     )}
                   </td>
 
                   {/* Action */}
-                  <td style={{ padding:"14px 16px" }}>
+                  <td className="docs-td">
                     {status === "verified" ? (
-                      <span style={{ color:"#15803d", fontSize:"0.82rem", fontWeight:600 }}>✓ Verified</span>
+                      <span className="docs-verified-text">✓ Verified</span>
                     ) : (
                       <>
                         <input
                           type="file"
                           accept=".pdf,.jpg,.jpeg,.png,.gif,.webp"
                           ref={el => fileInputRefs.current[docKey] = el}
-                          style={{ display:"none" }}
+                          style={{ display: "none" }}
                           onChange={e => handleReupload(docKey, e.target.files[0])}
                         />
                         <button
                           onClick={() => fileInputRefs.current[docKey]?.click()}
                           disabled={isUploading}
-                          style={{
-                            padding:"6px 14px", borderRadius:7, border:"none", cursor:"pointer",
-                            fontWeight:700, fontSize:"0.82rem",
-                            background: isRejected ? "#dc2626" : "#0f4c8a",
-                            color:"#fff", opacity: isUploading ? 0.6 : 1,
-                          }}>
+                          className="docs-upload-btn"
+                          style={{ background: isRejected ? "#dc2626" : "#0f4c8a", opacity: isUploading ? 0.6 : 1 }}>
                           {isUploading ? "Uploading..." : isRejected ? "🔄 Reupload" : fileUrl ? "🔄 Replace" : "📤 Upload"}
                         </button>
                       </>
@@ -264,7 +259,6 @@ export default function Documents({ user }) {
             })}
           </tbody>
         </table>
-      </div>
       </div>
 
       {/* Summary counts */}

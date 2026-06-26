@@ -210,3 +210,192 @@
   }
 }
 
+
+/* ─────────────────────────────────────────────
+   LEADS FILTER BAR
+───────────────────────────────────────────── */
+
+.leads-filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+.leads-filter-input {
+  padding: 8px 14px;
+  border: 1.5px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 0.84rem;
+  outline: none;
+  flex: 1 1 180px;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.leads-filter-select {
+  padding: 8px 12px;
+  border: 1.5px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 0.84rem;
+  outline: none;
+  flex: 1 1 140px;
+  min-width: 0;
+  box-sizing: border-box;
+  background: #fff;
+}
+
+.leads-view-toggle {
+  display: flex;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+.leads-toggle-btn {
+  padding: 7px 16px;
+  border: 1.5px solid #d1d5db;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  background: #fff;
+  color: #374151;
+}
+.leads-toggle-btn.left  { border-radius: 6px 0 0 6px; }
+.leads-toggle-btn.right { border-radius: 0 6px 6px 0; border-left: none; }
+.leads-toggle-btn.active { background: #0f2557; color: #fff; border-color: #0f2557; }
+
+/* Mobile — stack everything full-width */
+@media (max-width: 600px) {
+  .leads-filter-bar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .leads-filter-input,
+  .leads-filter-select {
+    width: 100%;
+    flex: none;
+  }
+
+  .leads-view-toggle {
+    margin-left: 0;
+    width: 100%;
+  }
+
+  .leads-toggle-btn {
+    flex: 1;
+    text-align: center;
+  }
+}
+
+/* ─────────────────────────────────────────────
+   DOCUMENT ACTION — responsive header + table
+───────────────────────────────────────────── */
+
+.da-wrap {
+  padding: 20px;
+  min-width: 0;
+  overflow-x: hidden;
+}
+
+/* top bar: title left, controls right — wraps on small screens */
+.da-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.da-title {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #0f2557;
+  white-space: nowrap;
+}
+
+/* right side: search + filter buttons, always wraps together */
+.da-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  justify-content: flex-end;
+  flex: 1;
+  min-width: 0;
+}
+
+.da-search {
+  padding: 7px 12px;
+  border: 1.5px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 0.88rem;
+  outline: none;
+  min-width: 0;
+  flex: 1 1 160px;
+  max-width: 240px;
+  box-sizing: border-box;
+}
+
+.da-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.da-filter-btn {
+  padding: 6px 12px !important;
+  border-radius: 8px !important;
+  border: 1.5px solid #d1d5db !important;
+  cursor: pointer !important;
+  font-weight: 600 !important;
+  background: #ffffff !important;
+  color: #374151 !important;
+  font-size: 0.8rem !important;
+  white-space: nowrap !important;
+  display: inline-block !important;
+}
+
+.da-filter-btn.da-active {
+  background: #0f2557 !important;
+  color: #fff !important;
+  border-color: #0f2557 !important;
+}
+
+/* table scroll wrapper inside each app card */
+.da-table-scroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  width: 100%;
+  max-width: 100%;
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 transparent;
+  border-radius: 6px;
+}
+.da-table-scroll::-webkit-scrollbar { height: 5px; }
+.da-table-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 99px; }
+
+/* the card that wraps each app — must NOT clip its scroll child */
+.da-app-card {
+  margin-bottom: 18px;
+  background: #fff;
+  padding: 16px;
+  border-radius: 10px;
+  border: 1px solid #eef2f7;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  min-width: 0;
+  overflow: visible;
+}
+
+/* ── mobile: stack title above controls ── */
+@media (max-width: 600px) {
+  .da-wrap { padding: 14px; }
+
+  .da-header { flex-direction: column; align-items: stretch; }
+
+  .da-controls { justify-content: flex-start; }
+
+  .da-search { max-width: 100%; flex: none; width: 100%; }
+}

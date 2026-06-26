@@ -158,16 +158,15 @@ function LeadsDetails() {
       <Container className="mt-4">
         <Card style={{ border: "1px solid #e5e7eb", borderRadius: "10px" }}>
           <Card.Body style={{ padding: "16px 20px" }}>
-            <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: "12px" }}>
+            <div className="leads-filter-bar">
               <input
                 type="text"
                 placeholder="Search name, ID, mobile..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                style={{ padding: "8px 14px", border: "1.5px solid #d1d5db", borderRadius: "6px", fontSize: "0.84rem", width: "220px", outline: "none" }}
+                className="leads-filter-input"
               />
-              <select value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)}
-                style={{ padding: "8px 12px", border: "1.5px solid #d1d5db", borderRadius: "6px", fontSize: "0.84rem", outline: "none" }}>
+              <select value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)} className="leads-filter-select">
                 <option value="all">All Statuses</option>
                 <option value="submitted">Submitted</option>
                 <option value="under_review">Under Review</option>
@@ -176,8 +175,7 @@ function LeadsDetails() {
                 <option value="rejected">Rejected</option>
                 <option value="disbursed">Disbursed</option>
               </select>
-              <select value={filterLoanType} onChange={(e) => setFilterLoanType(e.target.value)}
-                style={{ padding: "8px 12px", border: "1.5px solid #d1d5db", borderRadius: "6px", fontSize: "0.84rem", outline: "none" }}>
+              <select value={filterLoanType} onChange={(e) => setFilterLoanType(e.target.value)} className="leads-filter-select">
                 <option value="all">All Loan Types</option>
                 <option value="PURCHASE">Home Loan</option>
                 <option value="PLOT">Plot Loan</option>
@@ -185,23 +183,12 @@ function LeadsDetails() {
                 <option value="NRI">NRI Loan</option>
                 <option value="BALANCE_TRANSFER">Balance Transfer</option>
               </select>
-              <select value={sortBy} onChange={(e) => setSortBy(e.target.value)}
-                style={{ padding: "8px 12px", border: "1.5px solid #d1d5db", borderRadius: "6px", fontSize: "0.84rem", outline: "none" }}>
+              <select value={sortBy} onChange={(e) => setSortBy(e.target.value)} className="leads-filter-select">
                 <option value="newest">Newest First</option>
                 <option value="oldest">Oldest First</option>
                 <option value="amount_high">Amount: High to Low</option>
                 <option value="amount_low">Amount: Low to High</option>
               </select>
-              <div style={{ marginLeft: "auto", display: "flex", gap: "0" }}>
-                <button onClick={() => setViewMode("table")}
-                  style={{ padding: "7px 14px", border: "1.5px solid #d1d5db", borderRadius: "6px 0 0 6px", fontSize: "0.8rem", fontWeight: 600, cursor: "pointer", background: viewMode === "table" ? "#0f2557" : "#fff", color: viewMode === "table" ? "#fff" : "#374151" }}>
-                  Table
-                </button>
-                <button onClick={() => setViewMode("cards")}
-                  style={{ padding: "7px 14px", border: "1.5px solid #d1d5db", borderRadius: "0 6px 6px 0", fontSize: "0.8rem", fontWeight: 600, cursor: "pointer", background: viewMode === "cards" ? "#0f2557" : "#fff", color: viewMode === "cards" ? "#fff" : "#374151" }}>
-                  Cards
-                </button>
-              </div>
             </div>
             <div style={{ marginTop: "8px", fontSize: "0.78rem", color: "#6b7280" }}>
               Showing {filtered.length} of {applications.length} applications
@@ -220,7 +207,7 @@ function LeadsDetails() {
             </Card.Body>
           </Card>
         ) : viewMode === "table" ? (
-          <Card style={{ border: "1px solid #e5e7eb", borderRadius: "10px", overflow: "hidden" }}>
+          <Card style={{ border: "1px solid #e5e7eb", borderRadius: "10px" }}>
             <Table responsive hover style={{ margin: 0, fontSize: "0.84rem" }}>
               <thead style={{ background: "#f8f9fa" }}>
                 <tr>

@@ -186,41 +186,42 @@ function AgentUserDetails({ show, onClose, application, onRefresh }) {
 
   return (
     <Modal show={show} onHide={onClose} fullscreen dialogClassName="agent-detail-modal">
-      <Modal.Header style={{ background: "#0f2557", color: "#fff", padding: "16px 28px", border: "none" }}>
-        <div style={{ flex: 1 }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
+      <Modal.Header style={{ background: "#0f2557", color: "#fff", padding: "16px 20px", border: "none", flexWrap: "wrap", gap: "10px" }}>
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "12px", flexWrap: "wrap" }}>
             <div style={{
-              width: 48, height: 48, borderRadius: "50%", background: "rgba(255,255,255,0.15)",
+              width: 44, height: 44, borderRadius: "50%", background: "rgba(255,255,255,0.15)",
               display: "flex", alignItems: "center", justifyContent: "center",
-              fontSize: "1.2rem", fontWeight: 800, color: "#fff",
+              fontSize: "1.1rem", fontWeight: 800, color: "#fff", flexShrink: 0,
             }}>
               {name[0]?.toUpperCase() || "U"}
             </div>
-            <div>
-              <h5 style={{ margin: 0, fontWeight: 700, color: "#fff" }}>{name}</h5>
-              <div style={{ fontSize: "0.82rem", opacity: 0.8 }}>
+            <div style={{ minWidth: 0 }}>
+              <h5 style={{ margin: 0, fontWeight: 700, color: "#fff", fontSize: "1rem", wordBreak: "break-word" }}>{name}</h5>
+              <div style={{ fontSize: "0.78rem", opacity: 0.8, wordBreak: "break-all" }}>
                 {app.applicationId} &bull; {LOAN_LABELS[app.loanType] || app.loanType} &bull; {formatAmount(app.financialDetails?.loanAmount)}
               </div>
             </div>
           </div>
         </div>
-        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "8px", flexShrink: 0 }}>
           <span style={{
-            padding: "5px 14px", borderRadius: "100px", fontSize: "0.78rem", fontWeight: 700,
+            padding: "4px 12px", borderRadius: "100px", fontSize: "0.75rem", fontWeight: 700,
             background: STATUS_COLORS[app.status]?.bg || "#f3f4f6",
             color: STATUS_COLORS[app.status]?.color || "#6b7280",
+            whiteSpace: "nowrap",
           }}>
             {app.status?.replace(/_/g, " ").toUpperCase()}
           </span>
-          <Button variant="light" size="sm" onClick={onClose} style={{ fontWeight: 700 }}>Close</Button>
+          <Button variant="light" size="sm" onClick={onClose} style={{ fontWeight: 700, whiteSpace: "nowrap" }}>Close</Button>
         </div>
       </Modal.Header>
 
       <Modal.Body style={{ padding: 0, background: "#f8f9fc" }}>
         <Tab.Container activeKey={activeTab} onSelect={setActiveTab}>
           {/* Tab Navigation */}
-          <div style={{ background: "#fff", borderBottom: "1px solid #e5e7eb", padding: "0 28px" }}>
-            <Nav variant="tabs" style={{ borderBottom: "none" }}>
+          <div style={{ background: "#fff", borderBottom: "1px solid #e5e7eb", overflowX: "auto", WebkitOverflowScrolling: "touch" }}>
+            <Nav variant="tabs" style={{ borderBottom: "none", flexWrap: "nowrap", padding: "0 16px", minWidth: "max-content" }}>
                 {[
                 { key: "overview", label: "Overview" },
                 { key: "personal", label: "Personal & Employment" },
@@ -248,7 +249,7 @@ function AgentUserDetails({ show, onClose, application, onRefresh }) {
           </div>
 
           {/* Tab Content */}
-          <Container style={{ padding: "28px", maxWidth: "1200px" }}>
+          <Container style={{ padding: "20px 16px", maxWidth: "1200px" }}>
             <Tab.Content>
               {/* ═══════════ OVERVIEW TAB ═══════════ */}
               <Tab.Pane eventKey="overview">
@@ -300,26 +301,28 @@ function AgentUserDetails({ show, onClose, application, onRefresh }) {
                 {docStats.total > 0 && (
                   <Card className="mb-4" style={{ border: "1px solid #e5e7eb", borderRadius: "10px" }}>
                     <Card.Body>
-                      <div className="d-flex justify-content-between mb-2">
-                                   <Button
-                                     variant="success"
-                                     onClick={() => handleAction("recommend")}
-                                     disabled={(() => {
-                                       const remarks = app.processing?.remarks || [];
-                                       const rec = [...remarks].reverse().find(r => typeof r.text === 'string' && r.text.toLowerCase().includes('agent recommendation'));
-                                       return !!rec;
-                                     })()}
-                                     style={{ fontWeight: 600 }}
-                                   >
-                                     {(() => {
-                                       const remarks = app.processing?.remarks || [];
-                                       const rec = [...remarks].reverse().find(r => typeof r.text === 'string' && r.text.toLowerCase().includes('agent recommendation'));
-                                       return rec ? 'Recommended' : 'Recommend for Approval';
-                                     })()}
-                                   </Button>
-                        <span style={{ color: "#16a34a" }}>Verified: {docStats.verified}</span>
-                        <span style={{ color: "#f59e0b" }}>Pending: {docStats.pending}</span>
-                        <span style={{ color: "#dc2626" }}>Rejected: {docStats.rejected}</span>
+                      <div style={{ display:"flex", flexWrap:"wrap", gap:"10px", alignItems:"center", justifyContent:"space-between" }}>
+                        <Button
+                          variant="success"
+                          onClick={() => handleAction("recommend")}
+                          disabled={(() => {
+                            const remarks = app.processing?.remarks || [];
+                            const rec = [...remarks].reverse().find(r => typeof r.text === 'string' && r.text.toLowerCase().includes('agent recommendation'));
+                            return !!rec;
+                          })()}
+                          style={{ fontWeight: 600, flexShrink: 0 }}
+                        >
+                          {(() => {
+                            const remarks = app.processing?.remarks || [];
+                            const rec = [...remarks].reverse().find(r => typeof r.text === 'string' && r.text.toLowerCase().includes('agent recommendation'));
+                            return rec ? 'Recommended' : 'Recommend for Approval';
+                          })()}
+                        </Button>
+                        <div style={{ display:"flex", flexWrap:"wrap", gap:"10px" }}>
+                          <span style={{ background:"#dcfce7", color:"#16a34a", padding:"4px 12px", borderRadius:20, fontWeight:700, fontSize:"0.82rem", whiteSpace:"nowrap" }}>Verified: {docStats.verified}</span>
+                          <span style={{ background:"#fef9c3", color:"#f59e0b", padding:"4px 12px", borderRadius:20, fontWeight:700, fontSize:"0.82rem", whiteSpace:"nowrap" }}>Pending: {docStats.pending}</span>
+                          <span style={{ background:"#fee2e2", color:"#dc2626", padding:"4px 12px", borderRadius:20, fontWeight:700, fontSize:"0.82rem", whiteSpace:"nowrap" }}>Rejected: {docStats.rejected}</span>
+                        </div>
                       </div>
                     </Card.Body>
                   </Card>

@@ -6,6 +6,8 @@
 
 .UserDashboard .dashboard-content {
   flex: 1;
+  min-width: 0;        /* critical: allows flex child to shrink below content size */
+  overflow-x: hidden;  /* prevent the whole page from widening; scroll stays inside .docs-table-scroll */
   display: flex;
   flex-direction: column;
 }
@@ -179,6 +181,8 @@
 
 .dashboard-main {
   padding: 28px;
+  min-width: 0;   /* allow shrinking inside flex column */
+  overflow-x: hidden;
 }
 
 /* =============================
@@ -314,37 +318,124 @@
    DOCUMENTS PAGE
 ============================= */
 
-/* Horizontal scroll wrapper for the doc table on mobile */
+/* =============================
+   DOCUMENTS PAGE
+============================= */
+
+/* Scroll wrapper — table scrolls horizontally on small screens */
 .docs-table-scroll {
   overflow-x: auto;
+  overflow-y: visible;
   -webkit-overflow-scrolling: touch;
   border-radius: 12px;
   border: 1px solid #e5e7eb;
   width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 transparent;
 }
 
-.docs-table-scroll > div {
-  min-width: 480px;
+.docs-table-scroll::-webkit-scrollbar { height: 5px; }
+.docs-table-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 99px; }
+
+/* The table itself stays wide enough not to wrap */
+.docs-table {
+  width: 100%;
+  min-width: 520px;   /* prevents column squish; scroll kicks in below this */
+  border-collapse: collapse;
   background: #fff;
-  border-radius: 12px;
+}
+
+.docs-table thead tr {
+  background: #f8fafc;
+}
+
+.docs-table th {
+  padding: 12px 14px;
+  text-align: left;
+  font-size: 0.78rem;
+  color: #6b7280;
+  font-weight: 700;
+  border-bottom: 2px solid #e5e7eb;
+  white-space: nowrap;
+}
+
+.docs-td {
+  padding: 12px 14px;
+  vertical-align: middle;
+}
+
+.docs-table tbody tr { border-bottom: 1px solid #f3f4f6; }
+.docs-table tbody tr:last-child { border-bottom: none; }
+.docs-row-rejected { background: #fff5f5; }
+
+.docs-doc-name   { font-weight: 600; color: #1f2937; font-size: 0.88rem; }
+.docs-rejected-hint { font-size: 0.72rem; color: #dc2626; margin-top: 3px; }
+
+.docs-status-pill {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 0.76rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.docs-date { font-size: 0.7rem; color: #9ca3af; margin-top: 4px; }
+
+.docs-preview-img {
+  width: 56px;
+  height: 42px;
+  object-fit: cover;
+  border-radius: 6px;
+  cursor: pointer;
+  border: 1px solid #e5e7eb;
+}
+
+.docs-file-link  { color: #0f4c8a; font-weight: 600; font-size: 0.83rem; }
+.docs-no-file    { color: #9ca3af; font-size: 0.8rem; }
+.docs-verified-text { color: #15803d; font-size: 0.82rem; font-weight: 600; }
+
+.docs-upload-btn {
+  padding: 6px 13px;
+  border-radius: 7px;
+  border: none;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 0.8rem;
+  color: #fff;
+  white-space: nowrap;
 }
 
 /* Summary pills row */
 .docs-summary-pills {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
+  gap: 8px;
   margin-top: 16px;
 }
 
 .docs-summary-pills > div {
   flex: 1 1 auto;
-  min-width: 80px;
+  min-width: 70px;
   text-align: center;
-  padding: 6px 14px;
+  padding: 7px 14px;
   border-radius: 20px;
   font-size: 0.82rem;
   font-weight: 700;
+  white-space: nowrap;
+}
+
+/* ---- mobile overrides ---- */
+@media (max-width: 480px) {
+  /* pills: 2 per row */
+  .docs-summary-pills > div {
+    flex: 1 1 calc(50% - 8px);
+    max-width: calc(50% - 8px);
+    font-size: 0.78rem;
+    padding: 6px 8px;
+  }
 }
 
 .documents-table {
@@ -1336,6 +1427,13 @@
 
   .dashboard-main {
     padding: 16px;
+  }
+
+  /* Let the scroll wrapper reach edge-to-edge so the table has full room */
+  .docs-table-scroll {
+    margin-left: -0px;
+    margin-right: -0px;
+    border-radius: 10px;
   }
 
   .stats {

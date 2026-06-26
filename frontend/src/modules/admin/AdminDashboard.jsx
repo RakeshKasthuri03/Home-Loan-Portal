@@ -103,7 +103,7 @@ function AdminDashboard() {
             <div className="loan-config-header">
               <h3>Loan Type Overview</h3>
             </div>
-
+            <div className="admin-table-scroll">
             <table className="loan-config-table">
               <thead>
                 <tr>
@@ -128,6 +128,7 @@ function AdminDashboard() {
                 ))}
               </tbody>
             </table>
+            </div>
           </div>
 
           {/* USER ACTIONS: Closure Requests */}
@@ -137,6 +138,7 @@ function AdminDashboard() {
                 <h3>User Actions</h3>
                 <p className="muted">Pending closure requests from users</p>
               </div>
+              <div className="admin-table-scroll">
               <table className="loan-config-table">
                 <thead>
                   <tr>
@@ -163,6 +165,7 @@ function AdminDashboard() {
                   ))}
                 </tbody>
               </table>
+              </div>
             </div>
           )}
 
@@ -172,6 +175,7 @@ function AdminDashboard() {
               <div className="loan-config-header">
                 <h3>Recent Applications</h3>
               </div>
+              <div className="admin-table-scroll">
               <table className="loan-config-table">
                 <thead>
                   <tr>
@@ -196,6 +200,7 @@ function AdminDashboard() {
                   ))}
                 </tbody>
               </table>
+              </div>
             </div>
           )}
         </main>

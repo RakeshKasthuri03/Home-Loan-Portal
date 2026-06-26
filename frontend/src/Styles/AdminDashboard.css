@@ -1,7 +1,52 @@
 
-/* =============================
-   ADMIN EXTENSIONS
-============================= */
+/* ── Admin table scroll wrapper ── */
+.admin-table-scroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 transparent;
+}
+.admin-table-scroll::-webkit-scrollbar { height: 5px; }
+.admin-table-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 99px; }
+
+/* Ensure tables inside the wrapper don't shrink — scroll instead */
+.admin-table-scroll .loan-config-table,
+.admin-table-scroll .admin-data-table,
+.admin-table-scroll .apps-table {
+  min-width: 560px;
+}
+
+/* Also fix admin-table-wrap (Users/Agents) — it had overflow:hidden which breaks scroll */
+.admin-table-wrap {
+  overflow: visible;
+}
+
+/* Admin stats grid — 2 cols on mobile, 4 on tablet, all on desktop */
+@media (max-width: 992px) {
+  .admin-stats {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+  .loan-config-section {
+    margin-left: 0;
+    margin-right: 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .admin-stats {
+    grid-template-columns: 1fr 1fr !important;
+    gap: 10px !important;
+  }
+  .admin-stat-card {
+    margin-left: 0;
+    margin-right: 0;
+  }
+}
+
+
 
 .admin-stat-card {
   position: relative;
@@ -261,6 +306,28 @@
   display: flex;
   align-items: center;
   gap: 10px;
+}
+
+@media (max-width: 600px) {
+  .admin-table-header {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .admin-table-actions {
+    flex-direction: column;
+    align-items: stretch;
+    width: 100%;
+  }
+
+  .admin-table-actions .apps-search {
+    width: 100%;
+  }
+
+  .add-agent-btn {
+    width: 100%;
+    justify-content: center;
+  }
 }
 
 .add-agent-btn {

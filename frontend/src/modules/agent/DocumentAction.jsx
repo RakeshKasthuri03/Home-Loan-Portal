@@ -240,17 +240,18 @@ export default function DocumentAction() {
   const appList = Object.values(apps);
 
   return (
-    <div style={{ padding:"28px" }}>
-      <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:20 }}>
-        <h4 style={{ margin:0 }}>Document Action</h4>
-        <div style={{ display:"flex", gap:8 }}>
-          <input type="text" placeholder="Search name / loan ID..." value={search} onChange={e => setSearch(e.target.value)}
-            style={{ padding:"7px 12px", border:"1.5px solid #d1d5db", borderRadius:8, fontSize:"0.88rem", width:220 }} />
-          {["All","pending","verified","rejected","processed"].map(f => (
-            <button key={f} onClick={() => setFilter(f)} style={{ padding:"6px 14px", borderRadius:8, border:"1.5px solid #d1d5db", cursor:"pointer", fontWeight:600, background:filter===f?"#0f2557":"#fff", color:filter===f?"#fff":"#374151", fontSize:"0.82rem" }}>
-              {f==="All"?"All":f.charAt(0).toUpperCase()+f.slice(1)}
-            </button>
-          ))}
+    <div className="da-wrap">
+      <div className="da-header">
+        <h4 className="da-title">Document Action</h4>
+        <div className="da-controls">
+          <input type="text" placeholder="Search name / loan ID..." value={search} onChange={e => setSearch(e.target.value)} className="da-search" />
+          <div className="da-filters">
+            {["All","pending","verified","rejected","processed"].map(f => (
+              <button key={f} onClick={() => setFilter(f)} className={`da-filter-btn${filter===f?" da-active":""}`}>
+                {f==="All"?"All":f.charAt(0).toUpperCase()+f.slice(1)}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
@@ -267,7 +268,7 @@ export default function DocumentAction() {
         const isUnderReview = appStatus === 'under_review';
 
         return (
-          <div key={app.applicationId} style={{ marginBottom:18, background:'#fff', padding:16, borderRadius:10, border:'1px solid #eef2f7', boxShadow:'0 1px 4px rgba(0,0,0,0.06)' }}>
+          <div key={app.applicationId} className="da-app-card">
             <div style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-start', marginBottom:12 }}>
               <div>
                 <strong style={{ fontSize:"1rem" }}>{app.customer}</strong>
@@ -301,9 +302,10 @@ export default function DocumentAction() {
                 </>}
               </div>
             </div>
-            <table style={{ width:"100%", borderCollapse:"collapse" }}>
+            <div className="da-table-scroll">
+            <table style={{ width:"100%", borderCollapse:"collapse", minWidth:420 }}>
               <thead><tr style={{ background:"#f9fafb" }}>
-                {["Document","Status","File","Actions"].map(h => <th key={h} style={{ padding:"8px 12px", textAlign:"left", fontSize:"0.8rem", color:"#6b7280", fontWeight:600 }}>{h}</th>)}
+                {["Document","Status","File","Actions"].map(h => <th key={h} style={{ padding:"8px 12px", textAlign:"left", fontSize:"0.8rem", color:"#6b7280", fontWeight:600, whiteSpace:"nowrap" }}>{h}</th>)}
               </tr></thead>
               <tbody>
                 {app.docs.map((doc) => (
@@ -330,6 +332,7 @@ export default function DocumentAction() {
                 ))}
               </tbody>
             </table>
+            </div>
           </div>
         );
       })}

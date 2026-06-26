@@ -74,6 +74,7 @@ function AdminAgents() {
       </div>
 
       <div className="admin-table-wrap">
+        <div className="admin-table-scroll">
         <table className="admin-data-table">
           <thead>
             <tr>
@@ -109,6 +110,7 @@ function AdminAgents() {
             )}
           </tbody>
         </table>
+        </div>
       </div>
     </div>
   );
