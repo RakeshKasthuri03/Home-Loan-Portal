@@ -4,7 +4,7 @@ import Upload from "../../Components/Upload/Upload";
 import axios from "axios";
 import { getToken } from "../../utils/auth";
 
-export default function Sidebar({ user, sections = [], role = "user", onProfileUpdated }) {
+export default function Sidebar({ user, sections = [], role = "user", onProfileUpdated, onCloseSidebar }) {
   const navigate = useNavigate();
 
   // Use the user prop passed from UserDashboard (which fetches from backend)
@@ -62,9 +62,9 @@ export default function Sidebar({ user, sections = [], role = "user", onProfileU
         console.error("Failed to update profile photo:", err);
       }
     }
-  };  return (
+  };
+  return (
     <aside className="sidebar">
-
       {/* User card */}
       <div className="user-card">
         <div className="avatar" style={{ position: 'relative' }}>
@@ -107,6 +107,7 @@ export default function Sidebar({ user, sections = [], role = "user", onProfileU
                 to={item.to}
                 end={item.to === "/dashboard"}
                 className={({ isActive }) => (isActive ? "active" : "")}
+                onClick={() => onCloseSidebar && onCloseSidebar()}
               >
                 <span>{item.label}</span>
                 {item.badge && <span>{item.badge}</span>}

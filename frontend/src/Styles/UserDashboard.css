@@ -1,5 +1,6 @@
 .UserDashboard .dashboard-layout {
   display: flex;
+  position: relative;
   min-height: 100vh;
 }
 
@@ -13,10 +14,10 @@
    HEADER (Head.jsx)
 ============================= */
 
-.UserDashboard .dashboard-header {
+ .UserDashboard .dashboard-header {
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  gap: 12px;
   padding: 16px 28px;
   border-bottom: 1px solid #eaeaea;
   background: #fff;
@@ -26,6 +27,18 @@
   margin: 0;
   font-weight: 600;
 }
+.UserDashboard .header-right { z-index: 1002; }
+.sidebar-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sidebar-toggle:hover {
+  background: #eff6ff;
+  border-color: #a5b4fc;
+}
+
 
 .primary-btn {
   background: #0f4c8a;
@@ -47,77 +60,130 @@
   padding: 20px;
   background: #fff;
 
+  transition: transform 0.3s ease;
 }
 
-.user-card {
-  text-align: center;
-  margin-bottom: 20px;
- 
-}
 
-.avatar {
-  width: 56px;
-  height: 56px;
-  background: #e6f0ff;
-  color: #0f4c8a;
-  border-radius: 50%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-weight: 600;
-  margin: auto;
-}
-
-.user-card h4 {
-  margin: 10px 0 4px;
-}
-
-.user-card p {
-  font-size: 13px;
-  color: #666;
-  margin: 0;
-}
-
-.badge {
-  display: inline-block;
-  margin-top: 8px;
-  padding: 4px 10px;
-  font-size: 12px;
-  background:green;
-  color: white;
+.sidebar-close-btn {
+  display: none;
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  width: 34px;
+  height: 34px;
+  border: 1px solid #d1d5db;
   border-radius: 12px;
-}
-
-.menu h5 {
-  margin: 22px 0 8px;
-  font-size: 11px;
-  color: #888;
-}
-
-.menu a {
-  display: flex;
-  justify-content: space-between;
-  padding: 8px 10px;
-  margin-bottom: 4px;
-  border-radius: 6px;
+  background: #fff;
+  color: #374151;
+  font-size: 18px;
+  line-height: 1;
   cursor: pointer;
-  font-size: 14px;
-  text-decoration: none;
-  
+  align-items: center;
+  justify-content: center;
 }
 
-.menu a span {
-  font-size: 12px;
-  background: #eef3f8;
-  padding: 2px 8px;
-  border-radius: 10px;
- 
-}
+ .user-card {
+   text-align: center;
+   margin-bottom: 20px;
+ }
 
-.menu a.active {
-  background: #eef5ff;
-  color: #0f4c8a;
-  font-weight: 500;
+ .avatar {
+   width: 56px;
+   height: 56px;
+   background: #e6f0ff;
+   color: #0f4c8a;
+   border-radius: 50%;
+   display: flex;
+   justify-content: center;
+   align-items: center;
+   font-weight: 600;
+   margin: auto;
+ }
+
+ .user-card h4 {
+   margin: 10px 0 4px;
+ }
+
+ .user-card p {
+   font-size: 13px;
+   color: #666;
+   margin: 0;
+ }
+
+ .badge {
+   display: inline-block;
+   margin-top: 8px;
+   padding: 4px 10px;
+   font-size: 12px;
+   background: green;
+   color: white;
+   border-radius: 12px;
+ }
+
+ .menu h5 {
+   margin: 22px 0 8px;
+   font-size: 10px;
+   color: #667085;
+   letter-spacing: 0.08em;
+   text-transform: uppercase;
+ }
+
+ .sidebar-toggle {
+   display: inline-flex;
+   align-items: center;
+   justify-content: center;
+   min-height: 40px;
+   padding: 0 16px;
+   border: 1px solid #cbd5e1;
+   border-radius: 10px;
+   background: #fff;
+   color: #0f4c8a;
+   font-weight: 600;
+   transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+ }
+
+ .sidebar-toggle:hover {
+   background: #eff6ff;
+   border-color: #93c5fd;
+ }
+
+ .menu a {
+   display: flex;
+   justify-content: space-between;
+   align-items: center;
+   padding: 10px 14px;
+   margin-bottom: 8px;
+   border-radius: 12px;
+   cursor: pointer;
+   font-size: 14px;
+   text-decoration: none;
+   color: #1f2937;
+   background: #f8fbff;
+   transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease;
+ }
+
+ .menu a span:first-child {
+   font-size: 14px;
+ }
+
+ .menu a span:last-child {
+   font-size: 12px;
+   min-width: 28px;
+   text-align: center;
+   background: #e7efff;
+   color: #0f4c8a;
+   padding: 2px 8px;
+   border-radius: 999px;
+ }
+
+ .menu a:hover {
+   background: #eef4ff;
+ }
+
+ .menu a.active {
+   background: #e7f0ff;
+   color: #0f4c8a;
+   font-weight: 600;
 }
 
 /* =============================
@@ -961,9 +1027,9 @@
 @media (max-width: 1024px) {
   .profile-header-content {
     padding: 0 20px;
-    gap: 24px;
-  }
-
+    left: 0;
+    top: 0;
+    height: 100vh;
   .user-title-row h1 {
     font-size: 28px;
   }
@@ -1091,4 +1157,95 @@
   font-size: 0.78rem;
   color: #15803d;
   text-align: center;
+}
+
+
+/* ─── RESPONSIVE ───────────────────────────────────────────────────────────── */
+
+@media (max-width: 992px) {
+  .sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    height: 100vh;
+    z-index: 999;
+    transform: translateX(-260px); /* Hide sidebar off-screen */
+    box-shadow: 0 0 20px rgba(0,0,0,0.1);
+    border-right: 1px solid #ddd;
+  }
+
+  .sidebar-open .sidebar {
+    transform: translateX(0);
+  }
+
+  .sidebar-overlay {
+    position: fixed;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.4);
+    z-index: 998;
+  }
+
+  .sidebar-close-btn {
+    display: flex;
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    width: 38px;
+    height: 38px;
+    border-radius: 12px;
+    border: 1px solid rgba(15, 37, 87, 0.12);
+    background: #ffffff;
+    color: #0f2557;
+    font-size: 18px;
+    font-weight: 700;
+    box-shadow: 0 12px 24px rgba(15, 37, 87, 0.08);
+    cursor: pointer;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s ease, background 0.2s ease, border-color 0.2s ease;
+    z-index: 1002;
+  }
+
+  .sidebar-close-btn:hover {
+    background: #f8fafc;
+    border-color: #dbeafe;
+    transform: translateY(-1px);
+  }
+
+  .sidebar-toggle {
+    display: block;
+  }
+
+  .UserDashboard .dashboard-header {
+    padding: 12px 20px;
+  }
+
+  .dashboard-main {
+    padding: 20px;
+  }
+
+  .stats {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+
+  .bottom-grid {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+}
+
+@media (max-width: 576px) {
+  .stats {
+    grid-template-columns: 1fr;
+  }
+
+  .welcome-card {
+    flex-direction: column;
+    gap: 16px;
+    padding: 24px;
+  }
 }

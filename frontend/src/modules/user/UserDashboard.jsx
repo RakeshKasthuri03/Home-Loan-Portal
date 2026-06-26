@@ -15,6 +15,7 @@ import {userMenuSections} from "../../utils/UserDashboardUtils";
 const fmt = (n) => n ? "₹" + Number(n).toLocaleString("en-IN") : "—";
 
 export default function UserDashboard() {
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [customer, setCustomer]   = useState(null);
   const [loading, setLoading]     = useState(true);
   const [applications, setApplications] = useState([]);
@@ -154,10 +155,26 @@ export default function UserDashboard() {
   );
 
   return (
-    <div className="UserDashboard">
+    <div className={`UserDashboard ${sidebarOpen ? "sidebar-open" : "sidebar-closed"}`}>
       <div className="dashboard-layout">
-        <Sidebar user={user} sections={dynamicSections} onProfileUpdated={handleProfileUpdated} />
+        <Sidebar
+          user={user}
+          sections={dynamicSections}
+          onProfileUpdated={handleProfileUpdated}
+          onCloseSidebar={() => setSidebarOpen(false)}
+        />
+        {sidebarOpen && <div className="sidebar-overlay" onClick={() => setSidebarOpen(false)} />}
         <div className="dashboard-content">
+          <header className="dashboard-header">
+            <button
+              type="button"
+              className="sidebar-toggle"
+              onClick={() => setSidebarOpen(!sidebarOpen)}
+              aria-label={sidebarOpen ? "Close sidebar" : "Open sidebar"}
+            >
+              Menu
+            </button>
+          </header>
           <Routes>
             <Route index element={<DashboardMain dashboardData={dashboardData} />} />
             <Route path="applications"  element={<Applications user={user} />} />
