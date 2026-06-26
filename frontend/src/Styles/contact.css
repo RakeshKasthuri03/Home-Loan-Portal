@@ -233,12 +233,40 @@
 
 
   @media (max-width: 900px) {
-    .mlrr-nav { padding: 16px 24px; }
-    .mlrr-nav-links { display: none; }
     .mlrr-about-hero, .mlrr-contact-section, .mlrr-faq-section { padding: 60px 24px; }
     .mlrr-about-inner { grid-template-columns: 1fr; gap: 40px; }
     .mlrr-contact-grid { grid-template-columns: 1fr; }
     .mlrr-form-wrap { padding: 30px 22px; }
     .mlrr-form-row { grid-template-columns: 1fr; }
     .mlrr-chip-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  @media (max-width: 600px) {
+    .mlrr-about-hero, .mlrr-contact-section, .mlrr-faq-section {
+      padding: 40px 16px;
+    }
+    .mlrr-about-inner {
+      grid-template-columns: 1fr;
+      gap: 28px;
+    }
+    .mlrr-stats {
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    .mlrr-form-wrap {
+      padding: 20px 14px;
+    }
+    .mlrr-chip-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    .mlrr-faq-q {
+      font-size: 0.88rem;
+      padding: 16px 18px;
+    }
+    .mlrr-faq-a {
+      padding: 0 18px;
+    }
+    .mlrr-contact-grid {
+      grid-template-columns: 1fr;
+    }
   }

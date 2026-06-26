@@ -7,9 +7,6 @@
   border-bottom: 1px solid #e5e7eb;
   transition: box-shadow 0.3s ease;
   font-family: 'Inter', 'Poppins', sans-serif;
-  left: 0;
-  right: 0;
-  overflow-x: hidden;
 }
 
 .hdr-main--scrolled {

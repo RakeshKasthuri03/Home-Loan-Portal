@@ -180,7 +180,8 @@ export default function Documents({ user }) {
       )}
 
       {/* Documents table */}
-      <div style={{ background:"#fff", borderRadius:12, border:"1px solid #e5e7eb", overflow:"hidden" }}>
+      <div className="docs-table-scroll">
+      <div>
         <table style={{ width:"100%", borderCollapse:"collapse" }}>
           <thead>
             <tr style={{ background:"#f8fafc" }}>
@@ -264,16 +265,17 @@ export default function Documents({ user }) {
           </tbody>
         </table>
       </div>
+      </div>
 
       {/* Summary counts */}
-      <div style={{ display:"flex", gap:12, marginTop:16, flexWrap:"wrap" }}>
+      <div className="docs-summary-pills">
         {[
           ["Total", expectedDocs.length, "#f3f4f6", "#374151"],
           ["Verified", expectedDocs.filter(k => appDocs[k]?.status==="verified").length, "#dcfce7", "#15803d"],
           ["Pending",  expectedDocs.filter(k => !appDocs[k] || appDocs[k]?.status==="pending").length, "#fef9c3", "#92400e"],
           ["Rejected", expectedDocs.filter(k => appDocs[k]?.status==="rejected").length, "#fee2e2", "#dc2626"],
         ].map(([label, count, bg, color]) => (
-          <div key={label} style={{ background:bg, color, padding:"6px 16px", borderRadius:20, fontSize:"0.82rem", fontWeight:700 }}>
+          <div key={label} style={{ background:bg, color }}>
             {label}: {count}
           </div>
         ))}
