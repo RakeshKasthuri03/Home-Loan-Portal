@@ -1,0 +1,892 @@
+/* ─── LOAN FORM DESIGN SYSTEM ─────────────────────────────────────────────── */
+:root {
+  --lf-primary:     #1a3c6e;
+  --lf-accent:      #2771e2;
+  --lf-accent-light:#eff6ff;
+  --lf-success:     #16a34a;
+  --lf-error:       #dc2626;
+  --lf-bg:          #f8fafc;
+  --lf-white:       #ffffff;
+  --lf-border:      #d1d5db;
+  --lf-label:       #374151;
+  --lf-muted:       #6b7280;
+  --lf-radius:      10px;
+  --lf-font:        'Inter', 'Poppins', sans-serif;
+  --lf-shadow:      0 4px 24px rgba(26, 60, 110, 0.10);
+}
+
+/* ─── PAGE WRAPPER ─────────────────────────────────────────────────────────── */
+.lf-page {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #e8f0fe 0%, #f8fafc 60%, #e0ecff 100%);
+  padding: 40px 16px 60px;
+  font-family: var(--lf-font);
+}
+
+.lf-page-header {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.lf-page-header h1 {
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--lf-primary);
+  margin-bottom: 6px;
+}
+
+.lf-page-header p {
+  color: var(--lf-muted);
+  font-size: 1rem;
+}
+
+/* ─── LOAN TYPE SELECTOR ───────────────────────────────────────────────────── */
+.lf-type-selector {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  justify-content: center;
+  margin-bottom: 40px;
+}
+
+.lf-type-card {
+  background: var(--lf-white);
+  border: 2px solid var(--lf-border);
+  border-radius: 14px;
+  padding: 20px 28px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: center;
+  min-width: 180px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.lf-type-card:hover {
+  border-color: var(--lf-accent);
+  box-shadow: 0 4px 16px rgba(39, 113, 226, 0.15);
+  transform: translateY(-2px);
+}
+
+.lf-type-card--active {
+  border-color: var(--lf-accent);
+  background: var(--lf-accent-light);
+  box-shadow: 0 4px 16px rgba(39, 113, 226, 0.2);
+}
+
+.lf-type-card .lf-type-icon {
+  font-size: 2rem;
+  display: block;
+  margin-bottom: 8px;
+}
+
+.lf-type-card .lf-type-label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--lf-primary);
+}
+
+/* ─── FORM CARD ────────────────────────────────────────────────────────────── */
+.lf-card {
+  background: var(--lf-white);
+  border-radius: 18px;
+  box-shadow: var(--lf-shadow);
+  max-width: 860px;
+  margin: 0 auto;
+  overflow: hidden;
+}
+
+/* ─── PROGRESS BAR ─────────────────────────────────────────────────────────── */
+.lf-progress {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 28px 32px 20px;
+  background: var(--lf-white);
+  border-bottom: 1px solid #f0f0f0;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.lf-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  cursor: default;
+}
+
+.lf-step-circle {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  font-weight: 700;
+  border: 2px solid var(--lf-border);
+  background: var(--lf-white);
+  color: var(--lf-muted);
+  transition: all 0.3s ease;
+}
+
+.lf-step--active .lf-step-circle {
+  background: var(--lf-accent);
+  border-color: var(--lf-accent);
+  color: white;
+  box-shadow: 0 0 0 4px rgba(39, 113, 226, 0.15);
+}
+
+.lf-step--completed .lf-step-circle {
+  background: var(--lf-success);
+  border-color: var(--lf-success);
+  color: white;
+}
+
+.lf-step-label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--lf-muted);
+  text-align: center;
+  max-width: 70px;
+  line-height: 1.2;
+}
+
+.lf-step--active .lf-step-label {
+  color: var(--lf-accent);
+}
+
+.lf-step--completed .lf-step-label {
+  color: var(--lf-success);
+}
+
+.lf-step-line {
+  flex: 1;
+  height: 2px;
+  background: var(--lf-border);
+  min-width: 24px;
+  max-width: 60px;
+  margin-bottom: 22px;
+  transition: background 0.3s ease;
+}
+
+.lf-step-line--done {
+  background: var(--lf-success);
+}
+
+/* ─── STEP BODY ────────────────────────────────────────────────────────────── */
+.lf-step-body {
+  padding: 32px 36px;
+}
+
+.lf-step-header {
+  margin-bottom: 28px;
+}
+
+.lf-step-title {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--lf-primary);
+  margin-bottom: 4px;
+}
+
+.lf-step-subtitle {
+  font-size: 0.9rem;
+  color: var(--lf-muted);
+  margin: 0;
+}
+
+/* ─── FIELDS GRID ──────────────────────────────────────────────────────────── */
+.lf-fields-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px 28px;
+}
+
+@media (max-width: 640px) {
+  .lf-fields-grid {
+    grid-template-columns: 1fr;
+  }
+  .lf-step-body {
+    padding: 24px 20px;
+  }
+}
+
+/* ─── FIELD ────────────────────────────────────────────────────────────────── */
+.lf-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.lf-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--lf-label);
+  letter-spacing: 0.01em;
+}
+
+.lf-required {
+  color: var(--lf-error);
+  margin-left: 3px;
+}
+
+.lf-input {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1.5px solid var(--lf-border);
+  border-radius: var(--lf-radius);
+  font-size: 0.92rem;
+  color: #111827;
+  background: var(--lf-white);
+  transition: border-color 0.2s, box-shadow 0.2s;
+  outline: none;
+  font-family: var(--lf-font);
+}
+
+.lf-input:focus {
+  border-color: var(--lf-accent);
+  box-shadow: 0 0 0 3px rgba(39, 113, 226, 0.12);
+}
+
+.lf-input--error {
+  border-color: var(--lf-error);
+}
+
+.lf-input--error:focus {
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+}
+
+textarea.lf-input {
+  resize: vertical;
+  min-height: 80px;
+}
+
+select.lf-input {
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236b7280' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  padding-right: 36px;
+}
+
+.lf-error-msg {
+  font-size: 0.78rem;
+  color: var(--lf-error);
+  font-weight: 500;
+}
+
+/* ─── FILE UPLOAD ──────────────────────────────────────────────────────────── */
+.lf-file-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.lf-file-label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border: 1.5px dashed var(--lf-accent);
+  border-radius: var(--lf-radius);
+  cursor: pointer;
+  background: var(--lf-accent-light);
+  transition: background 0.2s;
+}
+
+.lf-file-label:hover {
+  background: #dbeafe;
+}
+
+.lf-file-icon {
+  font-size: 1.1rem;
+}
+
+.lf-file-text {
+  font-size: 0.85rem;
+  color: var(--lf-accent);
+  font-weight: 500;
+}
+
+.lf-file-input {
+  display: none;
+}
+
+.lf-file-chosen {
+  font-size: 0.78rem;
+  color: var(--lf-success);
+  font-weight: 500;
+  padding-left: 4px;
+}
+
+/* ─── NAV BUTTONS ──────────────────────────────────────────────────────────── */
+.lf-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 36px 32px;
+  border-top: 1px solid #f0f0f0;
+}
+
+.lf-btn {
+  padding: 11px 28px;
+  border-radius: 8px;
+  font-size: 0.92rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s ease;
+  font-family: var(--lf-font);
+}
+
+.lf-btn--back {
+  background: var(--lf-white);
+  color: var(--lf-primary);
+  border: 1.5px solid var(--lf-border);
+}
+
+.lf-btn--back:hover {
+  background: var(--lf-bg);
+  border-color: var(--lf-primary);
+}
+
+.lf-btn--next {
+  background: var(--lf-accent);
+  color: white;
+  box-shadow: 0 2px 8px rgba(39, 113, 226, 0.3);
+}
+
+.lf-btn--next:hover {
+  background: #1a5fcc;
+  box-shadow: 0 4px 12px rgba(39, 113, 226, 0.4);
+  transform: translateY(-1px);
+}
+
+.lf-btn--submit {
+  background: var(--lf-success);
+  color: white;
+  box-shadow: 0 2px 8px rgba(22, 163, 74, 0.3);
+}
+
+.lf-btn--submit:hover {
+  background: #15803d;
+  transform: translateY(-1px);
+}
+
+.lf-step-count {
+  font-size: 0.82rem;
+  color: var(--lf-muted);
+  font-weight: 500;
+}
+
+/* ─── SUCCESS SCREEN ───────────────────────────────────────────────────────── */
+.lf-success {
+  text-align: center;
+  padding: 60px 40px;
+}
+
+.lf-success-icon {
+  font-size: 4rem;
+  margin-bottom: 16px;
+}
+
+.lf-success h2 {
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: var(--lf-primary);
+  margin-bottom: 10px;
+}
+
+.lf-success p {
+  color: var(--lf-muted);
+  font-size: 1rem;
+  margin-bottom: 28px;
+}
+
+.lf-ref-box {
+  display: inline-block;
+  background: var(--lf-accent-light);
+  border: 1.5px solid var(--lf-accent);
+  border-radius: 10px;
+  padding: 12px 28px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--lf-accent);
+  letter-spacing: 0.05em;
+  margin-bottom: 28px;
+}
+
+/* ─── SELECTED TYPE BAR ────────────────────────────────────────────────────── */
+.lf-selected-type {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #eff6ff;
+  border: 1.5px solid #bfdbfe;
+  border-radius: 10px;
+  padding: 12px 20px;
+  margin: 0 auto 20px;
+  max-width: 860px;
+  font-size: 0.9rem;
+  color: #1e40af;
+}
+
+.lf-change-btn {
+  background: none;
+  border: 1.5px solid #2771e2;
+  color: #2771e2;
+  border-radius: 6px;
+  padding: 4px 14px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.lf-change-btn:hover {
+  background: #2771e2;
+  color: white;
+}
+
+/* ─── LAYOUT (sidebar + main) ──────────────────────────────────────────────── */
+.lf-layout {
+  display: flex;
+  align-items: flex-start;
+  gap: 24px;
+  max-width: 1160px;
+  margin: 0 auto;
+  position: relative;
+}
+
+.lf-main {
+  flex: 1;
+  min-width: 0;
+}
+
+/* ─── SAVE STATUS INDICATOR ────────────────────────────────────────────────── */
+.lf-save-status {
+  position: fixed;
+  top: 80px;
+  right: 20px;
+  padding: 10px 18px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  z-index: 1000;
+  animation: fadeIn 0.3s ease;
+}
+
+.lf-save-status--saving {
+  background: #fef3c7;
+  color: #92400e;
+  border: 1px solid #fbbf24;
+}
+
+.lf-save-status--saved {
+  background: #d1fae5;
+  color: #065f46;
+  border: 1px solid #10b981;
+}
+
+.lf-save-status--error {
+  background: #fee2e2;
+  color: #991b1b;
+  border: 1px solid #ef4444;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ─── CHECKLIST TOGGLE BUTTON ──────────────────────────────────────────────── */
+.lf-checklist-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--lf-white);
+  border: 1.5px solid var(--lf-border);
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--lf-primary);
+  cursor: pointer;
+  margin-bottom: 12px;
+  transition: all 0.2s;
+}
+
+.lf-checklist-toggle:hover {
+  border-color: var(--lf-accent);
+  color: var(--lf-accent);
+}
+
+.lf-toggle-badge {
+  background: var(--lf-accent);
+  color: white;
+  border-radius: 100px;
+  padding: 2px 8px;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+/* ─── TOP PROGRESS FILL BAR ────────────────────────────────────────────────── */
+.lf-progress-fill-bar {
+  height: 4px;
+  background: #e5e7eb;
+  border-radius: 0;
+}
+
+.lf-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--lf-accent), #4ade80);
+  border-radius: 0;
+  transition: width 0.4s ease;
+}
+
+/* ─── NEXT STEP HINT ───────────────────────────────────────────────────────── */
+.lf-next-hint {
+  background: #f0fdf4;
+  border-left: 3px solid #16a34a;
+  padding: 8px 20px;
+  font-size: 0.82rem;
+  color: #15803d;
+}
+
+/* ─── SIDEBAR ──────────────────────────────────────────────────────────────── */
+.lf-sidebar {
+  width: 280px;
+  min-width: 280px;
+  background: var(--lf-white);
+  border: 1.5px solid #e5e7eb;
+  border-radius: 16px;
+  box-shadow: var(--lf-shadow);
+  padding: 20px;
+  position: sticky;
+  top: 90px;
+  max-height: calc(100vh - 110px);
+  overflow-y: auto;
+  font-family: var(--lf-font);
+}
+
+.lf-sidebar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--lf-primary);
+  margin-bottom: 14px;
+}
+
+.lf-sidebar-close {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--lf-muted);
+  font-size: 1rem;
+  display: none;
+}
+
+/* ─── SIDEBAR PROGRESS ─────────────────────────────────────────────────────── */
+.lf-sidebar-progress {
+  margin-bottom: 16px;
+}
+
+.lf-sidebar-progress-bar {
+  height: 6px;
+  background: #e5e7eb;
+  border-radius: 100px;
+  margin-bottom: 6px;
+  overflow: hidden;
+}
+
+.lf-sidebar-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--lf-accent), #4ade80);
+  border-radius: 100px;
+  transition: width 0.4s ease;
+}
+
+.lf-sidebar-progress span {
+  font-size: 0.75rem;
+  color: var(--lf-muted);
+}
+
+/* ─── CHECKLIST STEPS ──────────────────────────────────────────────────────── */
+.lf-checklist-step {
+  border-left: 2px solid #e5e7eb;
+  padding: 10px 0 10px 14px;
+  margin-bottom: 4px;
+  transition: border-color 0.2s;
+}
+
+.lf-checklist-step--active {
+  border-left-color: var(--lf-accent);
+}
+
+.lf-checklist-step--done {
+  border-left-color: var(--lf-success);
+}
+
+.lf-checklist-step-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.lf-checklist-num {
+  width: 22px;
+  height: 22px;
+  min-width: 22px;
+  border-radius: 50%;
+  background: #e5e7eb;
+  color: var(--lf-muted);
+  font-size: 0.72rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 1px;
+}
+
+.lf-checklist-step--active .lf-checklist-num {
+  background: var(--lf-accent);
+  color: white;
+}
+
+.lf-checklist-step--done .lf-checklist-num {
+  background: var(--lf-success);
+  color: white;
+}
+
+.lf-checklist-title {
+  font-size: 0.83rem;
+  font-weight: 700;
+  color: var(--lf-primary);
+}
+
+.lf-checklist-count {
+  font-size: 0.72rem;
+  color: var(--lf-muted);
+  margin-top: 2px;
+}
+
+.lf-checklist-fields {
+  list-style: none;
+  padding: 8px 0 0 32px;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.lf-checklist-fields li {
+  font-size: 0.76rem;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #4b5563;
+}
+
+.lf-field-done   { color: var(--lf-success) !important; }
+.lf-field-required { color: #374151; }
+.lf-field-optional { color: #9ca3af; }
+
+.lf-optional-tag {
+  font-size: 0.65rem;
+  background: #f3f4f6;
+  color: #9ca3af;
+  border-radius: 4px;
+  padding: 1px 5px;
+  margin-left: 4px;
+}
+
+/* ─── DOCUMENTS SUMMARY ────────────────────────────────────────────────────── */
+.lf-sidebar-docs {
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid #f3f4f6;
+}
+
+.lf-sidebar-docs-title {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--lf-primary);
+  margin-bottom: 8px;
+}
+
+.lf-sidebar-doc-item {
+  font-size: 0.76rem;
+  color: #4b5563;
+  padding: 4px 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  border-bottom: 1px solid #f9fafb;
+}
+
+/* ─── FULL WIDTH FIELD ─────────────────────────────────────────────────────── */
+.lf-field--full {
+  grid-column: 1 / -1;
+}
+
+/* ─── MOBILE SIDEBAR ───────────────────────────────────────────────────────── */
+@media (max-width: 900px) {
+  .lf-layout {
+    flex-direction: column;
+  }
+
+  .lf-sidebar {
+    display: none;
+    position: fixed;
+    top: 0;
+    right: 0;
+    height: 100vh;
+    max-height: 100vh;
+    width: 300px;
+    border-radius: 0;
+    z-index: 2000;
+    box-shadow: -4px 0 24px rgba(0,0,0,0.15);
+  }
+
+  .lf-sidebar--open {
+    display: block;
+  }
+
+  .lf-sidebar-close {
+    display: block;
+  }
+
+  .lf-sidebar-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.4);
+    z-index: 1999;
+  }
+
+  .lf-checklist-toggle {
+    display: flex;
+  }
+}
+
+@media (min-width: 901px) {
+  .lf-sidebar {
+    display: block !important;
+  }
+
+  .lf-checklist-toggle {
+    display: none;
+  }
+}
+
+/* ─── CHECKBOX ─────────────────────────────────────────────────────────────── */
+.lf-field--checkbox {
+  grid-column: 1 / -1;
+}
+
+.lf-checkbox-label {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  cursor: pointer;
+  padding: 12px 16px;
+  border: 1.5px solid var(--lf-border);
+  border-radius: var(--lf-radius);
+  background: var(--lf-white);
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.lf-checkbox-label:hover {
+  border-color: var(--lf-accent);
+  background: var(--lf-accent-light);
+}
+
+.lf-checkbox-input { display: none; }
+
+.lf-checkbox-box {
+  width: 20px;
+  height: 20px;
+  min-width: 20px;
+  border: 2px solid var(--lf-border);
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: white;
+  background: white;
+  transition: all 0.2s;
+  margin-top: 1px;
+}
+
+.lf-checkbox-box--checked {
+  background: var(--lf-accent);
+  border-color: var(--lf-accent);
+}
+
+.lf-checkbox-text {
+  font-size: 0.87rem;
+  color: var(--lf-label);
+  line-height: 1.5;
+}
+
+/* ─── REVIEW SUMMARY ───────────────────────────────────────────────────────── */
+.lf-review-summary {
+  margin: 0 36px 24px;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 12px;
+  overflow: hidden;
+  max-height: 360px;
+  overflow-y: auto;
+}
+
+.lf-review-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--lf-primary);
+  margin: 0;
+  padding: 16px 20px 4px;
+}
+
+.lf-review-subtitle {
+  font-size: 0.82rem;
+  color: var(--lf-muted);
+  margin: 0;
+  padding: 0 20px 14px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.lf-review-section {
+  padding: 12px 20px;
+  border-bottom: 1px solid #f9fafb;
+}
+
+.lf-review-section:last-child { border-bottom: none; }
+
+.lf-review-section-title {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--lf-accent);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 8px;
+}
+
+.lf-review-fields {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px 20px;
+}
+
+.lf-review-field { display: flex; flex-direction: column; gap: 1px; }
+.lf-review-label { font-size: 0.7rem; color: var(--lf-muted); font-weight: 500; }
+.lf-review-value { font-size: 0.83rem; color: var(--lf-label); font-weight: 600; }
+
+@media (max-width: 640px) {
+  .lf-review-summary { margin: 0 16px 20px; }
+  .lf-review-fields  { grid-template-columns: 1fr; }
+}

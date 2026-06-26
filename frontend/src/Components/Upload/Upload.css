@@ -1,0 +1,111 @@
+/* Centered small upload button without borderlines */
+.upload-component{
+	display:flex;
+	flex-direction:column;
+	align-items:center;
+	justify-content:center;
+	width:100%;
+	gap:0.5rem;
+	box-sizing:border-box;
+}
+.upload-component.upload-compact{
+	display:inline-flex;
+	align-items:center;
+	justify-content:center;
+	padding:0;
+	margin:0;
+}
+.upload-label{
+     
+	display:inline-block;
+	text-align:center;
+	cursor:pointer;
+}
+
+.upload-label input{display:none}
+
+.upload-button{
+	display:inline-block;
+	background:#2563eb;
+	color:#fff;
+	padding:0.35rem 0.6rem;
+	border-radius:6px;
+	font-weight:600;
+	font-size:0.86rem;
+	border:none;
+	box-shadow: 0 4px 10px rgba(37,99,235,0.12);
+	transition:transform .12s ease, box-shadow .12s ease;
+}
+.upload-component.upload-compact .upload-button{
+	box-shadow:none;
+	padding:6px;
+	border-radius:999px;
+	width:25px;
+	height:25px;
+	display:inline-flex;
+	align-items:center;
+	justify-content:center;
+	background:#2563eb;
+}
+
+.upload-icon{ width:12px; height:12px; color:#fff; }
+
+/* Strong overrides for sidebar context to remove dashed border/box from global rules */
+.sidebar .upload-component .upload-label,
+.sidebar .upload-label,
+.user-card .upload-label {
+	padding: 0 !important;
+	border: none !important;
+	background: transparent !important;
+	box-shadow: none !important;
+}
+
+/* remove dashed border and background on hover/focus in sidebar */
+.sidebar .upload-label:hover,
+.sidebar .upload-label:focus,
+.sidebar .upload-label:focus-visible,
+.user-card .upload-label:hover,
+.user-card .upload-label:focus,
+.user-card .upload-label:focus-visible {
+	background: transparent !important;
+	border-color: transparent !important;
+	box-shadow: none !important;
+}
+
+/* ensure the inline file input is hidden and does not show outline */
+.upload-label input[type="file"] { opacity: 0; width: 0.1px; height: 0.1px; position: absolute; left: -9999px; }
+
+.upload-button:hover{ transform:translateY(-2px); box-shadow:0 8px 20px rgba(37,99,235,0.16) }
+
+.upload-preview{
+	display:flex;
+	align-items:center;
+	justify-content:center;
+	gap:0.5rem;
+}
+
+.upload-preview img{max-width:150px; height:150px;border-radius:50%;object-fit:cover}
+.upload-preview a{color:#2563eb}
+
+/* keep things compact on small screens */
+@media (max-width:480px){
+	.upload-button{padding:0.35rem 0.5rem;font-size:0.82rem}
+	.upload-preview img{max-width:96px}
+}
+
+/* Override global .upload-label from other styles (remove dashed border/box) */
+.upload-component .upload-label {
+	padding: 0; /* remove padded box look */
+	border: none !important;
+	background: transparent !important;
+}
+
+/* Remove focus outline/box from label/button */
+.upload-component .upload-label:focus,
+.upload-component .upload-label:focus-visible,
+.upload-component .upload-button:focus,
+.upload-component .upload-button:focus-visible {
+	outline: none !important;
+	box-shadow: none !important;
+}
+

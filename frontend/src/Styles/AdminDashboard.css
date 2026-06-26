@@ -1,0 +1,461 @@
+
+/* =============================
+   ADMIN EXTENSIONS
+============================= */
+
+.admin-stat-card {
+  position: relative;
+  margin-left: 10px;
+  margin-right: 10px;
+}
+
+.admin-badge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  font-size: 11px;
+  padding: 3px 8px;
+  border-radius: 999px;
+  font-weight: 500;
+}
+
+.admin-badge.green {
+  background: #e7f6ed;
+  color: #1e8e3e;
+}
+
+.admin-badge.orange {
+  background: #fff4e5;
+  color: #e37400;
+}
+
+.admin-badge.red {
+  background: #fdeaea;
+  color: #d93025;
+}
+
+.orange {
+  color: #e37400;
+}
+
+
+
+
+
+/* =============================
+   LOAN CONFIGURATION (ADMIN)
+============================= */
+
+.loan-config-section {
+  margin-top: 40px;
+  margin-left: 15px;
+  margin-right: 15px;
+}
+
+.loan-config-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.loan-config-header h3 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.link-btn {
+  background: none;
+  border: none;
+  color: #0f4c8a;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.loan-config-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.loan-config-table th {
+  text-align: left;
+  font-size: 12px;
+  color: #777;
+  padding: 12px 8px;
+  border-bottom: 1px solid #eaeaea;
+}
+
+.loan-config-table td {
+  padding: 14px 8px;
+  border-bottom: 1px solid #f0f0f0;
+  font-size: 14px;
+}
+
+/* Status badge */
+.status.active {
+  background: #e7f6ed;
+  color: #1e8e3e;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+}
+
+/* Colored dots */
+.loan-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: inline-block;
+  margin-right: 10px;
+}
+
+.loan-dot.blue { background: #1a73e8; }
+.loan-dot.green { background: #1e8e3e; }
+.loan-dot.orange { background: #e37400; }
+.loan-dot.purple { background: #6f42c1; }
+
+.blue-text { color: #1a73e8; }
+.purple { color: #6f42c1; }
+
+/* Edit action */
+.edit-btn-link {
+  background: #eef5ff;
+  color: #0f4c8a;
+  border: 1px solid #cfe0ff;
+  padding: 4px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+
+
+
+
+
+
+/* =============================
+   ADMIN APPLICATIONS PAGE
+============================= */
+
+.admin-app-header {
+  display: flex;
+  flex-direction: row-reverse;
+  margin-bottom: 12px;
+  margin-top: 5px;
+ 
+}
+
+.apps-tabs {
+  display: flex;
+  gap: 14px;
+  margin-bottom: 18px;
+   margin-left: 30px;
+  margin-right: 15px;
+}
+
+.tab {
+  background: none;
+  border: none;
+  font-size: 14px;
+  cursor: pointer;
+  padding: 6px 14px;
+  border-radius: 999px;
+}
+
+.tab.active {
+  background: #0f4c8a;
+  color: #fff;
+}
+
+.apps-search {
+  padding: 6px 14px;
+  font-size: 13px;
+  border-radius: 6px;
+  border: 1px solid #ddd;
+}
+
+/* Table */
+.apps-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-left: 15px;
+}
+
+.apps-table th {
+  text-align: left;
+  font-size: 12px;
+  padding: 12px 6px;
+  color: #777;
+  border-bottom: 1px solid #eaeaea;
+}
+
+.apps-table td {
+  padding: 14px 6px;
+  font-size: 14px;
+}
+
+/* Links */
+.link {
+  color: #1a73e8;
+  cursor: pointer;
+}
+
+/* Status pills */
+.status {
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+}
+
+.status.pending { background: #e8f0fe; color: #1a73e8; }
+.status.review  { background: #fff4e5; color: #e37400; }
+.status.approved{ background: #e7f6ed; color: #1e8e3e; }
+.status.rejected{ background: #fdeaea; color: #d93025; }
+
+/* Actions */
+.approve {
+  background: #e7f6ed;
+  border: none;
+  color: #1e8e3e;
+  padding: 4px 10px;
+  border-radius: 6px;
+  margin-right: 6px;
+}
+
+.reject {
+  background: #fdeaea;
+  border: none;
+  color: #d93025;
+  padding: 4px 10px;
+  border-radius: 6px;
+}
+
+.link-only {
+  color: #0f4c8a;
+  cursor: pointer;
+}
+
+
+
+/* =============================
+   USERS & AGENTS TABLES
+============================= */
+
+.admin-table-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 16px 16px;
+}
+
+.admin-table-header h3 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #0f2557;
+}
+
+.admin-table-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.add-agent-btn {
+  display: flex;
+  align-items: center;
+  padding: 7px 14px;
+  background: #0f2557;
+  color: #fff;
+  border: none;
+  border-radius: 7px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.15s;
+}
+
+.add-agent-btn:hover {
+  background: #0f4c8a;
+}
+
+.admin-table-wrap {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  overflow: hidden;
+  margin: 0 16px;
+}
+
+.admin-data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.admin-data-table thead tr {
+  background: #f8f9fa;
+}
+
+.admin-data-table th {
+  text-align: left;
+  padding: 12px 16px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #6b7280;
+  border-bottom: 1px solid #e5e7eb;
+  white-space: nowrap;
+}
+
+.admin-data-table td {
+  padding: 14px 16px;
+  border-bottom: 1px solid #f3f4f6;
+  color: #111827;
+}
+
+.admin-data-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.admin-data-table tbody tr:hover {
+  background: #f9fafb;
+}
+
+.table-name-cell {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.table-avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: #eef3f8;
+  color: #0f4c8a;
+  font-size: 12px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.table-status-pill {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.remove-row-btn {
+  padding: 5px 12px;
+  background: #fdeaea;
+  color: #d93025;
+  border: 1px solid #fca5a5;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.15s;
+}
+
+.remove-row-btn:hover {
+  background: #fca5a5;
+  color: #7f1d1d;
+}
+
+/* Update button (blue outline) */
+.update-row-btn {
+  padding: 4px 10px;
+  background: #eef5ff;
+  color: #0f4c8a;
+  border: 1px solid #cfe0ff;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.15s;
+}
+
+.update-row-btn:hover {
+  background: #cfe0ff;
+}
+
+/* Status cell — pill + optional update button side by side */
+.status-cell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Tier cell — pill + update button side by side */
+.tier-cell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Tier dropdown */
+.tier-dropdown-wrap {
+  position: relative;
+}
+
+.tier-dropdown-menu {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  z-index: 100;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.10);
+  min-width: 130px;
+  overflow: hidden;
+}
+
+.tier-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 9px 14px;
+  background: none;
+  border: none;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  text-align: left;
+  color: #111827;
+  transition: background 0.12s;
+}
+
+.tier-option:hover {
+  background: #f3f4f6;
+}
+
+.tier-option--active {
+  background: #f0f7ff;
+  color: #0f4c8a;
+  font-weight: 700;
+}
+
+.tier-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.tier-check {
+  margin-left: auto;
+  font-size: 11px;
+  color: #0f4c8a;
+}

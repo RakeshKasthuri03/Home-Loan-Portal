@@ -1,0 +1,74 @@
+
+.hdr-main {
+  background: #fff;
+  border-bottom: 1px solid #eaeaea;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.hdr-inner {
+  max-width: 100%;
+  padding: 12px 28px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* =============================
+   LOGO only
+============================= */
+
+.hdr-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+}
+
+.hdr-logo-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.1;
+}
+
+.hdr-logo-name {
+  font-size: 18px;
+  font-weight: 700;
+  color: #0f4c8a;
+}
+
+.hdr-logo-sub {
+  font-size: 11px;
+  color: #666;
+}
+
+/* =============================
+   RIGHT ACTIONS
+============================= */
+
+.hdr-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Icon buttons */
+.icon-btn {
+  background: #f4f6f8;
+  border: none;
+  padding: 8px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.icon-btn:hover {
+  background: #e6eef8;
+}
+
+.icon-btn svg {
+  vertical-align: middle;
+}
