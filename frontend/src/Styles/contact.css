@@ -117,7 +117,15 @@
     align-items: start;
   }
   /* Two-column grid for contact cards on desktop; collapses on small screens */
-  .mlrr-contact-sidebar { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 36px; row-gap: 22px; align-items: start; }
+  /* .mlrr-contact-sidebar { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 36px; row-gap: 22px; align-items: start; } */
+ .mlrr-contact-sidebar {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(100%, 1fr));
+    column-gap: 36px;
+    row-gap: 22px;
+    align-items: start;
+}
+ 
   .mlrr-contact-card {
     background: #fff;
     border: 1.5px solid #e9eef6;
@@ -144,6 +152,9 @@
     margin-bottom: 12px;
     box-shadow: 0 6px 18px rgba(15,37,64,0.10);
   }
+  .mlrr-card-value {
+  word-break: break-word;
+}
   .mlrr-card-label { font-size: 0.72rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #0f2557; margin-bottom: 8px; }
   .mlrr-card-value { font-size: 1rem; color: #0f1724; font-weight: 600; margin-top: 6px; }
   .mlrr-card-sub { font-size: 0.84rem; color: #5a6478; margin-top: 8px; font-weight: 300; }
@@ -270,3 +281,138 @@
       grid-template-columns: 1fr;
     }
   }
+  /* ===== Base (already your styles) ===== */
+
+
+/* ===== Large screens (1200px and below) ===== */
+@media (max-width: 1200px) {
+  .mlrr-contact-section {
+    padding: 70px 40px;
+  }
+
+  .mlrr-contact-grid {
+    max-width: 1000px;
+  }
+
+  .mlrr-contact-sidebar {
+    column-gap: 24px;
+  }
+}
+
+
+/* ===== Tablet (992px and below) ===== */
+@media (max-width: 992px) {
+  .mlrr-contact-section {
+    padding: 60px 30px;
+  }
+
+  .mlrr-section-header {
+    margin-bottom: 40px;
+  }
+
+  .mlrr-contact-sidebar {
+    grid-template-columns: 1fr; /* switch to single column */
+    gap: 20px;
+    align-items: stretch;
+  }
+
+  .mlrr-contact-card {
+    padding: 24px 20px;
+    min-height: 130px;
+  }
+}
+
+
+/* ===== Small tablets / large phones (768px and below) ===== */
+@media (max-width: 768px) {
+  .mlrr-contact-section {
+    padding: 50px 20px;
+  }
+
+  .mlrr-section-header h2 {
+    font-size: 1.7rem;
+  }
+
+  .mlrr-section-header p {
+    font-size: 0.78rem;
+  }
+
+  .mlrr-contact-sidebar {
+    grid-template-columns: 1fr; /* switch to single column */
+    gap: 18px;
+  }
+
+  .mlrr-contact-card {
+    padding: 22px 18px;
+    min-height: auto;
+  }
+
+  .mlrr-card-icon {
+    width: 42px;
+    height: 42px;
+    font-size: 1rem;
+  }
+}
+
+
+/* ===== Mobile (576px and below) ===== */
+@media (max-width: 576px) {
+  .mlrr-contact-section {
+    padding: 40px 16px;
+  }
+
+  .mlrr-section-header {
+    margin-bottom: 30px;
+  }
+
+  .mlrr-section-tag {
+    font-size: 0.7rem;
+    padding: 4px 12px;
+  }
+
+  .mlrr-section-header h2 {
+    font-size: 1.5rem;
+  }
+
+  .mlrr-section-header p {
+    font-size: 0.75rem;
+  }
+
+  .mlrr-card-label {
+    font-size: 0.65rem;
+  }
+
+  .mlrr-card-value {
+    font-size: 0.95rem;
+  }
+
+  .mlrr-card-sub {
+    font-size: 0.8rem;
+  }
+
+  .mlrr-hours-row {
+    font-size: 0.78rem;
+  }
+}
+
+
+/* ===== Extra small devices (400px and below) ===== */
+@media (max-width: 400px) {
+  .mlrr-contact-section {
+    padding: 35px 12px;
+  }
+
+  .mlrr-section-header h2 {
+    font-size: 1.35rem;
+  }
+
+  .mlrr-contact-card {
+    padding: 18px 14px;
+    border-radius: 14px;
+  }
+
+  .mlrr-card-icon {
+    width: 38px;
+    height: 38px;
+  }
+}

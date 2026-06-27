@@ -3,14 +3,14 @@ import { useNavigate } from "react-router-dom";
 import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
-
+ 
 import AnimateOnScroll from "../components/AnimationOnScroll";
 import CountUpNumber from "../components/CountUpNumber";
 import hero from "../assets/hero.png";
 import "../styles/Home.css";
-
+ 
 /* ── data ──────────────────────────────────────────────────────────────────── */
-
+ 
 const BENEFITS = [
   { icon: "⚡", title: "Quick Approval",        desc: "Get in-principle approval within 48 hours of application" },
   { icon: "📉", title: "Lowest Interest Rates",  desc: "Rates starting at 8.35% p.a. — one of the best in market" },
@@ -19,7 +19,7 @@ const BENEFITS = [
   { icon: "🤝", title: "Dedicated Support",      desc: "Personal loan advisor assigned to guide you end-to-end" },
   { icon: "💰", title: "Flexible Tenure",        desc: "Choose repayment tenure from 5 to 30 years as per comfort" },
 ];
-
+ 
 const REVIEWS = [
   {
     title: "Perfect for Loan Solutions",
@@ -37,20 +37,20 @@ const REVIEWS = [
     name: "Kokil Barnwal", date: "17th Jan 2026", stars: "★★★★☆", initials: "KB",
   },
 ];
-
+ 
 const STEPS = [
   { n: "01", title: "Fill Application",  desc: "Complete our simple multi-step online form in under 10 minutes." },
   { n: "02", title: "Upload Documents",  desc: "Upload your KYC, income proof and property documents digitally." },
   { n: "03", title: "Verification",      desc: "Our team verifies your details and assesses eligibility." },
   { n: "04", title: "Loan Disbursed",    desc: "Approved amount is credited directly to your account." },
 ];
-
+ 
 /* ── component ─────────────────────────────────────────────────────────────── */
 function Home() {
   const navigate = useNavigate();
   const statsRef = useRef(null);
   const [statsVisible, setStatsVisible] = useState(false);
-
+ 
   useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => { if (entry.isIntersecting) { setStatsVisible(true); observer.disconnect(); } },
@@ -59,10 +59,10 @@ function Home() {
     if (statsRef.current) observer.observe(statsRef.current);
     return () => observer.disconnect();
   }, []);
-
+ 
   return (
     <div className="Home">
-
+ 
       {/* ── HERO ─────────────────────────────────────────────────────────── */}
       <section className="hero-section">
         <Container>
@@ -99,7 +99,7 @@ function Home() {
         </Container>
         <img src={hero} alt="Home loan illustration" className="hero-corner-image" />
       </section>
-
+ 
       {/* ── HOW IT WORKS ─────────────────────────────────────────────────── */}
       <AnimateOnScroll>
         <section id="how-it-works" className="how-it-works">
@@ -143,7 +143,7 @@ function Home() {
           </Container>
         </section>
       </AnimateOnScroll>
-
+ 
       {/* ── KEY BENEFITS ─────────────────────────────────────────────────── */}
       <AnimateOnScroll>
         <section id="key-benefits" className="key-benefits">
@@ -167,7 +167,7 @@ function Home() {
           </Container>
         </section>
       </AnimateOnScroll>
-
+ 
       {/* ── STATS ────────────────────────────────────────────────────────── */}
       <section ref={statsRef} className="stats-section">
         <Container>
@@ -192,7 +192,7 @@ function Home() {
           </div>
         </Container>
       </section>
-
+ 
       {/* ── REVIEWS ──────────────────────────────────────────────────────── */}
       <AnimateOnScroll>
         <section className="reviews-section">
@@ -226,7 +226,7 @@ function Home() {
           </Container>
         </section>
       </AnimateOnScroll>
-
+ 
       {/* ── CTA BANNER ───────────────────────────────────────────────────── */}
       <AnimateOnScroll>
         <section className="cta-section">
@@ -244,9 +244,9 @@ function Home() {
           </Container>
         </section>
       </AnimateOnScroll>
-
+ 
     </div>
   );
 }
-
+ 
 export default Home;

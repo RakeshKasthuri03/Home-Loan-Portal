@@ -45,20 +45,15 @@ html, body {
 
 
 .overlay {
-  position: fixed;
-  inset: 0; /* ✅ replaces top/left/width/height */
-  background: rgba(0, 0, 0, 0.7);
-  z-index: 9999;
-
   display: flex;
   align-items: center;
   justify-content: center;
 
-  padding: 1rem;               /* ✅ space on small screens */
-  overflow-y: auto;            /* ✅ allow scroll if modal is tall */
+  padding: clamp(0.75rem, 4vw, 1.5rem);
+  overflow-y: auto;
 
-  /* Smooth appearance */
-  animation: overlayFadeIn 0.25s ease;
+  /* ✅ Prevent horizontal overflow */
+  overflow-x: hidden;
 }
 
 /* ===============================
@@ -67,14 +62,13 @@ html, body {
 body:has(.overlay) {
   overflow: hidden;
 }
-
 /* ===============================
    MOBILE OPTIMIZATION
 ================================ */
 @media (max-width: 768px) {
   .overlay {
     align-items: flex-start;   /* ✅ better UX on mobile */
-    padding: 0.75rem;
+    padding: 0.75rem 0.75rem 1rem;
   }
 }
 
@@ -83,7 +77,16 @@ body:has(.overlay) {
 ================================ */
 @media (max-width: 480px) {
   .overlay {
-    padding: 0.5rem;
+    padding: 0.5rem 0.5rem 0.75rem;
+  }
+}
+
+/* ===============================
+   EXTRA SMALL / NARROW SCREENS
+================================ */
+@media (max-width: 420px) {
+  .overlay {
+    padding: 0.4rem 0.4rem 0.65rem;
   }
 }
 
