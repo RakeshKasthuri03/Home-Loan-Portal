@@ -1,7 +1,5 @@
 .tabs-container {
   display: flex;
-  margin: 0px 50px;
-
 }
 
 .tab-item {
@@ -12,6 +10,7 @@
   background: #eee;
   border-right: 1px solid #ccc;
   color: black;
+  font-size: 0.9rem;
 }
 
 .tab-item.active {
@@ -19,12 +18,22 @@
   color: white;
 }
 
+/* sticky tab bar — sits flush directly below the 68px header */
 .fixed-tabs {
   position: sticky;
-  top: 70px; /* adjust based on your header height */
-  z-index: 999;
+  top: 68px;
+  z-index: 99;
+  background: #fff;
+  margin: 0;
 }
 
 .tab-content {
   padding: 20px;
+}
+
+@media (max-width: 600px) {
+  .tab-item {
+    padding: 14px 8px;
+    font-size: 0.82rem;
+  }
 }

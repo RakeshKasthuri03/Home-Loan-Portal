@@ -106,11 +106,21 @@ export default function Sidebar({ user, sections = [], role = "user", onProfileU
                 key={item.label}
                 to={item.to}
                 end={item.to === "/dashboard"}
-                className={({ isActive }) => (isActive ? "active" : "")}
                 onClick={() => onCloseSidebar && onCloseSidebar()}
+                style={({ isActive }) => ({
+                  display: "flex",
+                  alignItems: "center",
+                  padding: "10px 14px",
+                  marginBottom: 8,
+                  borderRadius: 12,
+                  textDecoration: "none",
+                  color: isActive ? "#0f4c8a" : "#1f2937",
+                  background: isActive ? "#e7f0ff" : "transparent",
+                  fontWeight: isActive ? 600 : 400,
+                  fontSize: 14,
+                })}
               >
-                <span>{item.label}</span>
-                {item.badge && <span>{item.badge}</span>}
+                {item.label}
               </NavLink>
             ))}
           </div>

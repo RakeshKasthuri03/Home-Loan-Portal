@@ -1,7 +1,8 @@
 /* ─── GLOBAL HOME ──────────────────────────────────────────────────────────── */
 .Home {
   font-family: 'Inter', 'Poppins', sans-serif;
- 
+  width: 100%;
+  max-width: 100%;
 }
  
 /* ─── SCROLL ANIMATION ─────────────────────────────────────────────────────── */
@@ -55,9 +56,10 @@
 /* Mobile devices */
 @media (max-width: 768px) {
   .hero-corner-image {
-    width: 400px;
-    max-width: 60vw;
-    opacity: 0.8; /* optional: reduce visual weight */
+    width: 300px;
+    max-width: 55vw;
+    opacity: 0.5;
+    right: -20px;   /* keep fully within hero bounds */
   }
 }
  

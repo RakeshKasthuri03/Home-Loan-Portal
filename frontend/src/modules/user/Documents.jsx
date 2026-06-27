@@ -147,13 +147,16 @@ export default function Documents({ user }) {
 
       {/* Application selector */}
       {applications.length > 1 && (
-        <div style={{ marginBottom:20 }}>
-          <label style={{ fontWeight:600, color:"#374151", marginRight:10, fontSize:"0.9rem" }}>Application:</label>
-          <select value={selectedAppId} onChange={e => handleSelectApp(e.target.value)}
-            style={{ padding:"8px 14px", border:"1.5px solid #d1d5db", borderRadius:8, fontSize:"0.9rem", color:"#1f2937" }}>
+        <div className="app-selector-wrap">
+          <label className="app-selector-label">Application:</label>
+          <select
+            value={selectedAppId}
+            onChange={e => handleSelectApp(e.target.value)}
+            className="app-selector-select"
+          >
             {applications.map(a => (
               <option key={a._id} value={a._id}>
-                {a.applicationId} — {LOAN_TYPE_LABELS[a.loanType] || a.loanType} ({a.status.replace(/_/g," ")})
+                {a.applicationId} — {LOAN_TYPE_LABELS[a.loanType] || a.loanType}
               </option>
             ))}
           </select>

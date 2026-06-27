@@ -19,3 +19,47 @@
 .upload-btn {
   margin-top: 1rem;
 }
+
+/* ─── NAV LINK STYLES ──────────────────────────────────────────────────────── */
+.sidebar .menu a {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 14px;
+  margin-bottom: 8px;
+  border-radius: 12px;
+  font-size: 14px;
+  text-decoration: none !important;
+  color: #1f2937 !important;
+  background: transparent !important;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.sidebar .menu a span {
+  color:black !important;
+  font-size: 14px;
+}
+
+/* hide the badge number pill */
+.sidebar .menu a span:last-child:not(:first-child) {
+  display: none !important;
+}
+
+.sidebar .menu a:hover {
+  background: #f3f4f6 !important;
+  color: #0f2557 !important;
+}
+
+.sidebar .menu a:hover span {
+  color: #0f2557 !important;
+}
+
+.sidebar .menu a.active {
+  background: #e7f0ff !important;
+  color: #0f4c8a !important;
+  font-weight: 600;
+}
+
+.sidebar .menu a.active span {
+  color: #0f4c8a !important;
+}

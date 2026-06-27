@@ -2,11 +2,12 @@
   background-color: #ffffff;
   width: 100%;
   max-width: 900px;
-  height: 91vh;                  /* ✅ Fits screen */
-  padding: 0.8rem 1rem;          /* ✅ Reduced padding */
+  max-height: 90vh;
+  padding: 1.2rem;
   border-radius: 16px;
   margin: auto;
-  overflow: hidden;              /* ✅ No scroll */
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 /* ===============================
@@ -16,16 +17,17 @@
 .SignUp .phone-form-row,
 .SignUp .password-row {
   display: flex;
-  align-items: center;
-  gap: 8px;                      /* ✅ Reduced gap */
+  align-items: flex-start;
+  gap: 10px;
   width: 100%;
+  margin-bottom: 8px;
 }
 
 /* Equal width inputs */
 .SignUp .form-group,
 .SignUp .password-group {
   flex: 1;
-  margin-bottom: 6px !important; /* ✅ Reduced spacing */
+  margin-bottom: 6px !important;
 }
 
 /* ===============================
@@ -35,40 +37,30 @@
   max-width: 140px;
   min-width: 110px;
 }
+
 .SignUp .countrycode {
- 
-    background: linear-gradient(90deg, #e0e7ff 60%, #c7d2fe 100%);
-    border: none;
-    color: #1e293b;
+  background: linear-gradient(90deg, #e0e7ff 60%, #c7d2fe 100%);
+  border: none;
+  color: #1e293b;
 }
 
 /* ===============================
-   INPUTS (COMPACT HEIGHT)
+   INPUTS
 ================================ */
 .SignUp input,
 .SignUp select {
-  font-size: 0.85rem;
-  padding: 6px 10px;             /* ✅ Smaller height */
+  font-size: 0.88rem;
+  padding: 7px 10px;
 }
 
 .SignUp .form-control,
 .SignUp .form-select {
-  min-height: 32px;
-}
-
-.SignUp .border-bottom {
-  border-radius: 0;
-  box-shadow: none;
+  min-height: 36px;
 }
 
 /* ===============================
    HEADINGS & LOGO SPACING
 ================================ */
-.SignUp .heading {
-  font-size: 14px;
-  margin-bottom: 2px;
-}
-
 .SignUp h1 {
   margin-bottom: 0.4rem;
 }
@@ -82,41 +74,39 @@
 ================================ */
 .SignUp .login-image-wrapper {
   height: 100%;
+  align-items: center;
 }
 
-.SignUp .login-side-image {
-  max-height: 100%;
-  object-fit: contain;
-}
-/* Make column take full height */
-.SignUp .login-image-wrapper {
-  height: 100%;
-  align-items: center;      /* optional – center image vertically */
-}
-
-/* Image fills column height */
 .SignUp .login-side-image {
   height: 100%;
   width: 100%;
-  object-fit: cover;        /* ✅ fills nicely without distortion */
+  object-fit: cover;
 }
 
-
 /* ===============================
-   MOBILE RESPONSIVE (NO SCROLL)
+   MOBILE
 ================================ */
 @media (max-width: 768px) {
-
   .SignUp {
-    height: 92vh;
-    padding: 0.6rem;
+    padding: 1rem;
+    border-radius: 12px;
+    max-width: 100%;
   }
 
+  /* stack all flex rows to single column */
   .SignUp .name-form-row,
   .SignUp .phone-form-row,
   .SignUp .password-row {
     flex-direction: column;
-    gap: 6px;
+    gap: 4px;
+  }
+
+  /* each field takes full width */
+  .SignUp .name-form-row .form-group,
+  .SignUp .phone-form-row .form-group,
+  .SignUp .password-row .form-group {
+    width: 100%;
+    flex: none;
   }
 
   .SignUp .country-select {
@@ -125,25 +115,17 @@
 
   .SignUp input,
   .SignUp select {
-    font-size: 0.8rem;
-    padding: 5px 8px;
+    font-size: 0.85rem;
   }
 
   .login-image-wrapper {
-    display: none;
+    display: none !important;
   }
 }
 
-/* ===============================
-   SMALL MOBILE
-================================ */
 @media (max-width: 480px) {
-
   .SignUp {
-    border-radius: 12px;
-  }
-
-  .heading {
-    font-size: 13px;
+    border-radius: 8px;
+    padding: 0.8rem;
   }
 }

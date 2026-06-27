@@ -140,10 +140,10 @@ export default function LoanTracker() {
           <button className="lt-btn lt-btn--primary" onClick={() => navigate("/loan-types")}>+ New Application</button>
         </div>
         {allApps.length > 1 && (
-          <div style={{ marginBottom:16 }}>
-            <label style={{ fontWeight:600, color:"#374151", marginRight:10 }}>Application:</label>
-            <select value={selectedId} onChange={e => handleSelectApp(e.target.value)} style={{ padding:"7px 12px", border:"1.5px solid #d1d5db", borderRadius:8, fontSize:"0.9rem" }}>
-              {allApps.map(a => <option key={a._id} value={a._id}>{a.applicationId} — {LOAN_TYPE_LABELS[a.loanType] || a.loanType} ({a.status.replace(/_/g," ")})</option>)}
+          <div className="app-selector-wrap">
+            <label className="app-selector-label">Application:</label>
+            <select value={selectedId} onChange={e => handleSelectApp(e.target.value)} className="app-selector-select">
+              {allApps.map(a => <option key={a._id} value={a._id}>{a.applicationId} — {LOAN_TYPE_LABELS[a.loanType] || a.loanType}</option>)}
             </select>
           </div>
         )}
@@ -204,10 +204,10 @@ export default function LoanTracker() {
 
       {/* App selector */}
       {allApps.length > 1 && (
-        <div style={{ marginBottom:16 }}>
-          <label style={{ fontWeight:600, color:"#374151", marginRight:10 }}>Application:</label>
-          <select value={selectedId} onChange={e => handleSelectApp(e.target.value)} style={{ padding:"7px 12px", border:"1.5px solid #d1d5db", borderRadius:8, fontSize:"0.9rem" }}>
-            {allApps.map(a => <option key={a._id} value={a._id}>{a.applicationId} — {LOAN_TYPE_LABELS[a.loanType] || a.loanType} ({a.status.replace(/_/g," ")})</option>)}
+        <div className="app-selector-wrap">
+          <label className="app-selector-label">Application:</label>
+          <select value={selectedId} onChange={e => handleSelectApp(e.target.value)} className="app-selector-select">
+            {allApps.map(a => <option key={a._id} value={a._id}>{a.applicationId} — {LOAN_TYPE_LABELS[a.loanType] || a.loanType}</option>)}
           </select>
         </div>
       )}

@@ -7,6 +7,8 @@
   border-bottom: 1px solid #e5e7eb;
   transition: box-shadow 0.3s ease;
   font-family: 'Inter', 'Poppins', sans-serif;
+  /* allow absolute dropdown to overflow below */
+  overflow: visible;
 }
 
 .hdr-main--scrolled {
@@ -151,8 +153,14 @@
 
 /* ─── MOBILE MENU ──────────────────────────────────────────────────────────── */
 .hdr-mobile-menu {
+  position: absolute;
+  top: 68px;           /* exactly below the header bar */
+  left: 0;
+  right: 0;
   background: #ffffff;
   border-top: 1px solid #f3f4f6;
+  border-bottom: 1px solid #e5e7eb;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.10);
   padding: 12px 20px 20px;
   display: flex;
   flex-direction: column;
@@ -160,6 +168,7 @@
   animation: mobileMenuIn 0.2s ease;
   box-sizing: border-box;
   width: 100%;
+  z-index: 1001;   /* above header (1000) and tab bar (999) */
 }
 
 @keyframes mobileMenuIn {
@@ -218,9 +227,7 @@
   .hdr-inner { padding: 0 12px; }
   .hdr-mobile-menu { padding-left: 12px; padding-right: 12px; }
   .hdr-mobile-link, .hdr-mobile-actions .hdr-btn { width: 100%; box-sizing: border-box; }
-}
-
-/* When the mobile menu is open, hide desktop actions to avoid duplicates */
+}/* When the mobile menu is open, hide desktop actions to avoid duplicates */
 .hdr-main.hdr-main--open .hdr-actions {
   display: none !important;
 }
