@@ -35,8 +35,8 @@
 /* ═══════════════════════════════════════════════════════════════════════════════
    TABLE STYLES (Admin-like)
    ═══════════════════════════════════════════════════════════════════════════════ */
-.admin-table-wrap{ overflow-x:auto; background:#fff; border-radius:12px; box-shadow:0 2px 8px rgba(15,37,87,0.06); margin-top:12px }
-.applications-table{ width:100%; border-collapse:collapse; font-size:0.9rem }
+.admin-table-wrap{ overflow-x:auto; -webkit-overflow-scrolling:touch; background:#fff; border-radius:12px; box-shadow:0 2px 8px rgba(15,37,87,0.06); margin-top:12px; width:100%; max-width:100%; box-sizing:border-box }
+.applications-table{ width:100%; min-width:640px; border-collapse:collapse; font-size:0.9rem }
 .applications-table thead{ background:linear-gradient(180deg,#f8fafc,#f1f5f9) }
 .applications-table th{ padding:12px 14px; text-align:left; font-weight:700; color:#0f2557; border-bottom:2px solid #e2e8f0; white-space:nowrap }
 .applications-table td{ padding:12px 14px; border-bottom:1px solid #f1f5f9; vertical-align:middle }
@@ -81,9 +81,9 @@
 .desktop-only{ display:block }
 .mobile-only{ display:none }
 
-@media (max-width:900px){
-  .desktop-only{ display:none }
-  .mobile-only{ display:grid }
+@media (max-width:768px){
+  .desktop-only{ display:none !important }
+  .mobile-only{ display:grid !important }
   .loans-grid{ grid-template-columns:1fr }
 }
 

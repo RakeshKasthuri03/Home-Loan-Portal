@@ -229,7 +229,8 @@ export default function Applications({ user }) {
         {pendingLoans.length > 0 && (
           <section className="applications-section">
             <h3>📋 Pending Applications</h3>
-            <div className="admin-table-wrap">
+            {/* Table for desktop */}
+            <div className="admin-table-wrap desktop-only">
               <table className="admin-data-table applications-table">
                 <thead>
                   <tr>
@@ -247,6 +248,10 @@ export default function Applications({ user }) {
                   {pendingLoans.map(app => renderApplicationRow(app))}
                 </tbody>
               </table>
+            </div>
+            {/* Cards for mobile */}
+            <div className="loans-grid mobile-only">
+              {pendingLoans.map(app => renderApplicationCard(app))}
             </div>
           </section>
         )}

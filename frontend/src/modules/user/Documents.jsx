@@ -4,6 +4,7 @@ import { getToken, getUser } from "../../utils/auth";
 import { getMyApplications, getApplicationById, uploadLoanDocument, resubmitDocument } from "../../utils/loanApi";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import CustomSelect from "../../components/CustomSelect";
 
 const DOC_LABELS = {
   panDoc: "PAN Card", aadharDoc: "Aadhaar Card", photoDoc: "Passport Photo",
@@ -149,17 +150,14 @@ export default function Documents({ user }) {
       {applications.length > 1 && (
         <div className="app-selector-wrap">
           <label className="app-selector-label">Application:</label>
-          <select
+          <CustomSelect
             value={selectedAppId}
-            onChange={e => handleSelectApp(e.target.value)}
-            className="app-selector-select"
-          >
-            {applications.map(a => (
-              <option key={a._id} value={a._id}>
-                {a.applicationId} — {LOAN_TYPE_LABELS[a.loanType] || a.loanType}
-              </option>
-            ))}
-          </select>
+            onChange={handleSelectApp}
+            options={applications.map(a => ({
+              value: a._id,
+              label: `${a.applicationId} — ${LOAN_TYPE_LABELS[a.loanType] || a.loanType}`
+            }))}
+          />
         </div>
       )}
 

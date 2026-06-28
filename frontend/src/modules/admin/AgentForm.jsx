@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import '../../Styles/AgentForm.css';
 import axios from 'axios';
 import notify from '../../utils/notify';
+import CustomSelect from '../../components/CustomSelect';
 
 export default function AgentForm({
   show,
@@ -142,12 +143,16 @@ export default function AgentForm({
 
               <div className="af-row">
                 <label>Gender</label>
-                <select name="gender" value={form.gender} onChange={handleChange}>
-                  <option value="">Select gender</option>
-                  <option value="Male">Male</option>
-                  <option value="Female">Female</option>
-                  <option value="Other">Other</option>
-                </select>
+                <CustomSelect
+                  value={form.gender}
+                  onChange={val => setForm(s => ({ ...s, gender: val }))}
+                  placeholder="Select gender"
+                  options={[
+                    { value: "Male", label: "Male" },
+                    { value: "Female", label: "Female" },
+                    { value: "Other", label: "Other" },
+                  ]}
+                />
                 {errors.gender && <div className="af-error">{errors.gender}</div>}
               </div>
 
@@ -178,15 +183,19 @@ export default function AgentForm({
 
               <div className="af-row">
                 <label>Tier</label>
-                <select name="tier" value={form.tier} onChange={handleChange}>
-                  {tiers.map((t) => (
-                    <option key={t} value={t}>{t}</option>
-                  ))}
-                </select>
+                <CustomSelect
+                  value={form.tier}
+                  onChange={val => setForm(s => ({ ...s, tier: val }))}
+                  options={tiers.map(t => ({ value: t, label: t }))}
+                />
               </div>
 
               <div className="af-actions">
-                <button type="button" className="af-btn af-cancel" onClick={onCancel}>
+                <button
+                  type="button"
+                  className="af-btn af-cancel"
+                  onClick={() => pageMode ? navigate('/admin/agents') : onCancel && onCancel()}
+                >
                   Cancel
                 </button>
                 <button type="submit" className="af-btn af-primary">

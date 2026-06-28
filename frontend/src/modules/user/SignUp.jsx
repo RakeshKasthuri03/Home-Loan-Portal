@@ -4,17 +4,19 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
 import signup from "../../assets/signup.png";
 import logo from "../../assets/logo.png";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { signupSchema } from "../../Validations/SignupValidation";
 import "../../styles/signup.css";
 import axios from "axios";
 import notify from "../../utils/notify";
+import CustomSelect from "../../components/CustomSelect";
 
 function SignUp({ closeModal, openLogin }) {
   const {
     register,
     handleSubmit,
+    control,
     formState: { errors },
   } = useForm({
     resolver: yupResolver(signupSchema),
@@ -114,11 +116,21 @@ function SignUp({ closeModal, openLogin }) {
                 <div className="phone-form-row">
                   <Form.Group>
                     <Form.Label>Country</Form.Label>
-                    <Form.Select {...register("countryCode")}>
-                      <option value="+91">India (+91)</option>
-                      <option value="+1">USA (+1)</option>
-                      <option value="+44">UK (+44)</option>
-                    </Form.Select>
+                    <Controller
+                      name="countryCode"
+                      control={control}
+                      render={({ field }) => (
+                        <CustomSelect
+                          value={field.value}
+                          onChange={field.onChange}
+                          options={[
+                            { value: "+91", label: "India (+91)" },
+                            { value: "+1",  label: "USA (+1)" },
+                            { value: "+44", label: "UK (+44)" },
+                          ]}
+                        />
+                      )}
+                    />
                   </Form.Group>
 
                   <Form.Group>
@@ -132,12 +144,22 @@ function SignUp({ closeModal, openLogin }) {
 
                 <Form.Group className="mb-2">
                   <Form.Label>Gender</Form.Label>
-                  <Form.Select {...register("gender")}>
-                    <option value="">Select gender</option>
-                    <option value="Male">Male</option>
-                    <option value="Female">Female</option>
-                    <option value="Other">Other</option>
-                  </Form.Select>
+                  <Controller
+                    name="gender"
+                    control={control}
+                    render={({ field }) => (
+                      <CustomSelect
+                        value={field.value}
+                        onChange={field.onChange}
+                        placeholder="Select gender"
+                        options={[
+                          { value: "Male",   label: "Male" },
+                          { value: "Female", label: "Female" },
+                          { value: "Other",  label: "Other" },
+                        ]}
+                      />
+                    )}
+                  />
                   <small className="text-danger">
                     {errors.gender?.message}
                   </small>

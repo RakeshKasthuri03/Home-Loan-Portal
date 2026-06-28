@@ -4,6 +4,7 @@ import { getUser } from "../../utils/auth";
 import { getMyApplications, getApplicationById, requestClosure } from "../../utils/loanApi";
 import { FIELD_VALIDATORS } from "../../Validations/LoanValidation";
 import "../../styles/LoanTracker.css";
+import CustomSelect from "../../components/CustomSelect";
 
 const fmt = (n) => n ? "₹" + Number(n).toLocaleString("en-IN") : "—";
 
@@ -142,9 +143,14 @@ export default function LoanTracker() {
         {allApps.length > 1 && (
           <div className="app-selector-wrap">
             <label className="app-selector-label">Application:</label>
-            <select value={selectedId} onChange={e => handleSelectApp(e.target.value)} className="app-selector-select">
-              {allApps.map(a => <option key={a._id} value={a._id}>{a.applicationId} — {LOAN_TYPE_LABELS[a.loanType] || a.loanType}</option>)}
-            </select>
+            <CustomSelect
+              value={selectedId}
+              onChange={handleSelectApp}
+              options={allApps.map(a => ({
+                value: a._id,
+                label: `${a.applicationId} — ${LOAN_TYPE_LABELS[a.loanType] || a.loanType}`
+              }))}
+            />
           </div>
         )}
         <div style={{ background:"#fff", borderRadius:12, padding:32, boxShadow:"0 2px 8px rgba(0,0,0,0.07)", textAlign:"center" }}>
@@ -206,9 +212,14 @@ export default function LoanTracker() {
       {allApps.length > 1 && (
         <div className="app-selector-wrap">
           <label className="app-selector-label">Application:</label>
-          <select value={selectedId} onChange={e => handleSelectApp(e.target.value)} className="app-selector-select">
-            {allApps.map(a => <option key={a._id} value={a._id}>{a.applicationId} — {LOAN_TYPE_LABELS[a.loanType] || a.loanType}</option>)}
-          </select>
+          <CustomSelect
+            value={selectedId}
+            onChange={handleSelectApp}
+            options={allApps.map(a => ({
+              value: a._id,
+              label: `${a.applicationId} — ${LOAN_TYPE_LABELS[a.loanType] || a.loanType}`
+            }))}
+          />
         </div>
       )}
 
