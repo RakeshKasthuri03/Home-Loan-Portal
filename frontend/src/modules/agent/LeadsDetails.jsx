@@ -4,6 +4,7 @@ import AgentUserDetails from "./AgentUserdetails";
 import "../../styles/Agentheader.css";
 import "../../styles/LeadDetails.css";
 import { agentGetStats, agentGetApplications, getApplicationById, agentRecommend, agentRequestDocs } from "../../utils/loanApi";
+import CustomSelect from "../../components/CustomSelect";
 
 const LOAN_LABELS = {
   PURCHASE: "Home Loan",
@@ -166,29 +167,44 @@ function LeadsDetails() {
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="leads-filter-input"
               />
-              <select value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)} className="leads-filter-select">
-                <option value="all">All Statuses</option>
-                <option value="submitted">Submitted</option>
-                <option value="under_review">Under Review</option>
-                <option value="documents_pending">Docs Pending</option>
-                <option value="approved">Approved</option>
-                <option value="rejected">Rejected</option>
-                <option value="disbursed">Disbursed</option>
-              </select>
-              <select value={filterLoanType} onChange={(e) => setFilterLoanType(e.target.value)} className="leads-filter-select">
-                <option value="all">All Loan Types</option>
-                <option value="PURCHASE">Home Loan</option>
-                <option value="PLOT">Plot Loan</option>
-                <option value="RENOVATION">Renovation</option>
-                <option value="NRI">NRI Loan</option>
-                <option value="BALANCE_TRANSFER">Balance Transfer</option>
-              </select>
-              <select value={sortBy} onChange={(e) => setSortBy(e.target.value)} className="leads-filter-select">
-                <option value="newest">Newest First</option>
-                <option value="oldest">Oldest First</option>
-                <option value="amount_high">Amount: High to Low</option>
-                <option value="amount_low">Amount: Low to High</option>
-              </select>
+              <CustomSelect
+                value={filterStatus}
+                onChange={setFilterStatus}
+                className="leads-filter-select"
+                options={[
+                  { value: "all",                label: "All Statuses" },
+                  { value: "submitted",          label: "Submitted" },
+                  { value: "under_review",       label: "Under Review" },
+                  { value: "documents_pending",  label: "Docs Pending" },
+                  { value: "approved",           label: "Approved" },
+                  { value: "rejected",           label: "Rejected" },
+                  { value: "disbursed",          label: "Disbursed" },
+                ]}
+              />
+              <CustomSelect
+                value={filterLoanType}
+                onChange={setFilterLoanType}
+                className="leads-filter-select"
+                options={[
+                  { value: "all",              label: "All Loan Types" },
+                  { value: "PURCHASE",         label: "Home Loan" },
+                  { value: "PLOT",             label: "Plot Loan" },
+                  { value: "RENOVATION",       label: "Renovation" },
+                  { value: "NRI",              label: "NRI Loan" },
+                  { value: "BALANCE_TRANSFER", label: "Balance Transfer" },
+                ]}
+              />
+              <CustomSelect
+                value={sortBy}
+                onChange={setSortBy}
+                className="leads-filter-select"
+                options={[
+                  { value: "newest",       label: "Newest First" },
+                  { value: "oldest",       label: "Oldest First" },
+                  { value: "amount_high",  label: "Amount: High to Low" },
+                  { value: "amount_low",   label: "Amount: Low to High" },
+                ]}
+              />
             </div>
             <div style={{ marginTop: "8px", fontSize: "0.78rem", color: "#6b7280" }}>
               Showing {filtered.length} of {applications.length} applications

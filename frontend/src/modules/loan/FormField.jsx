@@ -2,6 +2,7 @@ import { useState } from "react";
 import axios from "axios";
 import { getToken, getUser } from "../../utils/auth";
 import "./LoanForm.css";
+import CustomSelect from "../../components/CustomSelect";
 
 const FormField = ({ field, value, onChange, error, fullWidth }) => {
   const { name, label, type, required, placeholder, options, accept, maxLength } = field;
@@ -74,13 +75,15 @@ const FormField = ({ field, value, onChange, error, fullWidth }) => {
 
       case "select":
         return (
-          <select className={baseClass} value={value || ""} onChange={handleChange} disabled={locked}>
-            {options.map((opt) => (
-              <option key={opt} value={opt.startsWith("Select") ? "" : opt}>
-                {opt}
-              </option>
-            ))}
-          </select>
+          <CustomSelect
+            value={value || ""}
+            onChange={(val) => !locked && onChange(name, val)}
+            placeholder={options[0] || "Select..."}
+            options={options
+              .filter(opt => !opt.startsWith("Select"))
+              .map(opt => ({ value: opt, label: opt }))
+            }
+          />
         );
 
       case "textarea":

@@ -42,6 +42,7 @@ export default function LoanTracker() {
   const [activeTab, setActiveTab]   = useState("overview");
   const [closureMsg, setClosureMsg] = useState("");
   const [closureDate, setClosureDate] = useState("");
+  const [closureReason, setClosureReason] = useState("");
   const [closureError, setClosureError] = useState("");
 
   useEffect(() => {
@@ -79,7 +80,7 @@ export default function LoanTracker() {
     e.preventDefault();
     (async () => {
       try {
-        const reason = e.target[0]?.value || '';
+        const reason = closureReason || e.target[0]?.value || '';
         // prefer controlled state if present
         const preferredDate = closureDate || e.target[1]?.value || null;
 
@@ -438,13 +439,17 @@ export default function LoanTracker() {
             return (
               <form className="lt-form" onSubmit={handleClosure}>
                 <div className="lt-form-group"><label>Reason for Closure</label>
-                  <select className="lt-input" required>
-                    <option value="">Select reason</option>
-                    <option>Selling the property</option>
-                    <option>Refinancing with another bank</option>
-                    <option>Have surplus funds</option>
-                    <option>Other</option>
-                  </select>
+                  <CustomSelect
+                    value={closureReason}
+                    onChange={setClosureReason}
+                    placeholder="Select reason"
+                    options={[
+                      { value: "Selling the property",          label: "Selling the property" },
+                      { value: "Refinancing with another bank", label: "Refinancing with another bank" },
+                      { value: "Have surplus funds",            label: "Have surplus funds" },
+                      { value: "Other",                         label: "Other" },
+                    ]}
+                  />
                 </div>
                 <div className="lt-form-group"><label>Preferred Closure Date</label>
                   <input
