@@ -55,23 +55,6 @@ const updateuser=async(req,res)=>{
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 const signin=async (req,res)=>{
       const {email,password}=req.body;
         try{

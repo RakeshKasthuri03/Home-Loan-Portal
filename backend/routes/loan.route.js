@@ -10,16 +10,6 @@ const {
   deleteApplication,
   requestClosure,
   resubmitDocument,
-  
-  // Agent operations
-  // getAgentApplications,
-  // startReview,
-  // requestDocuments,
-  // addRemarks,
-  // recommendApplication,
-  // getAgentStats,
-  // verifyDocument,
-  // Loan types
   getLoanTypes,
   createLoanType,
   updateLoanType

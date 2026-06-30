@@ -56,6 +56,12 @@ function AdminApplications() {
   const [closureRequests, setClosureRequests] = useState([]);
   const [stats, setStats] = useState({ totalApplications: 0, statusStats: {} });
 
+  // Pagination state
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(20);
+  const [totalPages, setTotalPages] = useState(1);
+  const [total, setTotal] = useState(0);
+
   // Modals
   const [approveModal, setApproveModal]   = useState(null);
   const [rejectModal, setRejectModal]     = useState(null);
@@ -79,16 +85,27 @@ function AdminApplications() {
     if (closureRes.success) setClosureRequests(closureRes.data?.applications || []);
     if (statsRes.success) setStats(statsRes.data || { totalApplications: 0, statusStats: {} });
     fetchAgents();
+    // Load first page of applications initially
+    setPage(1);
+    fetchApplications(1);
   };
 
-  const fetchApplications = async () => {
+  const fetchApplications = async (pageOverride, limitOverride) => {
     setLoading(true);
-    const params = {};
+    const currentPage = pageOverride || page;
+    const currentLimit = limitOverride || limit;
+    const params = { page: currentPage, limit: currentLimit };
     if (activeTab !== "All") params.status = statusMap[activeTab];
     if (searchTerm.trim()) params.search = searchTerm.trim();
 
     const appsRes = await adminGetAllApplications(params);
-    if (appsRes.success) setApplications(appsRes.data.applications || []);
+    if (appsRes.success) {
+      setApplications(appsRes.data.applications || []);
+      const p = appsRes.data.pagination || {};
+      setTotal(p.total || 0);
+      setTotalPages(p.pages || 1);
+      setPage(p.page || currentPage);
+    }
     setLoading(false);
   };
 
@@ -105,10 +122,17 @@ function AdminApplications() {
   // Fetch applications when tab or search changes (debounced)
   useEffect(() => {
     const timer = setTimeout(() => {
-      fetchApplications();
+      // reset to first page when filters/search change
+      setPage(1);
+      fetchApplications(1);
     }, 300);
     return () => clearTimeout(timer);
   }, [activeTab, searchTerm]);
+
+  // Fetch when page or limit changes
+  useEffect(() => {
+    fetchApplications();
+  }, [page, limit]);
 
   // Call this after a successful action to refresh both lists and counts
   const refreshAll = async () => {
@@ -117,17 +141,6 @@ function AdminApplications() {
     if (statsRes.success) setStats(statsRes.data || { totalApplications: 0, statusStats: {} });
   };
 
-  // Open close modal if query param provided (reused from AdminDashboard link)
-  // const location = useLocation();
-  // useEffect(() => {
-  //   const params = new URLSearchParams(location.search);
-  //   const openClose = params.get('openClose');
-  //   if (openClose) {
-  //     // Ensure applications are loaded first, then open modal
-  //     const timer = setTimeout(() => setCloseModal(openClose), 400);
-  //     return () => clearTimeout(timer);
-  //   }
-  // }, [location.search]);
 
   const getCount = (tab) => {
     if (tab === "All") return stats.totalApplications || 0;
@@ -277,7 +290,25 @@ function AdminApplications() {
             <input type="text" placeholder="🔍 Search by name or application ID..."
               value={searchTerm} onChange={e => setSearchTerm(e.target.value)}
               style={{ padding:"9px 14px", border:"1.5px solid #d1d5db", borderRadius:9, fontSize:"0.9rem", width:280, outline:"none" }} />
-            <span style={{ color:"#6b7280", fontSize:"0.85rem" }}>{applications.length} application{applications.length !== 1 ? "s" : ""}</span>
+
+            <div style={{ display:"flex", gap:10, alignItems:"center" }}>
+              <div style={{ color:"#6b7280", fontSize:"0.85rem" }}>Showing {applications.length} of {total} result{total !== 1 ? "s" : ""}</div>
+
+              <select value={limit} onChange={(e) => { setLimit(parseInt(e.target.value, 10) || 20); setPage(1); }}
+                style={{ padding:"6px 8px", borderRadius:8, border:"1px solid #d1d5db", background:"#fff", fontSize:"0.85rem" }}>
+                <option value={10}>10</option>
+                <option value={20}>20</option>
+                <option value={50}>50</option>
+              </select>
+
+              <button onClick={() => setPage(Math.max(1, page - 1))} disabled={page <= 1}
+                style={{ padding:"6px 10px", borderRadius:8, border:"1px solid #e5e7eb", background:"#fff", cursor:"pointer" }}>Prev</button>
+
+              <div style={{ color:"#6b7280", fontSize:"0.85rem" }}>{page} / {totalPages}</div>
+
+              <button onClick={() => setPage(Math.min(totalPages, page + 1))} disabled={page >= totalPages}
+                style={{ padding:"6px 10px", borderRadius:8, border:"1px solid #0f2557", background:"#0f2557", color:"#fff", cursor:"pointer" }}>Next</button>
+            </div>
           </div>
 
           {/* Status tabs */}
